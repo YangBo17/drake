@@ -13,7 +13,7 @@
 #include <thread>
 
 #include <fmt/format.h>
-#include <libqhullcpp/Qhull.h>
+#include <drake_vendor/libqhullcpp/Qhull.h>
 
 #include "drake/geometry/optimization/vpolytope.h"
 #include "drake/multibody/rational_forward_kinematics/generate_monomial_basis_util.h"

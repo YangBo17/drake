@@ -7,15 +7,13 @@
 #include <fmt/format.h>
 
 #include "drake/common/pointer_cast.h"
-#include "drake/common/symbolic.h"
-#include "drake/common/symbolic_decompose.h"
+#include "drake/common/symbolic/decompose.h"
 #include "drake/geometry/optimization/graph_of_convex_sets.h"
 #include "drake/math/bspline_basis.h"
 #include "drake/math/knot_vector_type.h"
 #include "drake/solvers/constraint.h"
 #include "drake/solvers/mathematical_program.h"
 #include "drake/solvers/mathematical_program_result.h"
-#include "drake/solvers/solve.h"
 
 namespace drake {
 namespace geometry {
