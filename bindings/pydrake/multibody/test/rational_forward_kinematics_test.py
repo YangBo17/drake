@@ -166,8 +166,7 @@ class IiwaCspaceTest(unittest.TestCase):
         bilinear_alternation_option.lagrangian_backoff_scale = 0.01
         bilinear_alternation_option.polytope_backoff_scale = 0.05
         solver_options = mp.SolverOptions()
-        cspace_free_region_solution, polytope_volumes, \
-        ellipsoid_determinants = \
+        cspace_free_region_solution, polytope_volumes, ellipsoid_determinants = \
             dut.CspacePolytopeBilinearAlternation(
                 q_star, filtered_collision_pairs, C_init, d_init,
                 bilinear_alternation_option, solver_options,
