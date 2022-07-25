@@ -199,7 +199,6 @@ drake_cc_binary(
         "//examples/kuka_iiwa_arm:models",
         "//manipulation/models/iiwa_description:models",
         "//manipulation/models/wsg_50_description:models",
-        "//solvers:gurobi_solver",
     ],
     deps = [
         ":cspace_free_region",
@@ -210,6 +209,7 @@ drake_cc_binary(
         "//multibody/inverse_kinematics",
         "//multibody/parsing:parser",
         "//multibody/plant",
+        "//solvers:gurobi_solver",
     ],
 )
 

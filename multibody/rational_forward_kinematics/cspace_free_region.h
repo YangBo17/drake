@@ -154,8 +154,7 @@ struct CspaceFreeRegionSolution {
         separating_planes{std::move(m_separating_planes)} {}
   //
   CspaceFreeRegionSolution(Eigen::MatrixXd m_C, Eigen::MatrixXd m_d)
-      : C{m_C},
-        d{m_d} {}
+      : C{m_C}, d{m_d} {}
 
   // values defining Hpolyhedron Ct <= d
   Eigen::MatrixXd C;

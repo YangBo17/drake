@@ -1151,11 +1151,11 @@ GTEST_TEST(CalcPolynomialFromGram, Test1) {
                                            {symbolic::Monomial(x, 4), 2},
                                            {symbolic::Monomial(x, 2), 7},
                                            {symbolic::Monomial(), 3}}};
-  EXPECT_TRUE(ret1.EqualToAfterExpansion(ret_expected));
+  EXPECT_TRUE(ret1.Expand().EqualTo(ret_expected.Expand()));
 
   const auto ret2 =
       CalcPolynomialFromGramLower<double>(monomial_basis, Q_lower);
-  EXPECT_TRUE(ret2.EqualToAfterExpansion(ret_expected));
+  EXPECT_TRUE(ret2.Expand().EqualTo(ret_expected.Expand()));
 }
 
 GTEST_TEST(CalcPolynomialFromGram, Test2) {
@@ -1202,10 +1202,10 @@ GTEST_TEST(CalcPolynomialFromGram, Test2) {
                                            {symbolic::Monomial(x, 4), 2},
                                            {symbolic::Monomial(x, 2), 9},
                                            {symbolic::Monomial(), 3}}};
-  EXPECT_TRUE(ret1.EqualToAfterExpansion(ret_expected));
+  EXPECT_TRUE(ret1.Expand().EqualTo(ret_expected.Expand()));
   const auto ret2 =
       CalcPolynomialFromGramLower(monomial_basis, Q_lower_var, result);
-  EXPECT_TRUE(ret2.EqualToAfterExpansion(ret_expected));
+  EXPECT_TRUE(ret2.Expand().EqualTo(ret_expected.Expand()));
 }
 
 GTEST_TEST(SymmetricMatrixFromLower, Test) {
