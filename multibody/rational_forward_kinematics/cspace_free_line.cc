@@ -1,28 +1,68 @@
 #include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
+
 #include "drake/common/symbolic_decompose.h"
+#include "drake/solvers/mosek_solver.h"
+#include "drake/solvers/solve.h"
+
 namespace drake {
 namespace multibody {
 using solvers::MathematicalProgram;
 
-CspaceFreeLine::CspaceFreeLine(const systems::Diagram<double>& diagram,
-                               const multibody::MultibodyPlant<double>* plant,
-                               const geometry::SceneGraph<double>* scene_graph,
-                               SeparatingPlaneOrder plane_order)
+CspaceFreeLine::CspaceFreeLine(
+    const systems::Diagram<double>& diagram,
+    const multibody::MultibodyPlant<double>* plant,
+    const geometry::SceneGraph<double>* scene_graph,
+    SeparatingPlaneOrder plane_order, std::optional<Eigen::VectorXd> q_star,
+    const FilteredCollisionPairs& filtered_collision_pairs,
+    const VerificationOption option)
     : CspaceFreeRegion(diagram, plant, scene_graph, plane_order,
                        CspaceRegionType::kAxisAlignedBoundingBox),
-      mu_{symbolic::Variable("mu")} {
+      mu_{symbolic::Variable("mu")},
+      filtered_collision_pairs_{filtered_collision_pairs},
+      option_{option} {
+  if (q_star.has_value()) {
+    DRAKE_DEMAND(q_star.value().size() == plant->num_positions());
+    q_star_ = q_star.value();
+  } else {
+    q_star_ = Eigen::VectorXd::Zero(plant->num_positions());
+  }
+
   InitializeLineVariables(plant->num_positions());
+  allocated_certification_program_ = AllocateCertificationProgram();
 }
 
-CspaceFreeLine::CspaceFreeLine(
-    const multibody::MultibodyPlant<double>& plant,
-    const std::vector<const ConvexPolytope*>& link_polytopes,
-    const std::vector<const ConvexPolytope*>& obstacles,
-    SeparatingPlaneOrder plane_order)
-    : CspaceFreeRegion(plant, link_polytopes, obstacles, plane_order,
-                       CspaceRegionType::kAxisAlignedBoundingBox),
-      mu_{symbolic::Variable("mu")} {
-  InitializeLineVariables(plant.num_positions());
+bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
+    const Eigen::Ref<const Eigen::VectorXd>& s0, const Eigen::Ref<const Eigen::VectorXd>& s1,
+    const solvers::SolverOptions& solver_options) {
+  symbolic::Environment env;
+  DRAKE_DEMAND(s0.size() == s0_.size());
+  DRAKE_DEMAND(s1.size() == s1_.size());
+  auto is_in_joint_limits = [this](const Eigen::Ref<const Eigen::VectorXd>& s) {
+    Eigen::VectorXd q_lower =
+        rational_forward_kinematics().plant().GetPositionLowerLimits();
+    Eigen::VectorXd s_lower =
+        rational_forward_kinematics().ComputeTValue(q_lower, q_star_);
+    Eigen::VectorXd q_upper =
+        rational_forward_kinematics().plant().GetPositionUpperLimits();
+    Eigen::VectorXd s_upper =
+        rational_forward_kinematics().ComputeTValue(q_upper, q_star_);
+    for (int i = 0; i < s.size(); ++i) {
+      if (s(i) < s_lower(i) || s(i) > s_upper(i)) {
+        throw std::invalid_argument(fmt::format("s0 = {} not in the joint limits\n lower limit = {}\n upper limit = {}",
+                                s, s_lower, s_upper));
+      }
+    }
+  };
+  is_in_joint_limits(s0);
+  is_in_joint_limits(s1);
+
+  for (int i = 0; i < s0_.size(); ++i) {
+    env.insert(s0_(i), s0(i));
+    env.insert(s1_(i), s1(i));
+  }
+  allocated_certification_program_.EvaluatePolynomialsAndUpdateProgram(env);
+  const auto result = allocated_certification_program_.solve(solver_options);
+  return result.is_success();
 }
 
 std::vector<LinkVertexOnPlaneSideRational>
@@ -73,11 +113,17 @@ void CspaceFreeLine::GenerateTuplesForCertification(
                           separating_plane_to_tuples);
 }
 
-AllocatedCertificationProgram CspaceFreeLine::AllocateCertificationProgram(
-    const std::vector<CspaceFreeRegion::CspacePolytopeTuple>&
-        alternation_tuples,
-    const VectorX<symbolic::Variable>& separating_plane_vars,
-    const VerificationOption& option) const {
+internal::AllocatedCertificationProgram
+CspaceFreeLine::AllocateCertificationProgram() const {
+  std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples;
+  VectorX<symbolic::Variable> lagrangian_gram_vars, verified_gram_vars,
+      separating_plane_vars;
+  std::vector<std::vector<int>> separating_plane_to_tuples;
+  GenerateTuplesForCertification(q_star_, filtered_collision_pairs_,
+                                 &alternation_tuples, &lagrangian_gram_vars,
+                                 &verified_gram_vars, &separating_plane_vars,
+                                 &separating_plane_to_tuples);
+
   auto prog = std::make_unique<solvers::MathematicalProgram>();
 
   // Adds decision variables.
@@ -90,7 +136,8 @@ AllocatedCertificationProgram CspaceFreeLine::AllocateCertificationProgram(
   std::unordered_map<
       symbolic::Polynomial,
       std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>>
+                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
       polynomial_to_monomial_to_binding_map;
 
   symbolic::Expression coefficient_expression;
@@ -99,35 +146,22 @@ AllocatedCertificationProgram CspaceFreeLine::AllocateCertificationProgram(
   //
   // Recall that a univariate polynomial p(μ) is nonnegative on [0, 1] if and
   // only if p(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
-  // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with deg(λ) ≤
-  // 2d and deg(ν) ≤ 2d and λ, ν are SOS
+  // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
+  // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS
   for (const auto& tuple : alternation_tuples) {
     symbolic::Polynomial verified_polynomial = tuple.rational_numerator;
     verified_polynomial.SetIndeterminates({mu_});
     int d = verified_polynomial.TotalDegree() / 2;
     auto [l, Ql] =
-        prog->NewSosPolynomial(mu_variables, 2 * d, option.lagrangian_type);
+        prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
     if (verified_polynomial.TotalDegree() % 2 == 0) {
       auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
-                                            option.lagrangian_type);
+                                            option_.lagrangian_type);
       verified_polynomial -= l + v * mu_ * symbolic::Polynomial(1) - mu_;
     } else {
       auto [v, Qv] =
-          prog->NewSosPolynomial(mu_variables, 2 * d, option.lagrangian_type);
+          prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
       verified_polynomial -= l * mu_ + v * symbolic::Polynomial(1) - mu_;
-    }
-    // now add s0 and s1 to the indeterminates to enable us to add them to the
-    // program
-    VectorX<symbolic::Variable> mu_s0_s1_variables{1 + s0_.size() + s1_.size()};
-    mu_s0_s1_variables[0] = mu_;
-    int ctr = 1;
-    for (int i = 0; i < s0_.size(); i++) {
-      mu_s0_s1_variables[ctr] = s0_[i];
-      ++ctr;
-    }
-    for (int i = 0; i < s1_.size(); i++) {
-      mu_s0_s1_variables[ctr] = s1_[i];
-      ++ctr;
     }
 
     // preallocate linear equality constraints for the zero equality awaiting
@@ -138,18 +172,18 @@ AllocatedCertificationProgram CspaceFreeLine::AllocateCertificationProgram(
         monomial_to_equality_constraint;
     for (const auto& [monomial, coefficient] :
          verified_polynomial.monomial_to_coefficient_map()) {
-      // construct dummy expression to ensure that the binding has the appropriate variables
+      // construct dummy expression to ensure that the binding has the
+      // appropriate variables
       coefficient_expression = 0;
-      for(const auto& v: coefficient.GetVariables())
-      {
+      for (const auto& v : coefficient.GetVariables()) {
         coefficient_expression += v;
       }
       monomial_to_equality_constraint.insert(
-          {monomial, (prog->AddLinearEqualityConstraint(coefficient_expression, 0))});
+          {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
     }
 
-    polynomial_to_monomial_to_binding_map.insert(
-        {verified_polynomial, monomial_to_equality_constraint});
+    polynomial_to_monomial_to_binding_map.insert_or_assign(
+        verified_polynomial, monomial_to_equality_constraint);
   }
   return {std::move(prog), polynomial_to_monomial_to_binding_map};
 }
@@ -171,40 +205,44 @@ void CspaceFreeLine::InitializeLineVariables(int num_positions) {
   }
 }
 
+namespace internal {
 AllocatedCertificationProgram::AllocatedCertificationProgram(
     std::unique_ptr<solvers::MathematicalProgram> prog,
     std::unordered_map<
         symbolic::Polynomial,
         std::unordered_map<symbolic::Monomial,
-                           solvers::Binding<solvers::LinearEqualityConstraint>>>
+                           solvers::Binding<solvers::LinearEqualityConstraint>>,
+        std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
         polynomial_to_monomial_to_bindings_map)
     : prog_{std::move(prog)},
       polynomial_to_monomial_to_bindings_map_{
           polynomial_to_monomial_to_bindings_map} {};
 
-void AllocatedCertificationProgram::
-    EvaluatePolynomialsAndUpdateProgCoefficients(symbolic::Environment env) {
-  solvers::LinearEqualityConstraint* constraint;
+void internal::AllocatedCertificationProgram::
+    EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env) {
   symbolic::Expression coefficient;
   for (auto& [polynomial, monomial_to_binding] :
        polynomial_to_monomial_to_bindings_map_) {
     symbolic::Polynomial evaluated_polynomial = polynomial.EvaluatePartial(env);
     for (auto& [monomial, binding] : monomial_to_binding) {
-      constraint = binding.evaluator().get();
+      prog_->RemoveConstraint(binding);
+      // note that we do not explicitly check that evaluated polynomial and
+      // monomial_to_bindings contain the same monomials which could be
+      // dangerous.
       coefficient =
           evaluated_polynomial.monomial_to_coefficient_map().at(monomial);
-      std::unordered_map<symbolic::Variable::Id, int> map_var_to_index;
-      for (int i = 0; i < binding.variables().size(); ++i) {
-        // I believe that the variables in binding are sorted in the order of
-        // the linear constraint. TODO(hongkai.dai) check me on this
-        map_var_to_index[binding.variables()[i].get_id()] = i;
-      }
-      Eigen::RowVectorXd A{binding.variables().size()};
-      double b;
-      symbolic::DecomposeAffineExpression(coefficient, map_var_to_index, A, b);
+      monomial_to_binding.insert_or_assign(
+          monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
     }
   }
 }
 
+solvers::MathematicalProgramResult
+internal::AllocatedCertificationProgram::solve(
+    const solvers::SolverOptions& solver_options) {
+  return solvers::Solve(*(prog_.get()), std::nullopt, solver_options);
+}
+
+}  // namespace internal
 }  // namespace multibody
 }  // namespace drake

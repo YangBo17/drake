@@ -1,30 +1,54 @@
 #pragma once
+#include <optional>
+
 #include "drake/multibody/rational_forward_kinematics/cspace_free_region.h"
 
 namespace drake {
 namespace multibody {
+
+namespace internal {
+// Checks whether two polynomials are equal. Needed to build maps with
+// Polynomials as keys in the AllocateProgram method
+struct ComparePolynomials {
+  bool operator()(const symbolic::Polynomial& p1,
+                  const symbolic::Polynomial& p2) const {
+    return p1.CoefficientsAlmostEqual(p2, 1E-12);
+  }
+};
+
 // a class for storing the allocated certification program and constructing the
 // final program
 class AllocatedCertificationProgram {
  public:
+  AllocatedCertificationProgram() = default;
+
   AllocatedCertificationProgram(
       std::unique_ptr<solvers::MathematicalProgram> prog,
       std::unordered_map<
           symbolic::Polynomial,
           std::unordered_map<
               symbolic::Monomial,
-              solvers::Binding<solvers::LinearEqualityConstraint>>> polynomial_to_monomial_to_bindings_map);
+              solvers::Binding<solvers::LinearEqualityConstraint>>,
+          std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
+          polynomial_to_monomial_to_bindings_map);
 
-  void EvaluatePolynomialsAndUpdateProgCoefficients(symbolic::Environment env);
+  void EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env);
+
+
+  solvers::MathematicalProgramResult solve(const solvers::SolverOptions& solver_options);
+
+  solvers::MathematicalProgram* get_prog() {return prog_.get();}
 
  private:
   std::unique_ptr<solvers::MathematicalProgram> prog_;
   std::unordered_map<
       symbolic::Polynomial,
       std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>>
+                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
       polynomial_to_monomial_to_bindings_map_;
 };
+}  // namespace internal
 
 /**
  * This class is designed to certify lines in the configuration space
@@ -39,12 +63,10 @@ class CspaceFreeLine : public CspaceFreeRegion {
   CspaceFreeLine(const systems::Diagram<double>& diagram,
                  const multibody::MultibodyPlant<double>* plant,
                  const geometry::SceneGraph<double>* scene_graph,
-                 SeparatingPlaneOrder plane_order);
-
-  CspaceFreeLine(const multibody::MultibodyPlant<double>& plant,
-                 const std::vector<const ConvexPolytope*>& link_polytopes,
-                 const std::vector<const ConvexPolytope*>& obstacles,
-                 SeparatingPlaneOrder plane_order);
+                 SeparatingPlaneOrder plane_order,
+                 std::optional<Eigen::VectorXd> q_star,
+                 const FilteredCollisionPairs& filtered_collision_pairs = {},
+                 const VerificationOption option = {});
 
   void GenerateTuplesForCertification(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
@@ -55,17 +77,6 @@ class CspaceFreeLine : public CspaceFreeRegion {
       VectorX<symbolic::Variable>* separating_plane_vars,
       std::vector<std::vector<int>>* separating_plane_to_tuples) const;
 
-  AllocatedCertificationProgram AllocateCertificationProgram(
-      const std::vector<CspaceFreeRegion::CspacePolytopeTuple>&
-          alternation_tuples,
-      const VectorX<symbolic::Variable>& separating_plane_vars,
-      const VerificationOption& option) const;
-
-  std::unique_ptr<solvers::MathematicalProgram> AllocateCertificationProgram(
-      const Eigen::Ref<const Eigen::VectorXd>& q_star,
-      const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs)
-      const;
-
   const symbolic::Variable get_mu() const { return mu_; }
   const drake::VectorX<drake::symbolic::Variable> get_s0() const { return s0_; }
   const drake::VectorX<drake::symbolic::Variable> get_s1() const { return s1_; }
@@ -74,6 +85,10 @@ class CspaceFreeLine : public CspaceFreeRegion {
   GenerateLinkOnOneSideOfPlaneRationals(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const FilteredCollisionPairs& filtered_collision_pairs) const override;
+
+  bool CertifyTangentConfigurationSpaceLine(
+      const Eigen::Ref<const Eigen::VectorXd>& s0, const Eigen::Ref<const Eigen::VectorXd>& s1,
+      const solvers::SolverOptions& solver_options = solvers::SolverOptions());
 
  private:
   // the variable of the line going from 0 to 1
@@ -85,8 +100,19 @@ class CspaceFreeLine : public CspaceFreeRegion {
   // map for performing substitution from t to μ*s₀ + (1−μ)*s₁
   std::unordered_map<symbolic::Variable, symbolic::Expression>
       t_to_line_subs_map_;
+  // q_star_ for stereographic projection
+  Eigen::VectorXd q_star_;
+
+  FilteredCollisionPairs filtered_collision_pairs_;
+
+  VerificationOption option_;
+
+  // preallocated certification program
+  internal::AllocatedCertificationProgram allocated_certification_program_;
 
   void InitializeLineVariables(int num_positions);
+
+  internal::AllocatedCertificationProgram AllocateCertificationProgram() const;
 };
 
 }  // namespace multibody

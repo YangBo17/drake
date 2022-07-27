@@ -3,11 +3,10 @@
 #include <gtest/gtest.h>
 
 #include "drake/multibody/parsing/parser.h"
-#include "drake/systems/framework/diagram_builder.h"
-#include "drake/solvers/mathematical_program.h"
-#include "drake/solvers/mosek_solver.h"
-#include "drake/solvers/solve.h"
 #include "drake/solvers/get_program_type.h"
+#include "drake/solvers/mathematical_program.h"
+#include "drake/systems/framework/diagram_builder.h"
+#include "drake/common/test_utilities/eigen_matrix_compare.h"
 
 
 namespace drake {
@@ -93,7 +92,7 @@ class DoublePendulumTest : public ::testing::Test {
 
 TEST_F(DoublePendulumTest, TestCspaceFreeLineConstructor) {
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-                     SeparatingPlaneOrder::kAffine);
+                     SeparatingPlaneOrder::kAffine, std::nullopt);
   EXPECT_TRUE(dut.get_s0().size() == 2);
   EXPECT_TRUE(dut.get_s1().size() == 2);
 }
@@ -137,7 +136,7 @@ bool AffinePolynomialCoefficientsAlmostEqualByName(symbolic::Polynomial p1,
 
 TEST_F(DoublePendulumTest, TestGenerateLinkOnOneSideOfPlaneRationals) {
   const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-                           SeparatingPlaneOrder::kAffine);
+                           SeparatingPlaneOrder::kAffine, std::nullopt);
   const CspaceFreeRegion dut2(*diagram_, plant_, scene_graph_,
                               SeparatingPlaneOrder::kAffine,
                               CspaceRegionType::kAxisAlignedBoundingBox);
@@ -244,7 +243,7 @@ TEST_F(DoublePendulumTest, TestGenerateLinkOnOneSideOfPlaneRationals) {
 
 TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
   const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-                           SeparatingPlaneOrder::kAffine);
+                           SeparatingPlaneOrder::kAffine, std::nullopt);
 
   dut.GenerateTuplesForCertification(
       q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
@@ -306,30 +305,156 @@ TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
   EXPECT_EQ(tuple_indices_set.size(), rational_count);
 }
 
-TEST_F(DoublePendulumTest, TestConstructCertificationProgram) {
-  const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-                           SeparatingPlaneOrder::kAffine);
-  dut.GenerateTuplesForCertification(
-      q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
-      &verified_gram_vars_, &separating_plane_vars_,
-      &separating_plane_to_tuples_);
-
-  auto clock_start = std::chrono::system_clock::now();
-  auto prog = dut.AllocateCertificationProgram(
-      alternation_tuples_, separating_plane_vars_, {});
-  auto clock_finish = std::chrono::system_clock::now();
-  std::cout << "ConstructCertificationProgram takes "
-            << static_cast<float>(
-                   std::chrono::duration_cast<std::chrono::milliseconds>(
-                       clock_finish - clock_start)
-                       .count()) /
-                   1000
-            << "s\n";
+TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
   solvers::SolverOptions solver_options;
   solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
-  std::cout << solvers::GetProgramType(*prog) << std::endl;
-//  const auto result = solvers::Solve(*prog, std::nullopt, solver_options);
-//  EXPECT_TRUE(false);
+  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
+                           SeparatingPlaneOrder::kAffine, q_star_0_, {},
+                           {});
+
+
+  Eigen::Vector2d q0{0, 0};
+  Eigen::Vector2d q1_good{0, 0.1};
+  Eigen::Vector2d q1_bad{0.2, 0.5};
+  Eigen::Vector2d q1_out_of_limits{-2, -2};
+
+  Eigen::VectorXd s0 = dut.rational_forward_kinematics().ComputeTValue(q0, q_star_0_);
+  Eigen::VectorXd s1_good = dut.rational_forward_kinematics().ComputeTValue(q1_good, q_star_0_);
+  Eigen::VectorXd s1_bad = dut.rational_forward_kinematics().ComputeTValue(q1_bad, q_star_0_);
+  Eigen::VectorXd s1_out_of_limits= dut.rational_forward_kinematics().ComputeTValue(q1_out_of_limits, q_star_0_);
+
+  EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good));
+  EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad));
+  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(s0, s1_out_of_limits));
+}
+
+GTEST_TEST(AllocatedCertificationProgramConstructorTest, Test) {
+  symbolic::Variable x{"x"};  // indeterminate
+  symbolic::Variable a{"a"};  // decision variable
+  symbolic::Variable b{"b"};  // decision variable
+  symbolic::Variable p{"p"};  // parameter we will replace
+  symbolic::Polynomial poly{2 * a * p * symbolic::pow(x, 2) +
+                                3 * b * symbolic::pow(p, 2) * x + 1 + b + p,
+                            symbolic::Variables{x}};
+  auto prog = std::make_unique<solvers::MathematicalProgram>();
+  solvers::VectorXDecisionVariable decision_variables{2};
+  decision_variables << a, b;
+  prog->AddDecisionVariables(decision_variables);
+  // some constraint
+  prog->AddLinearConstraint(a <= 0);
+
+  std::unordered_map<
+      symbolic::Polynomial,
+      std::unordered_map<symbolic::Monomial,
+                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
+      polynomial_to_monomial_to_binding_map;
+  symbolic::Expression coefficient_expression;
+  std::unordered_map<symbolic::Monomial,
+                     solvers::Binding<solvers::LinearEqualityConstraint>>
+      monomial_to_equality_constraint;
+  for (const auto& [monomial, coefficient] :
+       poly.monomial_to_coefficient_map()) {
+    // construct dummy expression to ensure that the binding has the
+    // appropriate variables
+    coefficient_expression = 0;
+    for (const auto& v : coefficient.GetVariables()) {
+      coefficient_expression += v;
+    }
+    monomial_to_equality_constraint.insert(
+        {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
+    polynomial_to_monomial_to_binding_map.insert_or_assign(
+        poly, monomial_to_equality_constraint);
+  }
+
+  EXPECT_NO_THROW(internal::AllocatedCertificationProgram(
+      std::move(prog), polynomial_to_monomial_to_binding_map));
+}
+
+GTEST_TEST(EvaluatePolynomialsAndUpdateProgram, Test) {
+  symbolic::Variable x{"x"};  // indeterminate
+  symbolic::Variable a{"a"};  // decision variable
+  symbolic::Variable b{"b"};  // decision variable
+  symbolic::Variable p{"p"};  // parameter we will replace
+  symbolic::Polynomial poly{2 * a * p * symbolic::pow(x, 2) +
+                                3 * b * symbolic::pow(p, 2) * x + 1 + b + p,
+                            symbolic::Variables{x}};
+  auto prog = std::make_unique<solvers::MathematicalProgram>();
+  solvers::VectorXDecisionVariable decision_variables{2};
+  decision_variables << a, b;
+  prog->AddDecisionVariables(decision_variables);
+
+  // some constraint
+  prog->AddLinearConstraint(a <= 0);
+
+  std::unordered_map<
+      symbolic::Polynomial,
+      std::unordered_map<symbolic::Monomial,
+                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
+      polynomial_to_monomial_to_binding_map;
+  symbolic::Expression coefficient_expression;
+  std::unordered_map<symbolic::Monomial,
+                     solvers::Binding<solvers::LinearEqualityConstraint>>
+      monomial_to_equality_constraint;
+  for (const auto& [monomial, coefficient] :
+       poly.monomial_to_coefficient_map()) {
+    // construct dummy expression to ensure that the binding has the
+    // appropriate variables
+    coefficient_expression = 0;
+    for (const auto& v : coefficient.GetVariables()) {
+      coefficient_expression += v;
+    }
+    monomial_to_equality_constraint.insert(
+        {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
+    polynomial_to_monomial_to_binding_map.insert_or_assign(
+        poly, monomial_to_equality_constraint);
+  }
+
+  internal::AllocatedCertificationProgram allocated_prog{
+      std::move(prog), polynomial_to_monomial_to_binding_map};
+  symbolic::Environment env{{p, 2.0}};
+
+  allocated_prog.EvaluatePolynomialsAndUpdateProgram(env);
+
+  auto prog_expected = std::make_unique<solvers::MathematicalProgram>();
+  prog_expected->AddDecisionVariables(decision_variables);
+  // some constraint
+  prog_expected->AddLinearConstraint(a <= 0);
+  prog_expected->AddLinearConstraint(2 * 2 * a == 0);  // 2 * a * p = 0
+  prog_expected->AddLinearConstraint(3 * 4 * b ==
+                                     0);  // 3 * b * symbolic::pow(p, 2) = 0
+  prog_expected->AddLinearConstraint(3 + b == 0);  // 1 + b + p = 0
+
+  std::cout << "testing decision variables" << std::endl;
+  EXPECT_TRUE(allocated_prog.get_prog()->decision_variables() ==
+              prog_expected->decision_variables());
+
+  // there are only linear constraints in this program
+  EXPECT_TRUE(solvers::GetProgramType(*allocated_prog.get_prog()) ==
+              solvers::ProgramType::kLP);
+  EXPECT_TRUE(solvers::GetProgramType(*prog_expected) ==
+              solvers::ProgramType::kLP);
+  EXPECT_TRUE(allocated_prog.get_prog()->linear_constraints().size() ==
+              prog_expected->linear_constraints().size());
+  double tol = 1E-12;
+  for (const auto& binding : allocated_prog.get_prog()->linear_constraints()) {
+    bool same_constraint_found = false;
+    for (const auto& binding_expected : prog_expected->linear_constraints()) {
+      same_constraint_found = CompareMatrices(binding.evaluator()->GetDenseA(),
+                                  binding_expected.evaluator()->GetDenseA(), tol) &&
+                              CompareMatrices(binding.evaluator()->lower_bound(),
+                                  binding_expected.evaluator()->lower_bound(), tol) &&
+                              CompareMatrices(binding.evaluator()->upper_bound(),
+                                  binding_expected.evaluator()->upper_bound(), tol) &&
+                              CompareMatrices(binding.evaluator()->lower_bound(),
+                                  binding_expected.evaluator()->upper_bound(), tol);
+      if (same_constraint_found) {
+        break;
+      }
+    }
+    EXPECT_TRUE(same_constraint_found);
+  }
 }
 
 }  // namespace multibody
