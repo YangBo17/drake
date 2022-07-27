@@ -28,6 +28,7 @@ drake_cc_package_library(
     visibility = ["//visibility:public"],
     deps = [
         ":convex_geometry",
+        ":cspace_free_line",
         ":cspace_free_region",
         ":generate_monomial_basis_util",
         ":plane_side",

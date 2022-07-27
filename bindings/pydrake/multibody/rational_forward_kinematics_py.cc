@@ -1,6 +1,3 @@
-//
-// Created by amice on 11/8/21.
-//
 #include "pybind11/eigen.h"
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
@@ -10,6 +7,7 @@
 #include "drake/bindings/pydrake/common/value_pybind.h"
 #include "drake/bindings/pydrake/pydrake_pybind.h"
 #include "drake/multibody/rational_forward_kinematics/cspace_free_region.h"
+#include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
 #include "drake/multibody/rational_forward_kinematics/generate_monomial_basis_util.h"
 #include "drake/multibody/rational_forward_kinematics/rational_forward_kinematics.h"
 #include "drake/multibody/rational_forward_kinematics/rational_forward_kinematics_internal.h"
@@ -551,6 +549,29 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
       doc.CalcCspacePolytopeVolume.doc);
 
   py::module::import("pydrake.solvers.mathematicalprogram");
+
+   // CspaceFreeLine
+  py::class_<CspaceFreeLine> cspace_line_cls(
+      m, "CspaceFreeLine", doc.CspaceFreeLine.doc);
+  cspace_line_cls.def(
+      py::init<
+          const systems::Diagram<double>& diagram,
+                 const multibody::MultibodyPlant<double>* plant,
+                 const geometry::SceneGraph<double>* scene_graph,
+                 SeparatingPlaneOrder plane_order,
+                 std::optional<Eigen::VectorXd> q_star,
+                 const FilteredCollisionPairs& filtered_collision_pairs = {},
+                 const VerificationOption option = {}>(),
+                 py::arg("diagram"),
+                 py::arg("plant"),
+                 py::arg("scene_graph"),
+                 py::arg("plane_order"),
+                 py::arg("q_star"),
+                 py::arg("filtered_collision_pairs") = {},
+                 py::arg("VerificationOption") = {},
+      doc.CspaceFreeRegion.ctor.doc);
+
+
 
   type_pack<symbolic::Polynomial, symbolic::RationalFunction> sym_pack;
   type_visit([m](auto dummy) { DoPoseDeclaration(m, dummy); }, sym_pack);
