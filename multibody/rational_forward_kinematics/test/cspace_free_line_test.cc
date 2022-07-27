@@ -4,6 +4,11 @@
 
 #include "drake/multibody/parsing/parser.h"
 #include "drake/systems/framework/diagram_builder.h"
+#include "drake/solvers/mathematical_program.h"
+#include "drake/solvers/mosek_solver.h"
+#include "drake/solvers/solve.h"
+#include "drake/solvers/get_program_type.h"
+
 
 namespace drake {
 namespace multibody {
@@ -78,7 +83,12 @@ class DoublePendulumTest : public ::testing::Test {
   MultibodyPlant<double>* plant_;
   geometry::SceneGraph<double>* scene_graph_;
   const Eigen::Vector2d q_star_0_{0.0, 0.0};
-  const Eigen::Vector2d q_star_1_{0.0, 0.0};
+  const Eigen::Vector2d q_star_1_{0.0, 1.0};
+
+  std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples_;
+  VectorX<symbolic::Variable> d_var_, lagrangian_gram_vars_,
+      verified_gram_vars_, separating_plane_vars_;
+  std::vector<std::vector<int>> separating_plane_to_tuples_;
 };
 
 TEST_F(DoublePendulumTest, TestCspaceFreeLineConstructor) {
@@ -88,12 +98,49 @@ TEST_F(DoublePendulumTest, TestCspaceFreeLineConstructor) {
   EXPECT_TRUE(dut.get_s1().size() == 2);
 }
 
+// Evaluates whether two polynomials with indeterminates that have the same name
+// evaluate to about the same expression. We assume that the coefficients in the
+// polynomial are not Expressions, but scalars.
+bool AffinePolynomialCoefficientsAlmostEqualByName(symbolic::Polynomial p1,
+                                                   symbolic::Polynomial p2,
+                                                   double tol) {
+  auto extract_var_name_to_coefficient_map =
+      [](symbolic::Polynomial p,
+         std::unordered_map<std::string, double>* var_name_to_map_ptr) {
+        double c_val;
+        for (const auto& [m, c] : p.monomial_to_coefficient_map()) {
+          for (const auto& v : m.GetVariables()) {
+            c_val = c.Evaluate();
+            if (std::abs(c_val) > 1E-12) {
+              (*var_name_to_map_ptr).insert({v.get_name(), c.Evaluate()});
+            }
+          }
+        }
+      };
+  std::unordered_map<std::string, double> p1_var_name_to_coefficient_map;
+  std::unordered_map<std::string, double> p2_var_name_to_coefficient_map;
+  extract_var_name_to_coefficient_map(p1, &p1_var_name_to_coefficient_map);
+  extract_var_name_to_coefficient_map(p2, &p2_var_name_to_coefficient_map);
+
+  if (p1_var_name_to_coefficient_map.size() ==
+      p2_var_name_to_coefficient_map.size()) {
+    for (const auto& [name, c] : p1_var_name_to_coefficient_map) {
+      if (p2_var_name_to_coefficient_map.find(name) ==
+              p2_var_name_to_coefficient_map.end() ||
+          std::abs(p2_var_name_to_coefficient_map[name] - c) > tol) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 TEST_F(DoublePendulumTest, TestGenerateLinkOnOneSideOfPlaneRationals) {
-  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-                     SeparatingPlaneOrder::kAffine);
-  CspaceFreeRegion dut2(*diagram_, plant_, scene_graph_,
-                        SeparatingPlaneOrder::kAffine,
-                        CspaceRegionType::kAxisAlignedBoundingBox);
+  const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
+                           SeparatingPlaneOrder::kAffine);
+  const CspaceFreeRegion dut2(*diagram_, plant_, scene_graph_,
+                              SeparatingPlaneOrder::kAffine,
+                              CspaceRegionType::kAxisAlignedBoundingBox);
   std::vector<LinkVertexOnPlaneSideRational> rationals_free_line_0 =
       dut.GenerateLinkOnOneSideOfPlaneRationals(q_star_0_, {});
   std::vector<LinkVertexOnPlaneSideRational> rationals_free_region_0 =
@@ -104,62 +151,185 @@ TEST_F(DoublePendulumTest, TestGenerateLinkOnOneSideOfPlaneRationals) {
   std::vector<LinkVertexOnPlaneSideRational> rationals_free_region_1 =
       dut2.GenerateLinkOnOneSideOfPlaneRationals(q_star_1_, {});
 
-  auto test_same_rationals = [&dut, &dut2](std::vector<LinkVertexOnPlaneSideRational>& rationals_free_line,
-      std::vector<LinkVertexOnPlaneSideRational>& rationals_free_region) {
+  auto test_same_rationals =
+      [&dut, &dut2](
+          std::vector<LinkVertexOnPlaneSideRational>& rationals_free_line,
+          std::vector<LinkVertexOnPlaneSideRational>& rationals_free_region) {
+        EXPECT_EQ(rationals_free_region.size(), rationals_free_line.size());
 
-    EXPECT_EQ(rationals_free_region.size(), rationals_free_line.size());
+        symbolic::Environment env_line = {{dut.get_s0()[0], 0.0},
+                                          {dut.get_s0()[1], -0.5},
+                                          {dut.get_s1()[0], -0.25},
+                                          {dut.get_s1()[1], 0.5},
+                                          {dut.get_mu(), 0.0}};
+        Eigen::VectorXd mu_vals = Eigen::VectorXd::LinSpaced(10, 0, 1);
 
-    symbolic::Environment env1_line = {{dut.get_s0()[0], 0.0},
-                                       {dut.get_s0()[1], -0.5},
-                                       {dut.get_s1()[0], -0.25},
-                                       {dut.get_s1()[1], 0.5},
-                                       {dut.get_mu(), 0.0}};
-    Eigen::VectorXd mu_vals;
-    mu_vals.LinSpaced(10, 0, 1);
-    std::cout << mu_vals << std::endl;
-    // first place we evaluate the rationals is at s0
-    symbolic::Environment env1_region = {
-        {dut2.rational_forward_kinematics().t()[0], 0.0},
-        {dut2.rational_forward_kinematics().t()[0], -0.5}};
+        // first place we evaluate the rationals is at s0
+        symbolic::Environment env_region = {
+            {dut2.rational_forward_kinematics().t()[0], 0.0},
+            {dut2.rational_forward_kinematics().t()[0], -0.5}};
 
-    for (unsigned int i = 0; i < rationals_free_line.size(); ++i) {
-      EXPECT_EQ(rationals_free_line.at(i).link_polytope->body_index(),
-                rationals_free_region.at(i).link_polytope->body_index());
-      EXPECT_EQ(rationals_free_line.at(i).expressed_body_index,
-                rationals_free_region.at(i).expressed_body_index);
-      EXPECT_EQ(
-          rationals_free_line.at(i).other_side_link_polytope->body_index(),
-          rationals_free_region.at(i).other_side_link_polytope->body_index());
+        for (unsigned int i = 0; i < rationals_free_line.size(); ++i) {
+          EXPECT_EQ(rationals_free_line.at(i).link_polytope->body_index(),
+                    rationals_free_region.at(i).link_polytope->body_index());
+          EXPECT_EQ(rationals_free_line.at(i).expressed_body_index,
+                    rationals_free_region.at(i).expressed_body_index);
+          EXPECT_EQ(
+              rationals_free_line.at(i).other_side_link_polytope->body_index(),
+              rationals_free_region.at(i)
+                  .other_side_link_polytope->body_index());
 
-      // for some reason these expressions are evaluating to False even though they print to be the same
-//      for (unsigned int j = 0; j < rationals_free_line.at(i).a_A.size(); ++j) {
-//        EXPECT_TRUE(rationals_free_line.at(i).a_A(j).EqualTo(
-//            rationals_free_region.at(i).a_A(j)));
-//      }
-//      EXPECT_TRUE(
-//          rationals_free_line.at(i).b.EqualTo(rationals_free_region.at(i).b));
-      EXPECT_EQ(rationals_free_line.at(i).plane_side,
-                rationals_free_region.at(i).plane_side);
+          for (unsigned int j = 0; j < rationals_free_line.at(i).a_A.size();
+               ++j) {
+            EXPECT_TRUE(AffinePolynomialCoefficientsAlmostEqualByName(
+                symbolic::Polynomial(rationals_free_line.at(i).a_A(j)),
+                symbolic::Polynomial(rationals_free_region.at(i).a_A(j)),
+                1E-12));
+          }
+          EXPECT_TRUE(AffinePolynomialCoefficientsAlmostEqualByName(
+              symbolic::Polynomial(rationals_free_line.at(i).b),
+              symbolic::Polynomial(rationals_free_region.at(i).b), 1E-12));
 
+          EXPECT_EQ(rationals_free_line.at(i).plane_side,
+                    rationals_free_region.at(i).plane_side);
 
-      EXPECT_EQ(rationals_free_line.at(i).plane_order,
-                rationals_free_region.at(i).plane_order);
+          EXPECT_EQ(rationals_free_line.at(i).plane_order,
+                    rationals_free_region.at(i).plane_order);
 
-      for (unsigned int j = 0; j < mu_vals.size(); j++) {
-        double mu = mu_vals[j];
-        env1_line[dut.get_mu()] = mu;
-        env1_region[dut2.rational_forward_kinematics().t()[0]] =
-            mu * env1_line[dut.get_s0()[0]] + (1 - mu) * env1_line[dut.get_s1()[0]];
-        env1_region[dut2.rational_forward_kinematics().t()[1]] =
-            mu * env1_line[dut.get_s0()[1]] + (1 - mu) * env1_line[dut.get_s1()[1]];
-        EXPECT_NEAR(rationals_free_line.at(i).rational.Evaluate(env1_line),
-                    rationals_free_region.at(i).rational.Evaluate(env1_region),
-                    1E-12);
-      }
-    }
-  };
+          for (unsigned int j = 0; j < mu_vals.size(); j++) {
+            double mu = mu_vals[j];
+            env_line[dut.get_mu()] = mu;
+            env_region[dut2.rational_forward_kinematics().t()[0]] =
+                mu * env_line[dut.get_s0()[0]] +
+                (1 - mu) * env_line[dut.get_s1()[0]];
+            env_region[dut2.rational_forward_kinematics().t()[1]] =
+                mu * env_line[dut.get_s0()[1]] +
+                (1 - mu) * env_line[dut.get_s1()[1]];
+
+            symbolic::Polynomial free_line_numerator =
+                symbolic::Polynomial(rationals_free_line.at(i)
+                                         .rational.numerator()
+                                         .EvaluatePartial(env_line)
+                                         .ToExpression()
+                                         .Expand());
+            symbolic::Polynomial free_line_denominator =
+                symbolic::Polynomial(rationals_free_line.at(i)
+                                         .rational.denominator()
+                                         .EvaluatePartial(env_line)
+                                         .ToExpression()
+                                         .Expand());
+            symbolic::Polynomial free_region_numerator =
+                symbolic::Polynomial(rationals_free_region.at(i)
+                                         .rational.numerator()
+                                         .EvaluatePartial(env_region)
+                                         .ToExpression()
+                                         .Expand());
+            symbolic::Polynomial free_region_denominator =
+                symbolic::Polynomial(rationals_free_region.at(i)
+                                         .rational.denominator()
+                                         .EvaluatePartial(env_region)
+                                         .ToExpression()
+                                         .Expand());
+
+            EXPECT_TRUE(AffinePolynomialCoefficientsAlmostEqualByName(
+                free_region_numerator, free_line_numerator, 1E-12));
+            EXPECT_TRUE(AffinePolynomialCoefficientsAlmostEqualByName(
+                free_region_denominator, free_line_denominator, 1E-12));
+          }
+        }
+      };
   test_same_rationals(rationals_free_line_0, rationals_free_region_0);
   test_same_rationals(rationals_free_line_1, rationals_free_region_1);
+}
+
+TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
+  const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
+                           SeparatingPlaneOrder::kAffine);
+
+  dut.GenerateTuplesForCertification(
+      q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
+      &verified_gram_vars_, &separating_plane_vars_,
+      &separating_plane_to_tuples_);
+  int rational_count = 0;
+  for (const auto& separating_plane : dut.separating_planes()) {
+    rational_count += separating_plane.positive_side_polytope->p_BV().cols() +
+                      separating_plane.negative_side_polytope->p_BV().cols();
+  }
+  EXPECT_EQ(alternation_tuples_.size(), rational_count);
+  // Now count the total number of lagrangian gram vars.
+  int lagrangian_gram_vars_count = 0;
+  int verified_gram_vars_count = 0;
+  std::unordered_set<int> lagrangian_gram_vars_start;
+  std::unordered_set<int> verified_gram_vars_start;
+  for (const auto& tuple : alternation_tuples_) {
+    const int gram_rows = tuple.monomial_basis.rows();
+    const int gram_lower_size = gram_rows * (gram_rows + 1) / 2;
+    lagrangian_gram_vars_count += gram_lower_size * 2;
+    verified_gram_vars_count += gram_lower_size;
+    std::copy(tuple.polytope_lagrangian_gram_lower_start.begin(),
+              tuple.polytope_lagrangian_gram_lower_start.end(),
+              std::inserter(lagrangian_gram_vars_start,
+                            lagrangian_gram_vars_start.end()));
+    std::copy(tuple.t_lower_lagrangian_gram_lower_start.begin(),
+              tuple.t_lower_lagrangian_gram_lower_start.end(),
+              std::inserter(lagrangian_gram_vars_start,
+                            lagrangian_gram_vars_start.end()));
+    std::copy(tuple.t_upper_lagrangian_gram_lower_start.begin(),
+              tuple.t_upper_lagrangian_gram_lower_start.end(),
+              std::inserter(lagrangian_gram_vars_start,
+                            lagrangian_gram_vars_start.end()));
+    verified_gram_vars_start.insert(tuple.verified_polynomial_gram_lower_start);
+  }
+  EXPECT_EQ(lagrangian_gram_vars_.rows(), lagrangian_gram_vars_count);
+  EXPECT_EQ(verified_gram_vars_.rows(), verified_gram_vars_count);
+  EXPECT_EQ(verified_gram_vars_start.size(), alternation_tuples_.size());
+  EXPECT_EQ(lagrangian_gram_vars_start.size(), alternation_tuples_.size() * 2);
+
+  int separating_plane_vars_count = 0;
+  for (const auto& separating_plane : dut.separating_planes()) {
+    separating_plane_vars_count += separating_plane.decision_variables.rows();
+  }
+  EXPECT_EQ(separating_plane_vars_.rows(), separating_plane_vars_count);
+  const symbolic::Variables separating_plane_vars_set{separating_plane_vars_};
+  EXPECT_EQ(separating_plane_vars_set.size(), separating_plane_vars_count);
+  // Now check separating_plane_to_tuples
+  EXPECT_EQ(separating_plane_to_tuples_.size(), dut.separating_planes().size());
+  std::unordered_set<int> tuple_indices_set;
+  for (const auto& tuple_indices : separating_plane_to_tuples_) {
+    for (int index : tuple_indices) {
+      EXPECT_EQ(tuple_indices_set.count(index), 0);
+      tuple_indices_set.emplace(index);
+      EXPECT_LT(index, rational_count);
+      EXPECT_GE(index, 0);
+    }
+  }
+  EXPECT_EQ(tuple_indices_set.size(), rational_count);
+}
+
+TEST_F(DoublePendulumTest, TestConstructCertificationProgram) {
+  const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
+                           SeparatingPlaneOrder::kAffine);
+  dut.GenerateTuplesForCertification(
+      q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
+      &verified_gram_vars_, &separating_plane_vars_,
+      &separating_plane_to_tuples_);
+
+  auto clock_start = std::chrono::system_clock::now();
+  auto prog = dut.AllocateCertificationProgram(
+      alternation_tuples_, separating_plane_vars_, {});
+  auto clock_finish = std::chrono::system_clock::now();
+  std::cout << "ConstructCertificationProgram takes "
+            << static_cast<float>(
+                   std::chrono::duration_cast<std::chrono::milliseconds>(
+                       clock_finish - clock_start)
+                       .count()) /
+                   1000
+            << "s\n";
+  solvers::SolverOptions solver_options;
+  solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
+  std::cout << solvers::GetProgramType(*prog) << std::endl;
+//  const auto result = solvers::Solve(*prog, std::nullopt, solver_options);
+//  EXPECT_TRUE(false);
 }
 
 }  // namespace multibody

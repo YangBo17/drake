@@ -154,8 +154,7 @@ struct CspaceFreeRegionSolution {
         separating_planes{std::move(m_separating_planes)} {}
   //
   CspaceFreeRegionSolution(Eigen::MatrixXd m_C, Eigen::MatrixXd m_d)
-      : C{m_C},
-        d{m_d} {}
+      : C{m_C}, d{m_d} {}
 
   // values defining Hpolyhedron Ct <= d
   Eigen::MatrixXd C;
@@ -242,6 +241,8 @@ class CspaceFreeRegion {
  public:
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(CspaceFreeRegion)
 
+  virtual ~CspaceFreeRegion() = default;
+
   using FilteredCollisionPairs =
       std::unordered_set<drake::SortedPair<ConvexGeometry::Id>>;
 
@@ -274,7 +275,7 @@ class CspaceFreeRegion {
    * obstacle that are not in filtered_collision_pair.
    */
   // TODO(hongkai.dai): also consider the self-collision pairs.
-  std::vector<LinkVertexOnPlaneSideRational>
+  virtual std::vector<LinkVertexOnPlaneSideRational>
   GenerateLinkOnOneSideOfPlaneRationals(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs)
@@ -322,7 +323,8 @@ class CspaceFreeRegion {
 
   bool IsPostureInCollision(const systems::Context<double>& context) const;
 
-  /** Each tuple corresponds to one rational aᵀx + b - 1 or -1 - aᵀx - b.
+  /**
+   * Each tuple corresponds to one rational aᵀx + b - 1 or -1 - aᵀx - b.
    * This tuple should be used with GenerateTuplesForBilinearAlternation. To
    * save computation time, this class minimizes using dynamic memory
    * allocation.
@@ -623,6 +625,64 @@ class CspaceFreeRegion {
   polytope_geometries() const {
     return polytope_geometries_;
   }
+
+ protected:
+  void ConstructTuplesInMemory(
+      const Eigen::Ref<const Eigen::VectorXd>& q_star,
+      const FilteredCollisionPairs& filtered_collision_pairs, int C_rows,
+      int t_rows,
+      std::vector<CspaceFreeRegion::CspacePolytopeTuple>* alternation_tuples,
+      VectorX<symbolic::Variable>* lagrangian_gram_vars,
+      VectorX<symbolic::Variable>* verified_gram_vars,
+      VectorX<symbolic::Variable>* separating_plane_vars,
+      std::vector<std::vector<int>>* separating_plane_to_tuples) const;
+
+  /**
+   * Given t[i], t_lower and t_upper, construct the polynomial t - t_lower and
+   * t_upper - t.
+   */
+  static void ConstructTBoundsPolynomial(
+      const std::vector<symbolic::Monomial>& t_monomial,
+      const Eigen::Ref<const Eigen::VectorXd>& t_lower,
+      const Eigen::Ref<const Eigen::VectorXd>& t_upper,
+      VectorX<symbolic::Polynomial>* t_minus_t_lower,
+      VectorX<symbolic::Polynomial>* t_upper_minus_t);
+
+  /**
+   * Impose the constraint
+   * l_polytope(t) >= 0
+   * l_lower(t)>=0
+   * l_upper(t)>=0
+   * p(t) - l_polytope(t)ᵀ(d - C*t) - l_lower(t)ᵀ(t-t_lower) -
+   * l_upper(t)ᵀ(t_upper-t) >=0
+   * where l_polytope, l_lower, l_upper are Lagrangian
+   * multipliers. p(t) is the numerator of polytope_on_one_side_rational
+   * @param monomial_basis The monomial basis for all non-negative
+   * polynomials above.
+   * @param t_lower_needs_lagrangian If t_lower_needs_lagrangian[i]=false,
+   * then lagrangian_lower(i) = 0
+   * @param t_upper_needs_lagrangian If t_upper_needs_lagrangian[i]=false,
+   * then lagrangian_upper(i) = 0
+   * @param[out] lagrangian_polytope l_polytope(t).
+   * @param[out] lagrangian_lower l_lower(t).
+   * @param[out] lagrangian_upper l_upper(t).
+   * @param[out] verified_polynomial p(t) - l_polytope(t)ᵀ(d - C*t) -
+   * l_lower(t)ᵀ(t-t_lower) - l_upper(t)ᵀ(t_upper-t)
+   */
+  static void AddNonnegativeConstraintForPolytopeOnOneSideOfPlane(
+      solvers::MathematicalProgram* prog,
+      const symbolic::RationalFunction& polytope_on_one_side_rational,
+      const VectorX<symbolic::Polynomial>& d_minus_Ct,
+      const VectorX<symbolic::Polynomial>& t_minus_t_lower,
+      const VectorX<symbolic::Polynomial>& t_upper_minus_t,
+      const VectorX<symbolic::Monomial>& monomial_basis,
+      const VerificationOption& verification_option,
+      const std::vector<bool>& t_lower_needs_lagrangian,
+      const std::vector<bool>& t_upper_needs_lagrangian,
+      VectorX<symbolic::Polynomial>* lagrangian_polytope,
+      VectorX<symbolic::Polynomial>* lagrangian_lower,
+      VectorX<symbolic::Polynomial>* lagrangian_upper,
+      symbolic::Polynomial* verified_polynomial);
 
  private:
   RationalForwardKinematics rational_forward_kinematics_;
