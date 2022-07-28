@@ -19,7 +19,6 @@ drake_cc_package_library(
         ":graph_of_convex_sets",
         ":iris",
         ":polytope_cover",
-        "//solvers:gurobi_solver",
     ],
 )
 
@@ -169,6 +168,7 @@ drake_cc_googletest(
         ":bspline_graph_of_convex_sets",
         "//common/test_utilities:eigen_matrix_compare",
         "//solvers:gurobi_solver",
+        "//solvers:mosek_solver",
     ],
 )
 

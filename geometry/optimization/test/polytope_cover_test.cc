@@ -57,7 +57,7 @@ GTEST_TEST(FindInscribedBox, Test1) {
                                   dut.box_lo()(0), dut.box_lo()(1)));
   const auto result = solvers::Solve(dut.prog());
   EXPECT_TRUE(result.is_success());
-  const double tol{1E-6};
+  const double tol{1E-4};
   EXPECT_TRUE(CompareMatrices(result.GetSolution(dut.box_lo()),
                               Eigen::Vector2d(-0.5, -0.5), tol));
   EXPECT_TRUE(CompareMatrices(result.GetSolution(dut.box_up()),
