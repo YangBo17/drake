@@ -154,7 +154,7 @@ CspaceFreeLine::AllocateCertificationProgram() const {
     int d = verified_polynomial.TotalDegree() / 2;
     auto [l, Ql] =
         prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
-    if (verified_polynomial.TotalDegree() % 2 == 0) {
+    if (verified_polynomial.TotalDegree() % 2 == 0 && verified_polynomial.TotalDegree() > 0) {
       auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
                                             option_.lagrangian_type);
       verified_polynomial -= symbolic::Polynomial(l + v * mu_ * symbolic::Polynomial(1) - mu_);
@@ -225,6 +225,8 @@ void internal::AllocatedCertificationProgram::
   for (auto& [polynomial, monomial_to_binding] :
        polynomial_to_monomial_to_bindings_map_) {
     symbolic::Polynomial evaluated_polynomial = polynomial.EvaluatePartial(env);
+    // why do i need to do this??
+    evaluated_polynomial.SetIndeterminates(polynomial.indeterminates());
     for (auto& [monomial, binding] : monomial_to_binding) {
       prog_->RemoveConstraint(binding);
       // note that we do not explicitly check that evaluated polynomial and
@@ -232,8 +234,17 @@ void internal::AllocatedCertificationProgram::
       // dangerous.
       coefficient =
           evaluated_polynomial.monomial_to_coefficient_map().at(monomial).Expand();
-      monomial_to_binding.insert_or_assign(
-          monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
+      try {
+        monomial_to_binding.insert_or_assign(
+            monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
+      }
+      catch (...) {
+        std::cout << monomial << "\n";
+        std::cout << evaluated_polynomial.monomial_to_coefficient_map().at(monomial).Expand() << std::endl;
+        std::cout << evaluated_polynomial.decision_variables() << "\n";
+        std::cout << evaluated_polynomial.indeterminates() << "\n" << std::endl;
+        throw;
+      }
     }
   }
 }
