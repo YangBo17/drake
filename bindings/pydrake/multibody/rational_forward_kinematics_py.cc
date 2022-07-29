@@ -6,8 +6,8 @@
 #include "drake/bindings/pydrake/common/default_scalars_pybind.h"
 #include "drake/bindings/pydrake/common/value_pybind.h"
 #include "drake/bindings/pydrake/pydrake_pybind.h"
-#include "drake/multibody/rational_forward_kinematics/cspace_free_region.h"
 #include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
+#include "drake/multibody/rational_forward_kinematics/cspace_free_region.h"
 #include "drake/multibody/rational_forward_kinematics/generate_monomial_basis_util.h"
 #include "drake/multibody/rational_forward_kinematics/rational_forward_kinematics.h"
 #include "drake/multibody/rational_forward_kinematics/rational_forward_kinematics_internal.h"
@@ -550,28 +550,27 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
 
   py::module::import("pydrake.solvers.mathematicalprogram");
 
-   // CspaceFreeLine
-  py::class_<CspaceFreeLine> cspace_line_cls(
-      m, "CspaceFreeLine", doc.CspaceFreeLine.doc);
-  cspace_line_cls.def(
-      py::init<
-          const systems::Diagram<double>& diagram,
-                 const multibody::MultibodyPlant<double>* plant,
-                 const geometry::SceneGraph<double>* scene_graph,
-                 SeparatingPlaneOrder plane_order,
-                 std::optional<Eigen::VectorXd> q_star,
-                 const FilteredCollisionPairs& filtered_collision_pairs = {},
-                 const VerificationOption option = {}>(),
-                 py::arg("diagram"),
-                 py::arg("plant"),
-                 py::arg("scene_graph"),
-                 py::arg("plane_order"),
-                 py::arg("q_star"),
-                 py::arg("filtered_collision_pairs") = {},
-                 py::arg("VerificationOption") = {},
-      doc.CspaceFreeRegion.ctor.doc);
-
-
+  // CspaceFreeLine
+  py::class_<CspaceFreeLine>(m, "CspaceFreeLine", doc.CspaceFreeLine.doc)
+      .def(py::init<const systems::Diagram<double>&,
+               const multibody::MultibodyPlant<double>*,
+               const geometry::SceneGraph<double>*,
+               multibody::SeparatingPlaneOrder,
+               std::optional<Eigen::VectorXd>,
+               const CspaceFreeRegion::FilteredCollisionPairs&,
+               const multibody::VerificationOption&>(),
+          py::arg("diagram"), py::arg("plant"), py::arg("scene_graph"),
+          py::arg("plane_order"), py::arg("q_star") = std::nullopt,
+          py::arg("filtered_collision_pairs") = CspaceFreeRegion::FilteredCollisionPairs(),
+          py::arg("option") = VerificationOption(),
+          doc.CspaceFreeLine.ctor.doc)
+      .def("get_mu", &CspaceFreeLine::get_mu, doc.CspaceFreeLine.get_mu.doc)
+      .def("get_s0", &CspaceFreeLine::get_s0, doc.CspaceFreeLine.get_s0.doc)
+      .def("get_s1", &CspaceFreeLine::get_s1, doc.CspaceFreeLine.get_s1.doc)
+      .def("CertifyTangentConfigurationSpaceLine",
+          &CspaceFreeLine::CertifyTangentConfigurationSpaceLine, py::arg("s0"),
+          py::arg("s1"), py::arg("solver_options") = solvers::SolverOptions(),
+          doc.CspaceFreeLine.CertifyTangentConfigurationSpaceLine.doc);
 
   type_pack<symbolic::Polynomial, symbolic::RationalFunction> sym_pack;
   type_visit([m](auto dummy) { DoPoseDeclaration(m, dummy); }, sym_pack);

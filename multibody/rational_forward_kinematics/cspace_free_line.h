@@ -34,10 +34,10 @@ class AllocatedCertificationProgram {
 
   void EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env);
 
+  solvers::MathematicalProgramResult solve(
+      const solvers::SolverOptions& solver_options);
 
-  solvers::MathematicalProgramResult solve(const solvers::SolverOptions& solver_options);
-
-  solvers::MathematicalProgram* get_prog() {return prog_.get();}
+  solvers::MathematicalProgram* get_prog() { return prog_.get(); }
 
  private:
   std::unique_ptr<solvers::MathematicalProgram> prog_;
@@ -66,7 +66,7 @@ class CspaceFreeLine : public CspaceFreeRegion {
                  SeparatingPlaneOrder plane_order,
                  std::optional<Eigen::VectorXd> q_star,
                  const FilteredCollisionPairs& filtered_collision_pairs = {},
-                 const VerificationOption option = {});
+                 const VerificationOption& option = {});
 
   void GenerateTuplesForCertification(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
@@ -86,8 +86,19 @@ class CspaceFreeLine : public CspaceFreeRegion {
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const FilteredCollisionPairs& filtered_collision_pairs) const override;
 
+  /**
+   * Certifies whether the line μ*s₀ + (1−μ)*s₁. If the return is true, a formal
+   * proof of non-collision is generated. If the result is false there may be no
+   * collisions but this fact cannot be certified with the constructed SOS
+   * program.
+   * @param s0
+   * @param s1
+   * @param solver_options
+   * @return
+   */
   bool CertifyTangentConfigurationSpaceLine(
-      const Eigen::Ref<const Eigen::VectorXd>& s0, const Eigen::Ref<const Eigen::VectorXd>& s1,
+      const Eigen::Ref<const Eigen::VectorXd>& s0,
+      const Eigen::Ref<const Eigen::VectorXd>& s1,
       const solvers::SolverOptions& solver_options = solvers::SolverOptions());
 
  private:

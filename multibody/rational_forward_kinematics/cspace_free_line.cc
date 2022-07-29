@@ -14,7 +14,7 @@ CspaceFreeLine::CspaceFreeLine(
     const geometry::SceneGraph<double>* scene_graph,
     SeparatingPlaneOrder plane_order, std::optional<Eigen::VectorXd> q_star,
     const FilteredCollisionPairs& filtered_collision_pairs,
-    const VerificationOption option)
+    const VerificationOption& option)
     : CspaceFreeRegion(diagram, plant, scene_graph, plane_order,
                        CspaceRegionType::kAxisAlignedBoundingBox),
       mu_{symbolic::Variable("mu")},
@@ -150,18 +150,18 @@ CspaceFreeLine::AllocateCertificationProgram() const {
   // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS
   for (const auto& tuple : alternation_tuples) {
     symbolic::Polynomial verified_polynomial = tuple.rational_numerator;
-    verified_polynomial.SetIndeterminates({mu_});
+
     int d = verified_polynomial.TotalDegree() / 2;
     auto [l, Ql] =
         prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
     if (verified_polynomial.TotalDegree() % 2 == 0) {
       auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
                                             option_.lagrangian_type);
-      verified_polynomial -= l + v * mu_ * symbolic::Polynomial(1) - mu_;
+      verified_polynomial -= symbolic::Polynomial(l + v * mu_ * symbolic::Polynomial(1) - mu_);
     } else {
       auto [v, Qv] =
           prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
-      verified_polynomial -= l * mu_ + v * symbolic::Polynomial(1) - mu_;
+      verified_polynomial -= symbolic::Polynomial(l * mu_ + v * symbolic::Polynomial(1) - mu_);
     }
 
     // preallocate linear equality constraints for the zero equality awaiting
@@ -170,6 +170,7 @@ CspaceFreeLine::AllocateCertificationProgram() const {
     std::unordered_map<symbolic::Monomial,
                        solvers::Binding<solvers::LinearEqualityConstraint>>
         monomial_to_equality_constraint;
+    verified_polynomial.SetIndeterminates({mu_});
     for (const auto& [monomial, coefficient] :
          verified_polynomial.monomial_to_coefficient_map()) {
       // construct dummy expression to ensure that the binding has the
@@ -230,7 +231,7 @@ void internal::AllocatedCertificationProgram::
       // monomial_to_bindings contain the same monomials which could be
       // dangerous.
       coefficient =
-          evaluated_polynomial.monomial_to_coefficient_map().at(monomial);
+          evaluated_polynomial.monomial_to_coefficient_map().at(monomial).Expand();
       monomial_to_binding.insert_or_assign(
           monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
     }
