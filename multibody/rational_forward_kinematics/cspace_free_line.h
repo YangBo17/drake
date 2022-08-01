@@ -1,5 +1,8 @@
 #pragma once
+#include <memory>
 #include <optional>
+#include <unordered_map>
+#include <vector>
 
 #include "drake/multibody/rational_forward_kinematics/cspace_free_region.h"
 
@@ -75,14 +78,16 @@ class CspaceFreeLine : public CspaceFreeRegion {
       VectorX<symbolic::Variable>* lagrangian_gram_vars,
       VectorX<symbolic::Variable>* verified_gram_vars,
       VectorX<symbolic::Variable>* separating_plane_vars,
-      std::vector<std::vector<int>>* separating_plane_to_tuples) const;
+      std::vector<std::vector<int>>* separating_plane_to_tuples,
+      std::vector<
+          std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
+          separating_plane_to_lorentz_cone_constraints) const;
 
   const symbolic::Variable get_mu() const { return mu_; }
   const drake::VectorX<drake::symbolic::Variable> get_s0() const { return s0_; }
   const drake::VectorX<drake::symbolic::Variable> get_s1() const { return s1_; }
 
-  std::vector<LinkVertexOnPlaneSideRational>
-  GenerateLinkOnOneSideOfPlaneRationals(
+  std::vector<LinkOnPlaneSideRational> GenerateRationalsForLinkOnOneSideOfPlane(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const FilteredCollisionPairs& filtered_collision_pairs) const override;
 

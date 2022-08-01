@@ -291,7 +291,8 @@ class CspaceFreeRegion {
    * This function loops over all pair of collision geometries  that are not in
    * filtered_collision_pair.
    */
-  std::vector<LinkOnPlaneSideRational> GenerateRationalsForLinkOnOneSideOfPlane(
+  virtual std::vector<LinkOnPlaneSideRational>
+  GenerateRationalsForLinkOnOneSideOfPlane(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs)
       const;
@@ -669,7 +670,10 @@ class CspaceFreeRegion {
       VectorX<symbolic::Variable>* lagrangian_gram_vars,
       VectorX<symbolic::Variable>* verified_gram_vars,
       VectorX<symbolic::Variable>* separating_plane_vars,
-      std::vector<std::vector<int>>* separating_plane_to_tuples) const;
+      std::vector<std::vector<int>>* separating_plane_to_tuples,
+      std::vector<
+          std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
+          separating_plane_to_lorentz_cone_constraints) const;
 
   /**
    * Given t[i], t_lower and t_upper, construct the polynomial t - t_lower and
@@ -703,7 +707,7 @@ class CspaceFreeRegion {
    * @param[out] verified_polynomial p(t) - l_polytope(t)ᵀ(d - C*t) -
    * l_lower(t)ᵀ(t-t_lower) - l_upper(t)ᵀ(t_upper-t)
    */
-  static void AddNonnegativeConstraintForPolytopeOnOneSideOfPlane(
+  static void AddNonnegativeConstraintForGeometryOnOneSideOfPlane(
       solvers::MathematicalProgram* prog,
       const symbolic::RationalFunction& polytope_on_one_side_rational,
       const VectorX<symbolic::Polynomial>& d_minus_Ct,

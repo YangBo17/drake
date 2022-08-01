@@ -2,12 +2,11 @@
 
 #include <gtest/gtest.h>
 
+#include "drake/common/test_utilities/eigen_matrix_compare.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/solvers/get_program_type.h"
 #include "drake/solvers/mathematical_program.h"
 #include "drake/systems/framework/diagram_builder.h"
-#include "drake/common/test_utilities/eigen_matrix_compare.h"
-
 
 namespace drake {
 namespace multibody {
@@ -88,6 +87,8 @@ class DoublePendulumTest : public ::testing::Test {
   VectorX<symbolic::Variable> d_var_, lagrangian_gram_vars_,
       verified_gram_vars_, separating_plane_vars_;
   std::vector<std::vector<int>> separating_plane_to_tuples_;
+  std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>
+      separating_plane_to_lorentz_cone_constraints_;
 };
 
 TEST_F(DoublePendulumTest, TestCspaceFreeLineConstructor) {
@@ -134,26 +135,26 @@ bool AffinePolynomialCoefficientsAlmostEqualByName(symbolic::Polynomial p1,
   return true;
 }
 
-TEST_F(DoublePendulumTest, TestGenerateLinkOnOneSideOfPlaneRationals) {
+TEST_F(DoublePendulumTest, TestGenerateRationalsForLinkOnOneSideOfPlane) {
   const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
                            SeparatingPlaneOrder::kAffine, std::nullopt);
   const CspaceFreeRegion dut2(*diagram_, plant_, scene_graph_,
                               SeparatingPlaneOrder::kAffine,
                               CspaceRegionType::kAxisAlignedBoundingBox);
-  std::vector<LinkVertexOnPlaneSideRational> rationals_free_line_0 =
-      dut.GenerateLinkOnOneSideOfPlaneRationals(q_star_0_, {});
-  std::vector<LinkVertexOnPlaneSideRational> rationals_free_region_0 =
-      dut2.GenerateLinkOnOneSideOfPlaneRationals(q_star_0_, {});
+  std::vector<LinkOnPlaneSideRational> rationals_free_line_0 =
+      dut.GenerateRationalsForLinkOnOneSideOfPlane(q_star_0_, {});
+  std::vector<LinkOnPlaneSideRational> rationals_free_region_0 =
+      dut2.GenerateRationalsForLinkOnOneSideOfPlane(q_star_0_, {});
 
-  std::vector<LinkVertexOnPlaneSideRational> rationals_free_line_1 =
-      dut.GenerateLinkOnOneSideOfPlaneRationals(q_star_1_, {});
-  std::vector<LinkVertexOnPlaneSideRational> rationals_free_region_1 =
-      dut2.GenerateLinkOnOneSideOfPlaneRationals(q_star_1_, {});
+  std::vector<LinkOnPlaneSideRational> rationals_free_line_1 =
+      dut.GenerateRationalsForLinkOnOneSideOfPlane(q_star_1_, {});
+  std::vector<LinkOnPlaneSideRational> rationals_free_region_1 =
+      dut2.GenerateRationalsForLinkOnOneSideOfPlane(q_star_1_, {});
 
   auto test_same_rationals =
       [&dut, &dut2](
-          std::vector<LinkVertexOnPlaneSideRational>& rationals_free_line,
-          std::vector<LinkVertexOnPlaneSideRational>& rationals_free_region) {
+          std::vector<LinkOnPlaneSideRational>& rationals_free_line,
+          std::vector<LinkOnPlaneSideRational>& rationals_free_region) {
         EXPECT_EQ(rationals_free_region.size(), rationals_free_line.size());
 
         symbolic::Environment env_line = {{dut.get_s0()[0], 0.0},
@@ -169,14 +170,14 @@ TEST_F(DoublePendulumTest, TestGenerateLinkOnOneSideOfPlaneRationals) {
             {dut2.rational_forward_kinematics().t()[0], -0.5}};
 
         for (unsigned int i = 0; i < rationals_free_line.size(); ++i) {
-          EXPECT_EQ(rationals_free_line.at(i).link_polytope->body_index(),
-                    rationals_free_region.at(i).link_polytope->body_index());
+          EXPECT_EQ(rationals_free_line.at(i).link_geometry->body_index(),
+                    rationals_free_region.at(i).link_geometry->body_index());
           EXPECT_EQ(rationals_free_line.at(i).expressed_body_index,
                     rationals_free_region.at(i).expressed_body_index);
           EXPECT_EQ(
-              rationals_free_line.at(i).other_side_link_polytope->body_index(),
+              rationals_free_line.at(i).other_side_link_geometry->body_index(),
               rationals_free_region.at(i)
-                  .other_side_link_polytope->body_index());
+                  .other_side_link_geometry->body_index());
 
           for (unsigned int j = 0; j < rationals_free_line.at(i).a_A.size();
                ++j) {
@@ -248,11 +249,16 @@ TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
   dut.GenerateTuplesForCertification(
       q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
       &verified_gram_vars_, &separating_plane_vars_,
-      &separating_plane_to_tuples_);
+      &separating_plane_to_tuples_,
+      &separating_plane_to_lorentz_cone_constraints_);
   int rational_count = 0;
   for (const auto& separating_plane : dut.separating_planes()) {
-    rational_count += separating_plane.positive_side_polytope->p_BV().cols() +
-                      separating_plane.negative_side_polytope->p_BV().cols();
+    rational_count += multibody::GetVertices(
+                          separating_plane.positive_side_geometry->geometry())
+                          .cols() +
+                      multibody::GetVertices(
+                          separating_plane.negative_side_geometry->geometry())
+                          .cols();
   }
   EXPECT_EQ(alternation_tuples_.size(), rational_count);
   // Now count the total number of lagrangian gram vars.
@@ -309,23 +315,27 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
   solvers::SolverOptions solver_options;
   solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-                           SeparatingPlaneOrder::kAffine, q_star_0_, {},
-                           {});
-
+                     SeparatingPlaneOrder::kAffine, q_star_0_, {}, {});
 
   Eigen::Vector2d q0{0, 0};
   Eigen::Vector2d q1_good{0, 0.1};
   Eigen::Vector2d q1_bad{0.2, 0.5};
   Eigen::Vector2d q1_out_of_limits{-2, -2};
 
-  Eigen::VectorXd s0 = dut.rational_forward_kinematics().ComputeTValue(q0, q_star_0_);
-  Eigen::VectorXd s1_good = dut.rational_forward_kinematics().ComputeTValue(q1_good, q_star_0_);
-  Eigen::VectorXd s1_bad = dut.rational_forward_kinematics().ComputeTValue(q1_bad, q_star_0_);
-  Eigen::VectorXd s1_out_of_limits= dut.rational_forward_kinematics().ComputeTValue(q1_out_of_limits, q_star_0_);
+  Eigen::VectorXd s0 =
+      dut.rational_forward_kinematics().ComputeTValue(q0, q_star_0_);
+  Eigen::VectorXd s1_good =
+      dut.rational_forward_kinematics().ComputeTValue(q1_good, q_star_0_);
+  Eigen::VectorXd s1_bad =
+      dut.rational_forward_kinematics().ComputeTValue(q1_bad, q_star_0_);
+  Eigen::VectorXd s1_out_of_limits =
+      dut.rational_forward_kinematics().ComputeTValue(q1_out_of_limits,
+                                                      q_star_0_);
 
   EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good));
   EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad));
-  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(s0, s1_out_of_limits));
+  EXPECT_ANY_THROW(
+      dut.CertifyTangentConfigurationSpaceLine(s0, s1_out_of_limits));
 }
 
 GTEST_TEST(AllocatedCertificationProgramConstructorTest, Test) {
@@ -427,28 +437,29 @@ GTEST_TEST(EvaluatePolynomialsAndUpdateProgram, Test) {
   prog_expected->AddLinearConstraint(3 + b == 0);  // 1 + b + p = 0
 
   std::cout << "testing decision variables" << std::endl;
-  EXPECT_TRUE(allocated_prog.get_prog()->decision_variables() ==
+  EXPECT_EQ(allocated_prog.get_prog()->decision_variables() ,
               prog_expected->decision_variables());
 
   // there are only linear constraints in this program
-  EXPECT_TRUE(solvers::GetProgramType(*allocated_prog.get_prog()) ==
+  EXPECT_EQ(solvers::GetProgramType(*allocated_prog.get_prog()),
               solvers::ProgramType::kLP);
-  EXPECT_TRUE(solvers::GetProgramType(*prog_expected) ==
+  EXPECT_EQ(solvers::GetProgramType(*prog_expected),
               solvers::ProgramType::kLP);
-  EXPECT_TRUE(allocated_prog.get_prog()->linear_constraints().size() ==
+  EXPECT_EQ(allocated_prog.get_prog()->linear_constraints().size(),
               prog_expected->linear_constraints().size());
-  double tol = 1E-12;
+  const double tol = 1E-12;
   for (const auto& binding : allocated_prog.get_prog()->linear_constraints()) {
     bool same_constraint_found = false;
     for (const auto& binding_expected : prog_expected->linear_constraints()) {
-      same_constraint_found = CompareMatrices(binding.evaluator()->GetDenseA(),
-                                  binding_expected.evaluator()->GetDenseA(), tol) &&
-                              CompareMatrices(binding.evaluator()->lower_bound(),
-                                  binding_expected.evaluator()->lower_bound(), tol) &&
-                              CompareMatrices(binding.evaluator()->upper_bound(),
-                                  binding_expected.evaluator()->upper_bound(), tol) &&
-                              CompareMatrices(binding.evaluator()->lower_bound(),
-                                  binding_expected.evaluator()->upper_bound(), tol);
+      same_constraint_found =
+          CompareMatrices(binding.evaluator()->GetDenseA(),
+                          binding_expected.evaluator()->GetDenseA(), tol) &&
+          CompareMatrices(binding.evaluator()->lower_bound(),
+                          binding_expected.evaluator()->lower_bound(), tol) &&
+          CompareMatrices(binding.evaluator()->upper_bound(),
+                          binding_expected.evaluator()->upper_bound(), tol) &&
+          CompareMatrices(binding.evaluator()->lower_bound(),
+                          binding_expected.evaluator()->upper_bound(), tol);
       if (same_constraint_found) {
         break;
       }

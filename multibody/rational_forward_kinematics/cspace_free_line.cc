@@ -1,5 +1,7 @@
 #include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
 
+#include <utility>
+
 #include "drake/common/symbolic_decompose.h"
 #include "drake/solvers/mosek_solver.h"
 #include "drake/solvers/solve.h"
@@ -68,15 +70,15 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
   return result.is_success();
 }
 
-std::vector<LinkVertexOnPlaneSideRational>
-CspaceFreeLine::GenerateLinkOnOneSideOfPlaneRationals(
+std::vector<LinkOnPlaneSideRational>
+CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
     const Eigen::Ref<const Eigen::VectorXd>& q_star,
     const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs)
     const {
-  std::vector<LinkVertexOnPlaneSideRational> generic_rationals =
-      CspaceFreeRegion::GenerateLinkOnOneSideOfPlaneRationals(
+  std::vector<LinkOnPlaneSideRational> generic_rationals =
+      CspaceFreeRegion::GenerateRationalsForLinkOnOneSideOfPlane(
           q_star, filtered_collision_pairs);
-  std::vector<LinkVertexOnPlaneSideRational> rationals;
+  std::vector<LinkOnPlaneSideRational> rationals;
 
   symbolic::Expression numerator_expr;
   symbolic::Polynomial numerator_poly;
@@ -95,9 +97,10 @@ CspaceFreeLine::GenerateLinkOnOneSideOfPlaneRationals(
 
     rationals.emplace_back(
         symbolic::RationalFunction(numerator_poly, denominator_poly),
-        rational.link_polytope, rational.expressed_body_index,
-        rational.other_side_link_polytope, rational.a_A, rational.b,
-        rational.plane_side, rational.plane_order);
+        rational.link_geometry, rational.expressed_body_index,
+        rational.other_side_link_geometry, rational.a_A, rational.b,
+        rational.plane_side, rational.plane_order,
+        rational.lorentz_cone_constraints);
   }
   return rationals;
 }
@@ -109,11 +112,13 @@ void CspaceFreeLine::GenerateTuplesForCertification(
     VectorX<symbolic::Variable>* lagrangian_gram_vars,
     VectorX<symbolic::Variable>* verified_gram_vars,
     VectorX<symbolic::Variable>* separating_plane_vars,
-    std::vector<std::vector<int>>* separating_plane_to_tuples) const {
-  ConstructTuplesInMemory(q_star, filtered_collision_pairs, 0, 1,
-                          alternation_tuples, lagrangian_gram_vars,
-                          verified_gram_vars, separating_plane_vars,
-                          separating_plane_to_tuples);
+    std::vector<std::vector<int>>* separating_plane_to_tuples,
+    std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
+        separating_plane_to_lorentz_cone_constraints) const {
+  ConstructTuplesInMemory(
+      q_star, filtered_collision_pairs, 0, 1, alternation_tuples,
+      lagrangian_gram_vars, verified_gram_vars, separating_plane_vars,
+      separating_plane_to_tuples, separating_plane_to_lorentz_cone_constraints);
 }
 
 internal::AllocatedCertificationProgram
@@ -121,11 +126,14 @@ CspaceFreeLine::AllocateCertificationProgram() const {
   std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples;
   VectorX<symbolic::Variable> lagrangian_gram_vars, verified_gram_vars,
       separating_plane_vars;
+  std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>
+      separating_plane_to_lorentz_cone_constraints;
   std::vector<std::vector<int>> separating_plane_to_tuples;
   GenerateTuplesForCertification(q_star_, filtered_collision_pairs_,
                                  &alternation_tuples, &lagrangian_gram_vars,
                                  &verified_gram_vars, &separating_plane_vars,
-                                 &separating_plane_to_tuples);
+                                 &separating_plane_to_tuples,
+                                 &separating_plane_to_lorentz_cone_constraints);
 
   auto prog = std::make_unique<solvers::MathematicalProgram>();
 
