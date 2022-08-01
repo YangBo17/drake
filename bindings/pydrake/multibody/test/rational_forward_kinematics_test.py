@@ -124,51 +124,53 @@ class IiwaCspaceTest(unittest.TestCase):
 
         return q_star, C, d
 
-    # def test_construct_lagrangian_program(self):
-    #     dut = mut.CspaceFreeRegion(self.diagram,
-    #                                self.plant,
-    #                                self.scene_graph,
-    #                                mut.SeparatingPlaneOrder.kAffine,
-    #                                mut.CspaceRegionType.kGenericPolytope,
-    #                                separating_polytope_delta=1.)
-    #     q_star = np.zeros(7)
-    #     alternation_tuples, d_minus_Ct, t_lower, t_upper, t_minus_t_lower,\
-    #         t_upper_minus_t, C_var, d_var, lagrangian_gram_vars,\
-    #         verified_gram_vars, separating_plane_vars, \
-    #         separating_plane_to_tuples, \
-    #         separating_plane_lorentz_cone_constraints =\
-    #         dut.GenerateTuplesForBilinearAlternation(
-    #             q_star=q_star, filtered_collision_pairs=set(), C_rows=24)
-    # 
-    #     q_star, C, d = self.construct_initial_cspace_polytope(
-    #         dut, self.diagram)
-    #     P = np.empty((7, 7), dtype=sym.Variable)
-    #     q = np.empty(7, dtype=sym.Variable)
-    #     verification_option = mut.VerificationOption()
-    #     redundant_tighten = 0.5
-    # 
-    #     prog_lagrangian = dut.ConstructLagrangianProgram(
-    #         alternation_tuples, C, d, lagrangian_gram_vars, verified_gram_vars,
-    #         separating_plane_vars, separating_plane_lorentz_cone_constraints,
-    #         t_lower, t_upper, verification_option, redundant_tighten)
-    # 
-    #     P, q = mut.AddInscribedEllipsoid(prog_lagrangian, C, d, t_lower,
-    #                                      t_upper)
-    #     result_lagrangian = mp.Solve(prog_lagrangian)
-    #     self.assertTrue(result_lagrangian.is_success())
-    # 
-    #     lagrangian_gram_var_vals = result_lagrangian.GetSolution(
-    #         lagrangian_gram_vars)
-    #     P_sol = result_lagrangian.GetSolution(P)
-    #     q_sol = result_lagrangian.GetSolution(q)
-    # 
-    #     prog_polytope = dut.ConstructPolytopeProgram(
-    #         alternation_tuples, C_var, d_var, d_minus_Ct,
-    #         lagrangian_gram_var_vals, verified_gram_vars,
-    #         separating_plane_vars, separating_plane_lorentz_cone_constraints,
-    #         t_minus_t_lower, t_upper_minus_t, verification_option)
-    #     result_polytope = mp.Solve(prog_polytope)
-    #     self.assertTrue(result_polytope.is_success())
+    def test_construct_lagrangian_program(self):
+        dut = mut.CspaceFreeRegion(self.diagram,
+                                   self.plant,
+                                   self.scene_graph,
+                                   mut.SeparatingPlaneOrder.kAffine,
+                                   mut.CspaceRegionType.kGenericPolytope,
+                                   separating_polytope_delta=1.)
+        q_star = np.zeros(7)
+        alternation_tuples, d_minus_Ct, t_lower, t_upper, t_minus_t_lower,\
+            t_upper_minus_t, C_var, d_var, lagrangian_gram_vars,\
+            verified_gram_vars, separating_plane_vars, \
+            separating_plane_to_tuples, \
+            separating_plane_lorentz_cone_constraints =\
+            dut.GenerateTuplesForBilinearAlternation(
+                q_star=q_star, filtered_collision_pairs=set(), C_rows=24)
+
+        q_star, C, d = self.construct_initial_cspace_polytope(
+            dut, self.diagram)
+        P = np.empty((7, 7), dtype=sym.Variable)
+        q = np.empty(7, dtype=sym.Variable)
+        verification_option = mut.VerificationOption()
+        redundant_tighten = 0.5
+        # Join separating_plane_lorentz_cone_constraints to a single list
+        # from a list of sublists.
+        separating_plane_lorentz_cone_constraints = sum(
+            separating_plane_lorentz_cone_constraints, [])
+        prog_lagrangian = dut.ConstructLagrangianProgram(
+            alternation_tuples, C, d, lagrangian_gram_vars, verified_gram_vars,
+            separating_plane_vars, separating_plane_lorentz_cone_constraints,
+            t_lower, t_upper, verification_option, redundant_tighten)
+        P, q = mut.AddInscribedEllipsoid(prog_lagrangian, C, d, t_lower,
+                                         t_upper)
+        result_lagrangian = mp.Solve(prog_lagrangian)
+        self.assertTrue(result_lagrangian.is_success())
+
+        lagrangian_gram_var_vals = result_lagrangian.GetSolution(
+            lagrangian_gram_vars)
+        P_sol = result_lagrangian.GetSolution(P)
+        q_sol = result_lagrangian.GetSolution(q)
+
+        prog_polytope = dut.ConstructPolytopeProgram(
+            alternation_tuples, C_var, d_var, d_minus_Ct,
+            lagrangian_gram_var_vals, verified_gram_vars,
+            separating_plane_vars, separating_plane_lorentz_cone_constraints,
+            t_minus_t_lower, t_upper_minus_t, verification_option)
+        result_polytope = mp.Solve(prog_polytope)
+        self.assertTrue(result_polytope.is_success())
 
     def test_cspace_polytope_bilinear_alternation(self):
         dut = mut.CspaceFreeRegion(self.diagram,
@@ -185,11 +187,12 @@ class IiwaCspaceTest(unittest.TestCase):
         bilinear_alternation_option.lagrangian_backoff_scale = 0.01
         bilinear_alternation_option.polytope_backoff_scale = 0.05
         solver_options = mp.SolverOptions()
-        cspace_free_region_solution, polytope_volumes, ellipsoid_determinants = \
-            dut.CspacePolytopeBilinearAlternation(
-                q_star, filtered_collision_pairs, C_init, d_init,
-                bilinear_alternation_option, solver_options,
-                t_inner_points=None, inner_polytope=None)
+        cspace_free_region_solution, polytope_volumes, \
+            ellipsoid_determinants = \
+                dut.CspacePolytopeBilinearAlternation(
+                    q_star, filtered_collision_pairs, C_init, d_init,
+                    bilinear_alternation_option, solver_options,
+                    t_inner_pts=None, inner_polytope=None)
 
     def test_cspace_polytope_binary_search(self):
         dut = mut.CspaceFreeRegion(self.diagram,
