@@ -12,8 +12,8 @@
 #include <optional>
 #include <thread>
 
+#include <drake_vendor/libqhullcpp/Qhull.h>
 #include <fmt/format.h>
-#include <libqhullcpp/Qhull.h>
 
 #include "drake/geometry/optimization/vpolytope.h"
 #include "drake/multibody/rational_forward_kinematics/collision_geometry.h"
@@ -1245,82 +1245,81 @@ bool FindLagrangianAndSeparatingPlanesMultiThread(
   // This lambda function formulates and solves a small SOS program for each
   // separating plane. It finds the separating plane and the Lagrangian
   // multiplier for a pair of collision geometries.
-  auto solve_small_sos = [&cspace_free_region, &alternation_tuples, &C, &d,
-                          &lagrangian_gram_vars, &verified_gram_vars,
-                          &separating_plane_vars,
-                          &separating_plane_to_lorentz_cone_constraints,
-                          &t_lower, &t_upper, &verification_option,
-                          &redundant_tighten, &solver_options,
-                          &separating_plane_to_tuples,
-                          &separating_plane_var_indices,
-                          &active_plane_count_to_plane_index,
-                          lagrangian_gram_var_vals, separating_planes_sol,
-                          verified_gram_var_vals, separating_plane_var_vals,
-                          &is_success](int active_plane_count) {
-    const int plane_index =
-        active_plane_count_to_plane_index[active_plane_count];
-    const std::vector<int>& tuple_indices =
-        separating_plane_to_tuples[plane_index];
-    std::vector<CspaceFreeRegion::CspacePolytopeTuple> plane_tuples;
-    plane_tuples.reserve(tuple_indices.size());
-    for (const int tuple_index : tuple_indices) {
-      plane_tuples.push_back(alternation_tuples[tuple_index]);
-    }
-    auto prog = cspace_free_region.ConstructLagrangianProgram(
-        plane_tuples, C, d, lagrangian_gram_vars, verified_gram_vars,
-        separating_plane_vars,
-        separating_plane_to_lorentz_cone_constraints[plane_index], t_lower,
-        t_upper, verification_option, redundant_tighten, nullptr, nullptr);
-    const auto result = solvers::Solve(*prog, std::nullopt, solver_options);
-    is_success[active_plane_count] = result.is_success();
-    if (result.is_success()) {
-      // Now fill in lagrangian_gram_var_vals;
-      for (const int tuple_index : tuple_indices) {
-        const int gram_rows =
-            alternation_tuples[tuple_index].monomial_basis.rows();
-        const int gram_lower_size = gram_rows * (gram_rows + 1) / 2;
+  auto solve_small_sos =
+      [&cspace_free_region, &alternation_tuples, &C, &d, &lagrangian_gram_vars,
+       &verified_gram_vars, &separating_plane_vars,
+       &separating_plane_to_lorentz_cone_constraints, &t_lower, &t_upper,
+       &verification_option, &redundant_tighten, &solver_options,
+       &separating_plane_to_tuples, &separating_plane_var_indices,
+       &active_plane_count_to_plane_index, lagrangian_gram_var_vals,
+       separating_planes_sol, verified_gram_var_vals, separating_plane_var_vals,
+       &is_success](int active_plane_count) {
+        const int plane_index =
+            active_plane_count_to_plane_index[active_plane_count];
+        const std::vector<int>& tuple_indices =
+            separating_plane_to_tuples[plane_index];
+        std::vector<CspaceFreeRegion::CspacePolytopeTuple> plane_tuples;
+        plane_tuples.reserve(tuple_indices.size());
+        for (const int tuple_index : tuple_indices) {
+          plane_tuples.push_back(alternation_tuples[tuple_index]);
+        }
+        auto prog = cspace_free_region.ConstructLagrangianProgram(
+            plane_tuples, C, d, lagrangian_gram_vars, verified_gram_vars,
+            separating_plane_vars,
+            separating_plane_to_lorentz_cone_constraints[plane_index], t_lower,
+            t_upper, verification_option, redundant_tighten, nullptr, nullptr);
+        const auto result = solvers::Solve(*prog, std::nullopt, solver_options);
+        is_success[active_plane_count] = result.is_success();
+        if (result.is_success()) {
+          // Now fill in lagrangian_gram_var_vals;
+          for (const int tuple_index : tuple_indices) {
+            const int gram_rows =
+                alternation_tuples[tuple_index].monomial_basis.rows();
+            const int gram_lower_size = gram_rows * (gram_rows + 1) / 2;
 
-        auto fill_lagrangian =
-            [gram_lower_size, lagrangian_gram_var_vals, &result,
-             &lagrangian_gram_vars](
-                const std::vector<int>& lagrangian_gram_start) {
-              for (int start : lagrangian_gram_start) {
-                lagrangian_gram_var_vals->segment(start, gram_lower_size) =
-                    result.GetSolution(
-                        lagrangian_gram_vars.segment(start, gram_lower_size));
-              }
-            };
-        fill_lagrangian(alternation_tuples[tuple_index]
-                            .polytope_lagrangian_gram_lower_start);
-        fill_lagrangian(alternation_tuples[tuple_index]
-                            .t_lower_lagrangian_gram_lower_start);
-        fill_lagrangian(alternation_tuples[tuple_index]
-                            .t_upper_lagrangian_gram_lower_start);
-        verified_gram_var_vals->segment(
-            alternation_tuples[tuple_index]
-                .verified_polynomial_gram_lower_start,
-            gram_lower_size) =
-            result.GetSolution(verified_gram_vars.segment(
+            auto fill_lagrangian =
+                [gram_lower_size, lagrangian_gram_var_vals, &result,
+                 &lagrangian_gram_vars](
+                    const std::vector<int>& lagrangian_gram_start) {
+                  for (int start : lagrangian_gram_start) {
+                    lagrangian_gram_var_vals->segment(start, gram_lower_size) =
+                        result.GetSolution(lagrangian_gram_vars.segment(
+                            start, gram_lower_size));
+                  }
+                };
+            fill_lagrangian(alternation_tuples[tuple_index]
+                                .polytope_lagrangian_gram_lower_start);
+            fill_lagrangian(alternation_tuples[tuple_index]
+                                .t_lower_lagrangian_gram_lower_start);
+            fill_lagrangian(alternation_tuples[tuple_index]
+                                .t_upper_lagrangian_gram_lower_start);
+            verified_gram_var_vals->segment(
                 alternation_tuples[tuple_index]
                     .verified_polynomial_gram_lower_start,
-                gram_lower_size));
-      }
-      // Now get the solution for separating_plane.
-      (*separating_planes_sol)[active_plane_count] = GetSeparatingPlaneSolution(
-          cspace_free_region.separating_planes()[plane_index], result);
-      // Set separating_plane_var_vals.
-      for (int i = 0; i < cspace_free_region.separating_planes()[plane_index]
-                              .decision_variables.rows();
-           ++i) {
-        const symbolic::Variable& var =
-            cspace_free_region.separating_planes()[plane_index]
-                .decision_variables(i);
-        (*separating_plane_var_vals)(separating_plane_var_indices.at(
-            var.get_id())) = result.GetSolution(var);
-      }
-    }
-    return active_plane_count;
-  };
+                gram_lower_size) =
+                result.GetSolution(verified_gram_vars.segment(
+                    alternation_tuples[tuple_index]
+                        .verified_polynomial_gram_lower_start,
+                    gram_lower_size));
+          }
+          // Now get the solution for separating_plane.
+          (*separating_planes_sol)[active_plane_count] =
+              GetSeparatingPlaneSolution(
+                  cspace_free_region.separating_planes()[plane_index], result);
+          // Set separating_plane_var_vals.
+          for (int i = 0;
+               i < cspace_free_region.separating_planes()[plane_index]
+                       .decision_variables.rows();
+               ++i) {
+            const symbolic::Variable& var =
+                cspace_free_region.separating_planes()[plane_index]
+                    .decision_variables(i);
+            (*separating_plane_var_vals)(separating_plane_var_indices.at(
+                var.get_id())) = result.GetSolution(var);
+          }
+        }
+        return active_plane_count;
+      };
   if (num_threads > 0) {
     // We implement the "thread pool" idea here, by following
     // MonteCarloSimulationParallel class. This implementation doesn't use

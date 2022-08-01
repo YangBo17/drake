@@ -120,12 +120,11 @@ void DefineGeometryOptimization(py::module m) {
         .def("A", &HPolyhedron::A, cls_doc.A.doc)
         .def("b", &HPolyhedron::b, cls_doc.b.doc)
         .def("ContainedIn", &HPolyhedron::ContainedIn, py::arg("other"),
-             cls_doc.ContainedIn.doc)
+            cls_doc.ContainedIn.doc)
         .def("Intersection", &HPolyhedron::Intersection, py::arg("other"),
-             py::arg("check_redundancy") = false,
-             cls_doc.Intersection.doc)
+            py::arg("check_redundancy") = false, cls_doc.Intersection.doc)
         .def("ReduceInequalities", &HPolyhedron::ReduceInequalities,
-             cls_doc.ReduceInequalities.doc)
+            cls_doc.ReduceInequalities.doc)
         .def("MaximumVolumeInscribedEllipsoid",
             &HPolyhedron::MaximumVolumeInscribedEllipsoid,
             cls_doc.MaximumVolumeInscribedEllipsoid.doc)
@@ -135,6 +134,8 @@ void DefineGeometryOptimization(py::module m) {
             py::arg("other"), cls_doc.CartesianProduct.doc)
         .def("CartesianPower", &HPolyhedron::CartesianPower, py::arg("n"),
             cls_doc.CartesianPower.doc)
+        .def("PontryaginDifference", &HPolyhedron::PontryaginDifference,
+            py::arg("other"), cls_doc.PontryaginDifference.doc)
         .def_static("MakeBox", &HPolyhedron::MakeBox, py::arg("lb"),
             py::arg("ub"), cls_doc.MakeBox.doc)
         .def_static("MakeUnitBox", &HPolyhedron::MakeUnitBox, py::arg("dim"),
@@ -360,15 +361,12 @@ void DefineGeometryOptimization(py::module m) {
       py::arg("reference_frame") = std::nullopt, doc.MakeIrisObstacles.doc);
 
   m.def("IrisInRationalConfigurationSpace",
-        py::overload_cast<const multibody::MultibodyPlant<double>&,
-          const systems::Context<double>&,
-          const IrisOptionsRationalSpace&,
-          const std::optional<HPolyhedron>&>(
-                &IrisInRationalConfigurationSpace),
+      py::overload_cast<const multibody::MultibodyPlant<double>&,
+          const systems::Context<double>&, const IrisOptionsRationalSpace&,
+          const std::optional<HPolyhedron>&>(&IrisInRationalConfigurationSpace),
       py::arg("plant"), py::arg("context"),
       py::arg("options") = IrisOptionsRationalSpace(),
-      py::arg("starting_polyhedron") = std::nullopt
-      );
+      py::arg("starting_polyhedron") = std::nullopt);
 
   m.def("IrisInConfigurationSpace",
       py::overload_cast<const multibody::MultibodyPlant<double>&,
@@ -443,7 +441,7 @@ void DefineGeometryOptimization(py::module m) {
                 },
                 cls_doc.Edges.doc)
             .def("GetGraphvizString", &GraphOfConvexSets::GetGraphvizString,
-                py::arg("result"), py::arg("show_slacks") = true,
+                py::arg("result") = std::nullopt, py::arg("show_slacks") = true,
                 py::arg("precision") = 3, py::arg("scientific") = false,
                 cls_doc.GetGraphvizString.doc)
             .def("SolveShortestPath",

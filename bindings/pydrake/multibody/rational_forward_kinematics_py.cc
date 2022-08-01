@@ -430,7 +430,7 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
           py::arg("separating_plane_vars"),
           py::arg("separating_plane_lorentz_cone_constraints"),
           py::arg("t_lower"), py::arg("t_upper"), py::arg("option"),
-          py::arg("redundant_tighten"),
+          py::arg("redundant_tighten") = std::nullopt,
           doc.CspaceFreeRegion.ConstructLagrangianProgram.doc)
       .def("ConstructPolytopeProgram",
           &CspaceFreeRegion::ConstructPolytopeProgram,

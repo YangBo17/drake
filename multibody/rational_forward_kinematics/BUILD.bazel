@@ -86,8 +86,10 @@ drake_cc_library(
     deps = [
         ":plane_side",
         "//geometry:geometry_ids",
+        "//geometry:read_obj",
         "//geometry/optimization:convex_set",
         "//multibody/tree:multibody_tree_indexes",
+        "@qhull_internal//:qhull",
     ],
 )
 
@@ -109,6 +111,7 @@ drake_cc_library(
         "//solvers:mathematical_program",
         "//solvers:mathematical_program_result",
         "//solvers:mosek_solver",
+        "@qhull_internal//:qhull",
     ],
 )
 
@@ -203,6 +206,7 @@ drake_cc_binary(
         "//multibody/inverse_kinematics",
         "//multibody/parsing:parser",
         "//multibody/plant",
+        "//solvers:gurobi_solver",
     ],
 )
 
@@ -222,6 +226,7 @@ drake_cc_binary(
         "//multibody/inverse_kinematics",
         "//multibody/parsing:parser",
         "//multibody/plant",
+        "//solvers:gurobi_solver",
     ],
 )
 
