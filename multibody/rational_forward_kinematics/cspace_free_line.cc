@@ -32,7 +32,8 @@ CspaceFreeLine::CspaceFreeLine(
 }
 
 bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
-    const Eigen::Ref<const Eigen::VectorXd>& s0, const Eigen::Ref<const Eigen::VectorXd>& s1,
+    const Eigen::Ref<const Eigen::VectorXd>& s0,
+    const Eigen::Ref<const Eigen::VectorXd>& s1,
     const solvers::SolverOptions& solver_options) {
   symbolic::Environment env;
   DRAKE_DEMAND(s0.size() == s0_.size());
@@ -48,8 +49,10 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
         rational_forward_kinematics().ComputeTValue(q_upper, q_star_);
     for (int i = 0; i < s.size(); ++i) {
       if (s(i) < s_lower(i) || s(i) > s_upper(i)) {
-        throw std::invalid_argument(fmt::format("s0 = {} not in the joint limits\n lower limit = {}\n upper limit = {}",
-                                s, s_lower, s_upper));
+        throw std::invalid_argument(
+            fmt::format("s0 = {} not in the joint limits\n lower limit = {}\n "
+                        "upper limit = {}",
+                        s, s_lower, s_upper));
       }
     }
   };
@@ -154,14 +157,17 @@ CspaceFreeLine::AllocateCertificationProgram() const {
     int d = verified_polynomial.TotalDegree() / 2;
     auto [l, Ql] =
         prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
-    if (verified_polynomial.TotalDegree() % 2 == 0 && verified_polynomial.TotalDegree() > 0) {
+    if (verified_polynomial.TotalDegree() % 2 == 0 &&
+        verified_polynomial.TotalDegree() > 0) {
       auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
                                             option_.lagrangian_type);
-      verified_polynomial -= symbolic::Polynomial(l + v * mu_ * symbolic::Polynomial(1) - mu_);
+      verified_polynomial -=
+          symbolic::Polynomial(l + v * mu_ * symbolic::Polynomial(1) - mu_);
     } else {
       auto [v, Qv] =
           prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
-      verified_polynomial -= symbolic::Polynomial(l * mu_ + v * symbolic::Polynomial(1) - mu_);
+      verified_polynomial -=
+          symbolic::Polynomial(l * mu_ + v * symbolic::Polynomial(1) - mu_);
     }
 
     // preallocate linear equality constraints for the zero equality awaiting
@@ -232,15 +238,18 @@ void internal::AllocatedCertificationProgram::
       // note that we do not explicitly check that evaluated polynomial and
       // monomial_to_bindings contain the same monomials which could be
       // dangerous.
-      coefficient =
-          evaluated_polynomial.monomial_to_coefficient_map().at(monomial).Expand();
+      coefficient = evaluated_polynomial.monomial_to_coefficient_map()
+                        .at(monomial)
+                        .Expand();
       try {
         monomial_to_binding.insert_or_assign(
             monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
-      }
-      catch (...) {
+      } catch (...) {
         std::cout << monomial << "\n";
-        std::cout << evaluated_polynomial.monomial_to_coefficient_map().at(monomial).Expand() << std::endl;
+        std::cout << evaluated_polynomial.monomial_to_coefficient_map()
+                         .at(monomial)
+                         .Expand()
+                  << std::endl;
         std::cout << evaluated_polynomial.decision_variables() << "\n";
         std::cout << evaluated_polynomial.indeterminates() << "\n" << std::endl;
         throw;
