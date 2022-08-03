@@ -1,5 +1,6 @@
 #include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
 
+#include <execution>
 #include <utility>
 
 #include "drake/common/symbolic_decompose.h"
@@ -65,8 +66,27 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     env.insert(s0_(i), s0(i));
     env.insert(s1_(i), s1(i));
   }
+  auto clock_start = std::chrono::system_clock::now();
   allocated_certification_program_.EvaluatePolynomialsAndUpdateProgram(env);
+  auto clock_now = std::chrono::system_clock::now();
+  drake::log() -> info(fmt::format(
+      "Bindings updated in {} s",
+      static_cast<float>(
+      std::chrono::duration_cast<std::chrono::milliseconds>(clock_now -
+                                                                  clock_start)
+                .count()) /
+            1000)
+      );
+  clock_start = std::chrono::system_clock::now();
   const auto result = allocated_certification_program_.solve(solver_options);
+  clock_now = std::chrono::system_clock::now();
+  drake::log()->info(fmt::format(
+        "Certification checked in  {} s",
+        static_cast<float>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(clock_now -
+                                                                  clock_start)
+                .count()) /
+            1000));
   return result.is_success();
 }
 
@@ -241,6 +261,7 @@ void internal::AllocatedCertificationProgram::
     symbolic::Polynomial evaluated_polynomial = polynomial.EvaluatePartial(env);
     // why do i need to do this??
     evaluated_polynomial.SetIndeterminates(polynomial.indeterminates());
+
     for (auto& [monomial, binding] : monomial_to_binding) {
       prog_->RemoveConstraint(binding);
       // note that we do not explicitly check that evaluated polynomial and
@@ -266,12 +287,76 @@ void internal::AllocatedCertificationProgram::
   }
 }
 
+//void internal::AllocatedCertificationProgram::
+//    EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env) {
+//  auto clock_start = std::chrono::system_clock::now();
+//  //  symbolic::Expression coefficient;
+//  std::for_each(
+//      std::execution::par, polynomial_to_monomial_to_bindings_map_.begin(),
+//      polynomial_to_monomial_to_bindings_map_.end(),
+//      [this, env](auto poly_to_monom_to_binding_item) {
+//        symbolic::Polynomial evaluated_polynomial =
+//            poly_to_monom_to_binding_item.first.EvaluatePartial(env);
+//        // why do i need to do this??
+//        evaluated_polynomial.SetIndeterminates(
+//            poly_to_monom_to_binding_item.first.indeterminates());
+//        symbolic::Expression coefficient;
+//        for (auto& [monomial, binding] : poly_to_monom_to_binding_item.second) {
+//        prog_->RemoveConstraint(binding);
+//        // note that we do not explicitly check that evaluated polynomial and
+//        // monomial_to_bindings contain the same monomials which could be
+//        // dangerous.
+//        coefficient = evaluated_polynomial.monomial_to_coefficient_map()
+//                          .at(monomial)
+//                          .Expand();
+//        try {
+//          poly_to_monom_to_binding_item.second.insert_or_assign(
+//              monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
+//        } catch (...) {
+//          std::cout << monomial << "\n";
+//          std::cout << evaluated_polynomial.monomial_to_coefficient_map()
+//                           .at(monomial)
+//                           .Expand()
+//                    << std::endl;
+//          std::cout << evaluated_polynomial.decision_variables() << "\n";
+//          std::cout << evaluated_polynomial.indeterminates() << "\n" << std::endl;
+//          throw;
+//        }
+//      }
+//        // TODO(Alex.Amice) change the bindings in parallel as well
+////        std::for_each(
+////            std::execution::par,
+////            poly_to_monom_to_binding_item.second.begin(),
+////            poly_to_monom_to_binding_item.second.end(),
+////            [this, evaluated_polynomial,
+////             poly_to_monom_to_binding_item](auto monomial_to_binding) {
+////              this->prog_->RemoveConstraint(monomial_to_binding.second);
+////              symbolic::Expression coefficient =
+////                  evaluated_polynomial.monomial_to_coefficient_map()
+////                      .at(monomial_to_binding.first)
+////                      .Expand();
+////              poly_to_monom_to_binding_item.second.insert_or_assign(
+////                  monomial_to_binding.first,
+////                  prog_->AddLinearEqualityConstraint(coefficient, 0));
+////            });
+//      });
+//  auto clock_now = std::chrono::system_clock::now();
+//  drake::log() -> info(fmt::format(
+//      "Bindings updated in {} s",
+//      static_cast<float>(
+//      std::chrono::duration_cast<std::chrono::milliseconds>(clock_now -
+//                                                                  clock_start)
+//                .count()) /
+//            1000)
+//      );
+//}
+}  // namespace internal
+
 solvers::MathematicalProgramResult
 internal::AllocatedCertificationProgram::solve(
     const solvers::SolverOptions& solver_options) {
   return solvers::Solve(*(prog_.get()), std::nullopt, solver_options);
 }
 
-}  // namespace internal
 }  // namespace multibody
 }  // namespace drake
