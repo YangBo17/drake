@@ -434,25 +434,6 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
           py::arg("t_lower"), py::arg("t_upper"), py::arg("option"),
           py::arg("redundant_tighten") = std::nullopt,
           doc.CspaceFreeRegion.ConstructLagrangianProgram.doc)
-      .def(
-          "ConstructLagrangianProgramWithoutTuples",
-          [](const CspaceFreeRegion* self,
-              const Eigen::Ref<const Eigen::MatrixXd>& q_star,
-              const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs,
-              const Eigen::Ref<const Eigen::MatrixXd>& C,
-              const Eigen::Ref<const Eigen::VectorXd>& d,
-              const VerificationOption& option,
-              std::optional<double> redundant_tighten) {
-            auto prog = self->ConstructLagrangianProgramWithoutTuples(q_star,
-                filtered_collision_pairs, C, d, option, redundant_tighten,
-                nullptr, nullptr);
-            return prog;
-          },
-
-          py::arg("q_star"), py::arg("filtered_collision_pairs"), py::arg("C"),
-          py::arg("d"), py::arg("option"),
-          py::arg("redundant_tighten") = std::nullopt,
-          doc.CspaceFreeRegion.ConstructLagrangianProgramWithoutTuples.doc)
       .def("ConstructPolytopeProgram",
           &CspaceFreeRegion::ConstructPolytopeProgram,
           py::arg("alternation_tuples"), py::arg("C"), py::arg("d"),

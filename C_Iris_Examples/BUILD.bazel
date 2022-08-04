@@ -86,7 +86,7 @@ drake_jupyter_py_binary(
 )
 
 drake_jupyter_py_binary(
-    name = "pinball_iiwas_2d_motion_planning",
+    name = "pinball_iiwas_prm_certify",
     add_test_rule = 0,
     data = [
         "//C_Iris_Examples:models",

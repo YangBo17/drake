@@ -470,15 +470,6 @@ class CspaceFreeRegion {
       const VerificationOption& option, std::optional<double> redundant_tighten,
       MatrixX<symbolic::Variable>* P, VectorX<symbolic::Variable>* q) const;
 
-  std::unique_ptr<solvers::MathematicalProgram>
-  ConstructLagrangianProgramWithoutTuples(
-      const Eigen::Ref<const Eigen::MatrixXd>& q_star,
-      const FilteredCollisionPairs& filtered_collision_pairs,
-      const Eigen::Ref<const Eigen::MatrixXd>& C,
-      const Eigen::Ref<const Eigen::VectorXd>& d,
-      const VerificationOption& option, std::optional<double> redundant_tighten,
-      MatrixX<symbolic::Variable>* P, VectorX<symbolic::Variable>* q) const;
-
   /**
    * Given lagrangian polynomials, construct an optimization program to search
    * for the separating plane, the C-space polytope C*t<=d.
@@ -671,6 +662,11 @@ class CspaceFreeRegion {
   }
 
  protected:
+  /**
+   * A helper method for GenerateTuplesForBilinearAlternation. This method is
+   * responsible for actually constructing the tuples and proves useful in the
+   * CspaceFreeLine.
+   */
   void ConstructTuplesInMemory(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const FilteredCollisionPairs& filtered_collision_pairs, int C_rows,

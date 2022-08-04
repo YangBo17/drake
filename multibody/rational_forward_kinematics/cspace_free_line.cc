@@ -52,10 +52,10 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
         rational_forward_kinematics().ComputeTValue(q_upper, q_star_);
     for (int i = 0; i < s.size(); ++i) {
       if (s(i) < s_lower(i) || s(i) > s_upper(i)) {
-        throw std::invalid_argument(
-            fmt::format("s = {} is not in the joint limits\n lower limit = {}\n "
-                        "upper limit = {}",
-                        s, s_lower, s_upper));
+        throw std::invalid_argument(fmt::format(
+            "s = {} is not in the joint limits\n lower limit = {}\n "
+            "upper limit = {}",
+            s, s_lower, s_upper));
       }
     }
   };
@@ -69,24 +69,21 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
   auto clock_start = std::chrono::system_clock::now();
   allocated_certification_program_.EvaluatePolynomialsAndUpdateProgram(env);
   auto clock_now = std::chrono::system_clock::now();
-  drake::log() -> info(fmt::format(
+  drake::log()->info(fmt::format(
       "Bindings updated in {} s",
-      static_cast<float>(
-      std::chrono::duration_cast<std::chrono::milliseconds>(clock_now -
-                                                                  clock_start)
-                .count()) /
-            1000)
-      );
+      static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                             clock_now - clock_start)
+                             .count()) /
+          1000));
   clock_start = std::chrono::system_clock::now();
   const auto result = allocated_certification_program_.solve(solver_options);
   clock_now = std::chrono::system_clock::now();
   drake::log()->info(fmt::format(
-        "Certification checked in  {} s",
-        static_cast<float>(
-            std::chrono::duration_cast<std::chrono::milliseconds>(clock_now -
-                                                                  clock_start)
-                .count()) /
-            1000));
+      "Certification checked in  {} s",
+      static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                             clock_now - clock_start)
+                             .count()) /
+          1000));
   return result.is_success();
 }
 
@@ -181,49 +178,49 @@ CspaceFreeLine::AllocateCertificationProgram() const {
   // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS
   for (const auto& tuple : alternation_tuples) {
     symbolic::Polynomial verified_polynomial = tuple.rational_numerator;
-
-    int d = verified_polynomial.TotalDegree() / 2;
-    auto [l, Ql] =
-        prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
+    // In this case we just need positivity
     if (verified_polynomial.TotalDegree() == 0) {
-      drake::log()->info(fmt::format(
-          "verified_polynomial of zero degree is {}",
-          verified_polynomial));
-    }
-    if (verified_polynomial.TotalDegree() % 2 == 0 &&
-        verified_polynomial.TotalDegree() > 0) {
-      auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
-                                            option_.lagrangian_type);
-      verified_polynomial -=
-          symbolic::Polynomial(l + v * mu_ * (symbolic::Polynomial(1) - mu_));
-    } else {
-      auto [v, Qv] =
-          prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
-      verified_polynomial -=
-          symbolic::Polynomial(l * mu_ + v * (symbolic::Polynomial(1) - mu_));
-    }
-
-    // preallocate linear equality constraints for the zero equality awaiting
-    // substitution of s0 and s1 also create a map from the monomial to the
-    // appropriate linear equality constraint
-    std::unordered_map<symbolic::Monomial,
-                       solvers::Binding<solvers::LinearEqualityConstraint>>
-        monomial_to_equality_constraint;
-    verified_polynomial.SetIndeterminates({mu_});
-    for (const auto& [monomial, coefficient] :
-         verified_polynomial.monomial_to_coefficient_map()) {
-      // construct dummy expression to ensure that the binding has the
-      // appropriate variables
-      coefficient_expression = 0;
-      for (const auto& v : coefficient.GetVariables()) {
-        coefficient_expression += v;
+      for (const auto& [monomial, coeff] :
+           verified_polynomial.monomial_to_coefficient_map()) {
+        prog->AddLinearConstraint(coeff >= 0);
       }
-      monomial_to_equality_constraint.insert(
-          {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
-    }
+    } else {
+      int d = verified_polynomial.TotalDegree() / 2;
+      auto [l, Ql] =
+          prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
+      if (verified_polynomial.TotalDegree() % 2 == 0) {
+        auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
+                                              option_.lagrangian_type);
+        verified_polynomial -=
+            symbolic::Polynomial(l + v * mu_ * (symbolic::Polynomial(1) - mu_));
+      } else {
+        auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d,
+                                              option_.lagrangian_type);
+        verified_polynomial -=
+            symbolic::Polynomial(l * mu_ + v * (symbolic::Polynomial(1) - mu_));
+      }
+      // preallocate linear equality constraints for the zero equality awaiting
+      // substitution of s0 and s1 also create a map from the monomial to the
+      // appropriate linear equality constraint
+      std::unordered_map<symbolic::Monomial,
+                         solvers::Binding<solvers::LinearEqualityConstraint>>
+          monomial_to_equality_constraint;
+      verified_polynomial.SetIndeterminates({mu_});
+      for (const auto& [monomial, coefficient] :
+           verified_polynomial.monomial_to_coefficient_map()) {
+        // construct dummy expression to ensure that the binding has the
+        // appropriate variables
+        coefficient_expression = 0;
+        for (const auto& v : coefficient.GetVariables()) {
+          coefficient_expression += v;
+        }
+        monomial_to_equality_constraint.insert(
+            {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
+      }
 
-    polynomial_to_monomial_to_binding_map.insert_or_assign(
-        verified_polynomial, monomial_to_equality_constraint);
+      polynomial_to_monomial_to_binding_map.insert_or_assign(
+          verified_polynomial, monomial_to_equality_constraint);
+    }
   }
   return {std::move(prog), polynomial_to_monomial_to_binding_map};
 }
@@ -281,7 +278,7 @@ void internal::AllocatedCertificationProgram::
   }
 }
 
-//void internal::AllocatedCertificationProgram::
+// void internal::AllocatedCertificationProgram::
 //    EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env) {
 //  auto clock_start = std::chrono::system_clock::now();
 //  //  symbolic::Expression coefficient;
@@ -295,8 +292,8 @@ void internal::AllocatedCertificationProgram::
 //        evaluated_polynomial.SetIndeterminates(
 //            poly_to_monom_to_binding_item.first.indeterminates());
 //        symbolic::Expression coefficient;
-//        for (auto& [monomial, binding] : poly_to_monom_to_binding_item.second) {
-//        prog_->RemoveConstraint(binding);
+//        for (auto& [monomial, binding] : poly_to_monom_to_binding_item.second)
+//        { prog_->RemoveConstraint(binding);
 //        // note that we do not explicitly check that evaluated polynomial and
 //        // monomial_to_bindings contain the same monomials which could be
 //        // dangerous.
@@ -313,8 +310,8 @@ void internal::AllocatedCertificationProgram::
 //                           .Expand()
 //                    << std::endl;
 //          std::cout << evaluated_polynomial.decision_variables() << "\n";
-//          std::cout << evaluated_polynomial.indeterminates() << "\n" << std::endl;
-//          throw;
+//          std::cout << evaluated_polynomial.indeterminates() << "\n" <<
+//          std::endl; throw;
 //        }
 //      }
 //        // TODO(Alex.Amice) change the bindings in parallel as well
