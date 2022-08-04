@@ -91,63 +91,51 @@ class DoublePendulumTest : public ::testing::Test {
 };
 
 // Helper method for testing CspaceFreeLine.
-// A simple double pendulum with link lengths `l1` and `l2` with a box at the
-// tip with diagonal `2r` between two (fixed) walls at `w` from the origin.
-// The true configuration space is - w  ≤ l₁s₁ + l₂s₁₊₂ ± r * sin(1+2±π/4) ≤ w
-// . These regions are visualized as the white region at
-// https://www.desmos.com/calculator/2ugpepabig.
+// A simple pendulum with link length `l1` with a box at the
+// tip with diagonal `2r` between two (fixed) walls at `
 class SinglePendulumTest : public ::testing::Test {
  public:
   SinglePendulumTest() {
-    const double l1 = 2.0;
+    const double l1 = 1.0;
     const double r = .6;
-    const double w = 1.83;
     const std::string pendulum_urdf = fmt::format(
         R"(
-    <robot name="pendulum">
-      <link name="fixed">
+<robot name="pendulum">
+    <link name="fixed">
         <collision name="right">
-          <origin rpy="0 0 0" xyz="{w_plus_one_half} 0 0"/>
+          <origin rpy="0 0 0" xyz="1 0 0"/>
           <geometry><box size="1 1 10"/></geometry>
         </collision>
         <collision name="left">
-          <origin rpy="0 0 0" xyz="-{w_plus_one_half} 0 0"/>
+          <origin rpy="0 0 0" xyz="-2 0 0"/>
           <geometry><box size="1 1 10"/></geometry>
         </collision>
-      </link>
-      <joint name="fixed_link_weld" type="fixed">
+    </link>
+    <joint name="fixed_link_weld" type="fixed">
         <parent link="world"/>
         <child link="fixed"/>
-      </joint>
-      <link name="link1"/>
-      <joint name="joint1" type="revolute">
+    </joint>
+    <link name="link1">
+        <collision name="box">
+          <origin rpy="0 0 0" xyz="0 0 -{l1}"/>
+          <geometry><box size="{r} {r} {r}"/></geometry>
+        </collision>
+    </link>
+    <joint name="joint1" type="revolute">
         <axis xyz="0 1 0"/>
         <limit lower="-1.57" upper="1.57"/>
         <parent link="world"/>
         <child link="link1"/>
-      </joint>
-      <link name="link2">
-        <collision name="box">
-          <origin rpy="0 0 0" xyz="0 0 -{l2}"/>
-          <geometry><box size="{r} {r} {r}"/></geometry>
-        </collision>
-      </link>
-      <joint name="joint2" type="revolute">
-        <origin rpy="0 0 0" xyz="0 0 -{l1}"/>
-        <axis xyz="0 1 0"/>
-        <limit lower="-1.57" upper="1.57"/>
-        <parent link="link1"/>
-        <child link="link2"/>
-      </joint>
-    </robot>
+    </joint>
+</robot>
     )",
-        fmt::arg("w_plus_one_half", w + .5), fmt::arg("l1", l1),
+        fmt::arg("l1", l1),
         fmt::arg("r", r / sqrt(2)));
 
     systems::DiagramBuilder<double> builder;
     std::tie(plant_, scene_graph_) =
         multibody::AddMultibodyPlantSceneGraph(&builder, 0.0);
-    multibody::Parser(plant_).AddModelFromString(double_pendulum_urdf, "urdf");
+    multibody::Parser(plant_).AddModelFromString(pendulum_urdf, "urdf");
     plant_->Finalize();
     diagram_ = builder.Build();
   }
