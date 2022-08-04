@@ -773,6 +773,44 @@ void CspaceFreeRegion::ConstructTuplesInMemory(
 }
 
 std::unique_ptr<solvers::MathematicalProgram>
+CspaceFreeRegion::ConstructLagrangianProgramWithoutTuples(
+      const Eigen::Ref<const Eigen::MatrixXd>& q_star,
+      const FilteredCollisionPairs& filtered_collision_pairs,
+      const Eigen::Ref<const Eigen::MatrixXd>& C,
+      const Eigen::Ref<const Eigen::VectorXd>& d,
+      const VerificationOption& option, std::optional<double> redundant_tighten,
+      MatrixX<symbolic::Variable>* P, VectorX<symbolic::Variable>* q) const {
+  std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples;
+  VectorX<symbolic::Polynomial> d_minus_Ct;
+  Eigen::VectorXd t_lower, t_upper;
+  VectorX<symbolic::Polynomial> t_minus_t_lower, t_upper_minus_t;
+  MatrixX<symbolic::Variable> C_var;
+  VectorX<symbolic::Variable> d_var, lagrangian_gram_vars, verified_gram_vars,
+      separating_plane_vars;
+  std::vector<std::vector<int>> separating_plane_to_tuples;
+  std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>
+      separating_plane_to_lorentz_cone_constraints;
+  int C_rows = C.rows();
+  GenerateTuplesForBilinearAlternation(
+      q_star, filtered_collision_pairs, C_rows, &alternation_tuples,
+      &d_minus_Ct, &t_lower, &t_upper, &t_minus_t_lower, &t_upper_minus_t,
+      &C_var, &d_var, &lagrangian_gram_vars, &verified_gram_vars,
+      &separating_plane_vars, &separating_plane_to_tuples,
+      &separating_plane_to_lorentz_cone_constraints);
+  std::vector<solvers::Binding<solvers::LorentzConeConstraint>>
+      separating_plane_lorentz_cone_constraints;
+  for (const auto& bindings : separating_plane_to_lorentz_cone_constraints) {
+    separating_plane_lorentz_cone_constraints.insert(
+        separating_plane_lorentz_cone_constraints.end(), bindings.begin(),
+        bindings.end());
+  }
+  return ConstructLagrangianProgram(
+      alternation_tuples, C, d, lagrangian_gram_vars, verified_gram_vars,
+      separating_plane_vars, separating_plane_lorentz_cone_constraints,
+      t_lower, t_upper, option, redundant_tighten, P, q);
+}
+
+std::unique_ptr<solvers::MathematicalProgram>
 CspaceFreeRegion::ConstructLagrangianProgram(
     const std::vector<CspacePolytopeTuple>& alternation_tuples,
     const Eigen::Ref<const Eigen::MatrixXd>& C,

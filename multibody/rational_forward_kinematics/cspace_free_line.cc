@@ -185,17 +185,22 @@ CspaceFreeLine::AllocateCertificationProgram() const {
     int d = verified_polynomial.TotalDegree() / 2;
     auto [l, Ql] =
         prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
+    if (verified_polynomial.TotalDegree() == 0) {
+      drake::log()->info(fmt::format(
+          "verified_polynomial of zero degree is {}",
+          verified_polynomial));
+    }
     if (verified_polynomial.TotalDegree() % 2 == 0 &&
         verified_polynomial.TotalDegree() > 0) {
       auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
                                             option_.lagrangian_type);
       verified_polynomial -=
-          symbolic::Polynomial(l + v * mu_ * symbolic::Polynomial(1) - mu_);
+          symbolic::Polynomial(l + v * mu_ * (symbolic::Polynomial(1) - mu_));
     } else {
       auto [v, Qv] =
           prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
       verified_polynomial -=
-          symbolic::Polynomial(l * mu_ + v * symbolic::Polynomial(1) - mu_);
+          symbolic::Polynomial(l * mu_ + v * (symbolic::Polynomial(1) - mu_));
     }
 
     // preallocate linear equality constraints for the zero equality awaiting
