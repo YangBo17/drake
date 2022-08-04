@@ -40,7 +40,15 @@ class AllocatedCertificationProgram {
   solvers::MathematicalProgramResult solve(
       const solvers::SolverOptions& solver_options);
 
-  solvers::MathematicalProgram* get_prog() { return prog_.get(); }
+  const solvers::MathematicalProgram* get_prog() const { return prog_.get(); }
+  const std::unordered_map<
+      symbolic::Polynomial,
+      std::unordered_map<symbolic::Monomial,
+                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
+  get_polynomial_to_monomial_to_bindings_map() const {
+    return polynomial_to_monomial_to_bindings_map_;
+  }
 
  private:
   std::unique_ptr<solvers::MathematicalProgram> prog_;
@@ -86,6 +94,18 @@ class CspaceFreeLine : public CspaceFreeRegion {
   const symbolic::Variable get_mu() const { return mu_; }
   const drake::VectorX<drake::symbolic::Variable> get_s0() const { return s0_; }
   const drake::VectorX<drake::symbolic::Variable> get_s1() const { return s1_; }
+  const solvers::MathematicalProgram* get_prog() const {
+    return allocated_certification_program_.get_prog();
+  }
+  const std::unordered_map<
+      symbolic::Polynomial,
+      std::unordered_map<symbolic::Monomial,
+                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
+  get_polynomial_to_monomial_to_bindings_map() const {
+    return allocated_certification_program_
+        .get_polynomial_to_monomial_to_bindings_map();
+  }
 
   std::vector<LinkOnPlaneSideRational> GenerateRationalsForLinkOnOneSideOfPlane(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,

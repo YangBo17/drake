@@ -179,7 +179,12 @@ void AddMaximizeEigenValueGeometricMean(
     Z_diag_vec(i) = Z_lower(Z_lower_count);
     Z_lower_count += X_rows - i;
   }
-  prog->AddMaximizeGeometricMeanCost(Z_diag_vec);
+  if (Z_diag_vec.rows() > 1) {
+    prog->AddMaximizeGeometricMeanCost(Z_diag_vec);
+  } else {
+    // enables adding this cost on 1d plants
+    prog->AddLinearCost(-Eigen::VectorXd::Ones(1), 0, Z_diag_vec);
+  }
 }
 
 // Return the smallest d >= n where d = power(2, k);

@@ -171,3 +171,18 @@ class PRM:
             self.plotcallback(self.nodes, self.adjacency_list)
         else:
             pass
+
+    def __deepcopy__(self):
+        limits = np.array([self.min_pos, self.max_pos])
+        tmp = PRM(limits, len(self.nodes_list),
+                  self.in_collision, self.num_neighbours,
+                  self.dist_thresh, len(self.t_check),
+                  self.verbose, None)
+        tmp.nodes_list = self.nodes_list
+        tmp.nodes = self.nodes
+        tmp.nodes_kd = self.nodes_kd
+        tmp.adjacency_list = self.adjacency_list
+        tmp.dist_adj = self.dist_adj
+        tmp.plotcallback = self.plotcallback
+        return tmp
+

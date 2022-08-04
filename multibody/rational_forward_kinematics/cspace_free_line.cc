@@ -53,7 +53,7 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     for (int i = 0; i < s.size(); ++i) {
       if (s(i) < s_lower(i) || s(i) > s_upper(i)) {
         throw std::invalid_argument(
-            fmt::format("s0 = {} not in the joint limits\n lower limit = {}\n "
+            fmt::format("s = {} is not in the joint limits\n lower limit = {}\n "
                         "upper limit = {}",
                         s, s_lower, s_upper));
       }
@@ -262,7 +262,7 @@ void internal::AllocatedCertificationProgram::
     // why do i need to do this??
     evaluated_polynomial.SetIndeterminates(polynomial.indeterminates());
 
-    for (auto& [monomial, binding] : monomial_to_binding) {
+    for (const auto& [monomial, binding] : monomial_to_binding) {
       prog_->RemoveConstraint(binding);
       // note that we do not explicitly check that evaluated polynomial and
       // monomial_to_bindings contain the same monomials which could be
@@ -270,19 +270,8 @@ void internal::AllocatedCertificationProgram::
       coefficient = evaluated_polynomial.monomial_to_coefficient_map()
                         .at(monomial)
                         .Expand();
-      try {
-        monomial_to_binding.insert_or_assign(
-            monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
-      } catch (...) {
-        std::cout << monomial << "\n";
-        std::cout << evaluated_polynomial.monomial_to_coefficient_map()
-                         .at(monomial)
-                         .Expand()
-                  << std::endl;
-        std::cout << evaluated_polynomial.decision_variables() << "\n";
-        std::cout << evaluated_polynomial.indeterminates() << "\n" << std::endl;
-        throw;
-      }
+      monomial_to_binding.insert_or_assign(
+          monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
     }
   }
 }

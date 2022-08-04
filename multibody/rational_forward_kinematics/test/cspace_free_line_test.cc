@@ -18,7 +18,6 @@ namespace multibody {
 // The true configuration space is - w  ≤ l₁s₁ + l₂s₁₊₂ ± r * sin(1+2±π/4) ≤ w
 // . These regions are visualized as the white region at
 // https://www.desmos.com/calculator/2ugpepabig.
-
 class DoublePendulumTest : public ::testing::Test {
  public:
   DoublePendulumTest() {
@@ -67,6 +66,83 @@ class DoublePendulumTest : public ::testing::Test {
     )",
         fmt::arg("w_plus_one_half", w + .5), fmt::arg("l1", l1),
         fmt::arg("l2", l2), fmt::arg("r", r / sqrt(2)));
+
+    systems::DiagramBuilder<double> builder;
+    std::tie(plant_, scene_graph_) =
+        multibody::AddMultibodyPlantSceneGraph(&builder, 0.0);
+    multibody::Parser(plant_).AddModelFromString(double_pendulum_urdf, "urdf");
+    plant_->Finalize();
+    diagram_ = builder.Build();
+  }
+
+ protected:
+  std::unique_ptr<systems::Diagram<double>> diagram_;
+  MultibodyPlant<double>* plant_;
+  geometry::SceneGraph<double>* scene_graph_;
+  const Eigen::Vector2d q_star_0_{0.0, 0.0};
+  const Eigen::Vector2d q_star_1_{0.0, 1.0};
+
+  std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples_;
+  VectorX<symbolic::Variable> d_var_, lagrangian_gram_vars_,
+      verified_gram_vars_, separating_plane_vars_;
+  std::vector<std::vector<int>> separating_plane_to_tuples_;
+  std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>
+      separating_plane_to_lorentz_cone_constraints_;
+};
+
+// Helper method for testing CspaceFreeLine.
+// A simple double pendulum with link lengths `l1` and `l2` with a box at the
+// tip with diagonal `2r` between two (fixed) walls at `w` from the origin.
+// The true configuration space is - w  ≤ l₁s₁ + l₂s₁₊₂ ± r * sin(1+2±π/4) ≤ w
+// . These regions are visualized as the white region at
+// https://www.desmos.com/calculator/2ugpepabig.
+class SinglePendulumTest : public ::testing::Test {
+ public:
+  SinglePendulumTest() {
+    const double l1 = 2.0;
+    const double r = .6;
+    const double w = 1.83;
+    const std::string pendulum_urdf = fmt::format(
+        R"(
+    <robot name="pendulum">
+      <link name="fixed">
+        <collision name="right">
+          <origin rpy="0 0 0" xyz="{w_plus_one_half} 0 0"/>
+          <geometry><box size="1 1 10"/></geometry>
+        </collision>
+        <collision name="left">
+          <origin rpy="0 0 0" xyz="-{w_plus_one_half} 0 0"/>
+          <geometry><box size="1 1 10"/></geometry>
+        </collision>
+      </link>
+      <joint name="fixed_link_weld" type="fixed">
+        <parent link="world"/>
+        <child link="fixed"/>
+      </joint>
+      <link name="link1"/>
+      <joint name="joint1" type="revolute">
+        <axis xyz="0 1 0"/>
+        <limit lower="-1.57" upper="1.57"/>
+        <parent link="world"/>
+        <child link="link1"/>
+      </joint>
+      <link name="link2">
+        <collision name="box">
+          <origin rpy="0 0 0" xyz="0 0 -{l2}"/>
+          <geometry><box size="{r} {r} {r}"/></geometry>
+        </collision>
+      </link>
+      <joint name="joint2" type="revolute">
+        <origin rpy="0 0 0" xyz="0 0 -{l1}"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-1.57" upper="1.57"/>
+        <parent link="link1"/>
+        <child link="link2"/>
+      </joint>
+    </robot>
+    )",
+        fmt::arg("w_plus_one_half", w + .5), fmt::arg("l1", l1),
+        fmt::arg("r", r / sqrt(2)));
 
     systems::DiagramBuilder<double> builder;
     std::tie(plant_, scene_graph_) =

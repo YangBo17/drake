@@ -996,6 +996,10 @@ PYBIND11_MODULE(symbolic, m) {
           doc.Polynomial.SetIndeterminates.doc)
       .def("__str__",
           [](const RationalFunction& self) { return fmt::format("{}", self); })
+      .def("__repr__",
+          [](const RationalFunction& self) {
+            return fmt::format("<RationalFunction \"{}\">", self);
+          })
       .def(
           "Evaluate",
           [](const RationalFunction& self, const Environment::map& env) {
