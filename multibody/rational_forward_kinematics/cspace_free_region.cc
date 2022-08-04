@@ -12,8 +12,8 @@
 #include <optional>
 #include <thread>
 
+#include <drake_vendor/libqhullcpp/Qhull.h>
 #include <fmt/format.h>
-#include <libqhullcpp/Qhull.h>
 
 #include "drake/geometry/optimization/vpolytope.h"
 #include "drake/multibody/rational_forward_kinematics/collision_geometry.h"

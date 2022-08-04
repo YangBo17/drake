@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <libqhullcpp/Qhull.h>
+#include <drake_vendor/libqhullcpp/Qhull.h>
 
 #include "drake/geometry/read_obj.h"
 
