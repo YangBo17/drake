@@ -129,8 +129,7 @@ class SinglePendulumTest : public ::testing::Test {
     </joint>
 </robot>
     )",
-        fmt::arg("l1", l1),
-        fmt::arg("r", r / sqrt(2)));
+        fmt::arg("l1", l1), fmt::arg("r", r / sqrt(2)));
 
     systems::DiagramBuilder<double> builder;
     std::tie(plant_, scene_graph_) =
@@ -501,16 +500,15 @@ GTEST_TEST(EvaluatePolynomialsAndUpdateProgram, Test) {
   prog_expected->AddLinearConstraint(3 + b == 0);  // 1 + b + p = 0
 
   std::cout << "testing decision variables" << std::endl;
-  EXPECT_EQ(allocated_prog.get_prog()->decision_variables() ,
-              prog_expected->decision_variables());
+  EXPECT_EQ(allocated_prog.get_prog()->decision_variables(),
+            prog_expected->decision_variables());
 
   // there are only linear constraints in this program
   EXPECT_EQ(solvers::GetProgramType(*allocated_prog.get_prog()),
-              solvers::ProgramType::kLP);
-  EXPECT_EQ(solvers::GetProgramType(*prog_expected),
-              solvers::ProgramType::kLP);
+            solvers::ProgramType::kLP);
+  EXPECT_EQ(solvers::GetProgramType(*prog_expected), solvers::ProgramType::kLP);
   EXPECT_EQ(allocated_prog.get_prog()->linear_constraints().size(),
-              prog_expected->linear_constraints().size());
+            prog_expected->linear_constraints().size());
   const double tol = 1E-12;
   for (const auto& binding : allocated_prog.get_prog()->linear_constraints()) {
     bool same_constraint_found = false;

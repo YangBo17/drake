@@ -612,11 +612,6 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
       .def("get_mu", &CspaceFreeLine::get_mu, doc.CspaceFreeLine.get_mu.doc)
       .def("get_s0", &CspaceFreeLine::get_s0, doc.CspaceFreeLine.get_s0.doc)
       .def("get_s1", &CspaceFreeLine::get_s1, doc.CspaceFreeLine.get_s1.doc)
-      .def("get_prog", &CspaceFreeLine::get_prog,
-          doc.CspaceFreeLine.get_prog.doc)
-      .def("get_polynomial_to_monomial_to_bindings_map",
-          &CspaceFreeLine::get_polynomial_to_monomial_to_bindings_map,
-          doc.CspaceFreeLine.get_polynomial_to_monomial_to_bindings_map.doc)
       .def("CertifyTangentConfigurationSpaceLine",
           &CspaceFreeLine::CertifyTangentConfigurationSpaceLine, py::arg("s0"),
           py::arg("s1"), py::arg("solver_options") = solvers::SolverOptions(),

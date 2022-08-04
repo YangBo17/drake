@@ -3,7 +3,7 @@
 #include <execution>
 #include <utility>
 
-#include "drake/common/symbolic_decompose.h"
+#include "drake/common/symbolic/decompose.h"
 #include "drake/solvers/mosek_solver.h"
 #include "drake/solvers/solve.h"
 
