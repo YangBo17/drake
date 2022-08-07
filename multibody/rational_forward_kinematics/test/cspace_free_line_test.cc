@@ -96,20 +96,43 @@ class DoublePendulumTest : public ::testing::Test {
 class SinglePendulumTest : public ::testing::Test {
  public:
   SinglePendulumTest() {
-    const double l1 = 1.0;
-    const double r = .6;
     const std::string pendulum_urdf = fmt::format(
         R"(
+
 <robot name="pendulum">
+<material name="Gray">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
+  <material name="Red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
+  <material name="Green">
+    <color rgba="0.0 0.8 0.0 1.0"/>
+  </material>
+
     <link name="fixed">
         <collision name="right">
           <origin rpy="0 0 0" xyz="1 0 0"/>
           <geometry><box size="1 1 10"/></geometry>
         </collision>
+        <visual>
+          <origin xyz="1 0 .0" rpy="0 0 0"/>
+          <geometry>
+            <box size="1 1 10"/>
+          </geometry>
+          <material name="Gray"/>
+        </visual>
         <collision name="left">
           <origin rpy="0 0 0" xyz="-2 0 0"/>
           <geometry><box size="1 1 10"/></geometry>
         </collision>
+        <visual>
+          <origin xyz="-2 0 .0" rpy="0 0 0"/>
+          <geometry>
+            <box size="1 1 10"/>
+          </geometry>
+          <material name="Gray"/>
+        </visual>
     </link>
     <joint name="fixed_link_weld" type="fixed">
         <parent link="world"/>
@@ -117,9 +140,26 @@ class SinglePendulumTest : public ::testing::Test {
     </joint>
     <link name="link1">
         <collision name="box">
-          <origin rpy="0 0 0" xyz="0 0 -{l1}"/>
-          <geometry><box size="{r} {r} {r}"/></geometry>
+          <origin rpy="0 0 0" xyz="0 0 -1"/>
+          <geometry><box size="0.6 0.6 0.6"/></geometry>
         </collision>
+        <!-- actual box -->
+        <visual>
+          <origin xyz="0 0 -1" rpy="0 0 0"/>
+          <geometry>
+            <box size="0.6 0.6 0.6"/>
+          </geometry>
+          <material name="Red"/>
+        </visual>
+
+        <!-- pole (no collision geometry-->
+        <visual>
+          <origin xyz="0 0 -0.5" rpy="0 0 0"/>
+          <geometry>
+            <box size="0.1 0.1 1"/>
+          </geometry>
+          <material name="Green"/>
+        </visual>
     </link>
     <joint name="joint1" type="revolute">
         <axis xyz="0 1 0"/>
@@ -128,8 +168,7 @@ class SinglePendulumTest : public ::testing::Test {
         <child link="link1"/>
     </joint>
 </robot>
-    )",
-        fmt::arg("l1", l1), fmt::arg("r", r / sqrt(2)));
+    )");
 
     systems::DiagramBuilder<double> builder;
     std::tie(plant_, scene_graph_) =
@@ -143,8 +182,8 @@ class SinglePendulumTest : public ::testing::Test {
   std::unique_ptr<systems::Diagram<double>> diagram_;
   MultibodyPlant<double>* plant_;
   geometry::SceneGraph<double>* scene_graph_;
-  const Eigen::Vector2d q_star_0_{0.0, 0.0};
-  const Eigen::Vector2d q_star_1_{0.0, 1.0};
+  const Eigen::Matrix<double,1,1> q_star_0_{0.0};
+  const Eigen::Matrix<double,1,1> q_star_1_{1.0};
 
   std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples_;
   VectorX<symbolic::Variable> d_var_, lagrangian_gram_vars_,
@@ -324,35 +363,8 @@ TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
                           .cols();
   }
   EXPECT_EQ(alternation_tuples_.size(), rational_count);
-  // Now count the total number of lagrangian gram vars.
-  int lagrangian_gram_vars_count = 0;
-  int verified_gram_vars_count = 0;
-  std::unordered_set<int> lagrangian_gram_vars_start;
-  std::unordered_set<int> verified_gram_vars_start;
-  for (const auto& tuple : alternation_tuples_) {
-    const int gram_rows = tuple.monomial_basis.rows();
-    const int gram_lower_size = gram_rows * (gram_rows + 1) / 2;
-    lagrangian_gram_vars_count += gram_lower_size * 2;
-    verified_gram_vars_count += gram_lower_size;
-    std::copy(tuple.polytope_lagrangian_gram_lower_start.begin(),
-              tuple.polytope_lagrangian_gram_lower_start.end(),
-              std::inserter(lagrangian_gram_vars_start,
-                            lagrangian_gram_vars_start.end()));
-    std::copy(tuple.t_lower_lagrangian_gram_lower_start.begin(),
-              tuple.t_lower_lagrangian_gram_lower_start.end(),
-              std::inserter(lagrangian_gram_vars_start,
-                            lagrangian_gram_vars_start.end()));
-    std::copy(tuple.t_upper_lagrangian_gram_lower_start.begin(),
-              tuple.t_upper_lagrangian_gram_lower_start.end(),
-              std::inserter(lagrangian_gram_vars_start,
-                            lagrangian_gram_vars_start.end()));
-    verified_gram_vars_start.insert(tuple.verified_polynomial_gram_lower_start);
-  }
-  EXPECT_EQ(lagrangian_gram_vars_.rows(), lagrangian_gram_vars_count);
-  EXPECT_EQ(verified_gram_vars_.rows(), verified_gram_vars_count);
-  EXPECT_EQ(verified_gram_vars_start.size(), alternation_tuples_.size());
-  EXPECT_EQ(lagrangian_gram_vars_start.size(), alternation_tuples_.size() * 2);
 
+  // we only care about the separating planes and the rationals in this tuple
   int separating_plane_vars_count = 0;
   for (const auto& separating_plane : dut.separating_planes()) {
     separating_plane_vars_count += separating_plane.decision_variables.rows();
@@ -380,20 +392,21 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
                      SeparatingPlaneOrder::kAffine, q_star_0_, {}, {});
 
-  Eigen::Vector2d q0{0, 0};
-  Eigen::Vector2d q1_good{0, 0.1};
-  Eigen::Vector2d q1_bad{0.2, 0.5};
-  Eigen::Vector2d q1_out_of_limits{-2, -2};
+  Eigen::Vector2d s0{0, 0};
+  Eigen::Vector2d s1_good{-0.25, 0.9};
+  Eigen::Vector2d s1_bad{0.9, 0.9};
+  Eigen::Vector2d s1_out_of_limits{-2, -2};
+//
+//  Eigen::VectorXd s0 =
+//      dut.rational_forward_kinematics().ComputeTValue(q0, q_star_0_);
+//  Eigen::VectorXd s1_good =
+//      dut.rational_forward_kinematics().ComputeTValue(q1_good, q_star_0_);
+//  Eigen::VectorXd s1_bad =
+//      dut.rational_forward_kinematics().ComputeTValue(q1_bad, q_star_0_);
+//  Eigen::VectorXd s1_out_of_limits =
+//      dut.rational_forward_kinematics().ComputeTValue(q1_out_of_limits,
+//                                                      q_star_0_);
 
-  Eigen::VectorXd s0 =
-      dut.rational_forward_kinematics().ComputeTValue(q0, q_star_0_);
-  Eigen::VectorXd s1_good =
-      dut.rational_forward_kinematics().ComputeTValue(q1_good, q_star_0_);
-  Eigen::VectorXd s1_bad =
-      dut.rational_forward_kinematics().ComputeTValue(q1_bad, q_star_0_);
-  Eigen::VectorXd s1_out_of_limits =
-      dut.rational_forward_kinematics().ComputeTValue(q1_out_of_limits,
-                                                      q_star_0_);
 
   EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good));
   EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad));
