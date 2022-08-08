@@ -396,17 +396,6 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
   Eigen::Vector2d s1_good{-0.25, 0.9};
   Eigen::Vector2d s1_bad{0.9, 0.9};
   Eigen::Vector2d s1_out_of_limits{-2, -2};
-//
-//  Eigen::VectorXd s0 =
-//      dut.rational_forward_kinematics().ComputeTValue(q0, q_star_0_);
-//  Eigen::VectorXd s1_good =
-//      dut.rational_forward_kinematics().ComputeTValue(q1_good, q_star_0_);
-//  Eigen::VectorXd s1_bad =
-//      dut.rational_forward_kinematics().ComputeTValue(q1_bad, q_star_0_);
-//  Eigen::VectorXd s1_out_of_limits =
-//      dut.rational_forward_kinematics().ComputeTValue(q1_out_of_limits,
-//                                                      q_star_0_);
-
 
   EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good));
   EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad));
