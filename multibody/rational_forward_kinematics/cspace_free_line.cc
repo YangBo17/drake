@@ -7,7 +7,7 @@
 #include "drake/common/symbolic/decompose.h"
 #include "drake/solvers/mosek_solver.h"
 #include "drake/solvers/solve.h"
-
+#include <mutex>
 namespace drake {
 namespace multibody {
 using solvers::MathematicalProgram;
@@ -180,10 +180,8 @@ CspaceFreeLine::CspaceFreeLine(
 void CspaceFreeLine::EvaluateTuplesForEndpoints(
     const Eigen::Ref<const Eigen::VectorXd>& s0,
     const Eigen::Ref<const Eigen::VectorXd>& s1) {
-  // TODO (Alex.Amice) parallelize this
-
-    std::for_each(std::execution::par_unseq, tuples_.begin(), tuples_.end(),
-                  [s0, s1](auto&& tuple) { tuple.Evaluate_s0_s1(s0, s1); });
+  std::for_each(std::execution::par, tuples_.begin(), tuples_.end(),
+                [s0, s1](auto&& tuple) { tuple.Evaluate_s0_s1(s0, s1); });
 }
 
 bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
@@ -202,41 +200,44 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
           1000));
   std::vector<bool> is_success(separating_planes().size());
   separating_planes_sol->resize(separating_planes().size());
-  //  std::for_each(
-  //      std::execution::par_unseq, separating_planes().begin(),
-  //      separating_planes().end(),
-  //      [&is_success, &separating_planes_sol, &solver_options,
-  //      this](SeparatingPlane<symbolic::Variable>& plane) {
-  //        int plane_index = static_cast<int>(&plane -
-  //        &(separating_planes()[0])); is_success[plane_index] =
-  //            this->CertifyPlane(plane_index,
-  //            &(separating_planes_sol->at(plane_index)), solver_options);
-  //      });
 
-  //TODO(Alex.Amice) parallelize this
+  // TODO(Alex.Amice) parallelize this
   clock_start = std::chrono::system_clock::now();
-//  for (const auto& plane : separating_planes()) {
-//    int plane_index = static_cast<int>(&plane - &(separating_planes()[0]));
-//    is_success[plane_index] = this->CertifyPlane(
-//        plane_index, &(separating_planes_sol->at(plane_index)), solver_options);
-//  }
-//bool ret = std::all_of(is_success.begin(), is_success.end(), [](bool val) {
-//    return val;
-//  });
-//return ret;
+//  std::for_each(std::execution::par_unseq, separating_planes().begin(),
+//                separating_planes().end(),
+//                [&is_success, &separating_planes_sol, &solver_options,
+//                 this](SeparatingPlane<symbolic::Variable>& plane) {
+//                  int plane_index =
+//                      static_cast<int>(&plane - &(separating_planes()[0]));
+//                  is_success[plane_index] = this->CertifyPlane(
+//                      plane_index, &(separating_planes_sol->at(plane_index)),
+//                      solver_options);
+//                });
+
+//    for (const auto& plane : separating_planes()) {
+//      int plane_index = static_cast<int>(&plane - &(separating_planes()[0]));
+//      is_success[plane_index] = this->CertifyPlane(
+//          plane_index, &(separating_planes_sol->at(plane_index)),
+//          solver_options);
+//    }
+//  bool ret = std::all_of(is_success.begin(), is_success.end(),
+//                         [](bool val) { return val; });
+
   // make one big program
-  solvers::MathematicalProgram prog = solvers::MathematicalProgram();
-  prog.AddDecisionVariables(separating_plane_vars_);
-  for(int i = 0; i < static_cast<int>(separating_planes().size()); ++i){
-    AddCertifySeparatingPlaneConstraintToProg(&prog, i);
-  }
-  auto result = solvers::Solve(prog, std::nullopt, solver_options);
-  if (result.is_success()) {
-    for(int i = 0; i < static_cast<int>(separating_planes().size()); ++i) {
-      separating_planes_sol->at(i) = GetSeparatingPlaneSolution(
-          this->separating_planes()[i], result);
+    solvers::MathematicalProgram prog = solvers::MathematicalProgram();
+    prog.AddDecisionVariables(separating_plane_vars_);
+    for(int i = 0; i < static_cast<int>(separating_planes().size()); ++i){
+      AddCertifySeparatingPlaneConstraintToProg(&prog, i);
     }
-  }
+    auto result = solvers::Solve(prog, std::nullopt, solver_options);
+    if (result.is_success()) {
+      for(int i = 0; i < static_cast<int>(separating_planes().size()); ++i) {
+        separating_planes_sol->at(i) = GetSeparatingPlaneSolution(
+            this->separating_planes()[i], result);
+      }
+    }
+   bool ret = result.is_success();
+
   clock_now = std::chrono::system_clock::now();
   drake::log()->info(fmt::format(
       "certified in {} s",
@@ -244,63 +245,36 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
                              clock_now - clock_start)
                              .count()) /
           1000));
-  return result.is_success();
-
+  return ret;
 }
-//
-// bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
-//    const Eigen::Ref<const Eigen::VectorXd>& s0,
-//    const Eigen::Ref<const Eigen::VectorXd>& s1,
-//    const solvers::SolverOptions& solver_options) {
-//  symbolic::Environment env;
-//  DRAKE_DEMAND(s0.size() == s0_.size());
-//  DRAKE_DEMAND(s1.size() == s1_.size());
-//  auto is_in_joint_limits = [this](const Eigen::Ref<const Eigen::VectorXd>& s)
-//  {
-//    Eigen::VectorXd q_lower =
-//        rational_forward_kinematics().plant().GetPositionLowerLimits();
-//    Eigen::VectorXd s_lower =
-//        rational_forward_kinematics().ComputeTValue(q_lower, q_star_);
-//    Eigen::VectorXd q_upper =
-//        rational_forward_kinematics().plant().GetPositionUpperLimits();
-//    Eigen::VectorXd s_upper =
-//        rational_forward_kinematics().ComputeTValue(q_upper, q_star_);
-//    for (int i = 0; i < s.size(); ++i) {
-//      if (s(i) < s_lower(i) || s(i) > s_upper(i)) {
-//        throw std::invalid_argument(fmt::format(
-//            "s = {} is not in the joint limits\n lower limit = {}\n "
-//            "upper limit = {}",
-//            s, s_lower, s_upper));
-//      }
-//    }
-//  };
-//  is_in_joint_limits(s0);
-//  is_in_joint_limits(s1);
-//
-//  for (int i = 0; i < s0_.size(); ++i) {
-//    env.insert(s0_(i), s0(i));
-//    env.insert(s1_(i), s1(i));
-//  }
-//  auto clock_start = std::chrono::system_clock::now();
-//  allocated_certification_program_.EvaluatePolynomialsAndUpdateProgram(env);
-//  auto clock_now = std::chrono::system_clock::now();
-//  drake::log()->info(fmt::format(
-//      "Bindings updated in {} s",
-//      static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
-//                             clock_now - clock_start)
-//                             .count()) /
-//          1000));
-//  clock_start = std::chrono::system_clock::now();
-//  const auto result = allocated_certification_program_.solve(solver_options);
-//  clock_now = std::chrono::system_clock::now();
-//  drake::log()->info(fmt::format(
-//      "Certification checked in  {} s",
-//      static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
-//                             clock_now - clock_start)
-//                             .count()) /
-//          1000));
-//  return result.is_success();
-//}
+
+bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
+      const Eigen::Ref<const Eigen::MatrixXd>& s0,
+      const Eigen::Ref<const Eigen::MatrixXd>& s1,
+      std::vector<std::vector<SeparatingPlane<double>>>* separating_planes_sol_per_row,
+      const solvers::SolverOptions& solver_options) {
+  DRAKE_DEMAND(s0.rows() == s1.rows());
+  DRAKE_DEMAND(s0.cols() == s1.cols());
+  auto certify_line = [&s0, &s1, &separating_planes_sol_per_row, &solver_options, this](int row_idx) {
+    solvers::MathematicalProgram prog = solvers::MathematicalProgram();
+    prog.AddDecisionVariables(separating_plane_vars_);
+    // prevents data race on the tuple information
+    update_bindings_mutex_.lock();
+    EvaluateTuplesForEndpoints(s0.row(row_idx), s1.row(row_idx));
+    for(int i = 0; i < static_cast<int>(this->separating_planes().size()); ++i){
+      AddCertifySeparatingPlaneConstraintToProg(&prog, i);
+    }
+    update_bindings_mutex_.unlock();
+    auto result = solvers::Solve(prog, std::nullopt, solver_options);
+    if (result.is_success()) {
+      for(int i = 0; i < static_cast<int>(separating_planes().size()); ++i) {
+        separating_planes_sol_per_row->at(row_idx).at(i) = GetSeparatingPlaneSolution(
+            this->separating_planes()[i], result);
+      }
+    }
+    return result.is_success()
+  };
+}
 
 std::vector<LinkOnPlaneSideRational>
 CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
@@ -446,93 +420,6 @@ bool CspaceFreeLine::CertifyPlane(
   return result.is_success();
 }
 
-internal::AllocatedCertificationProgram
-CspaceFreeLine::AllocateCertificationProgram() const {
-  std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples;
-  VectorX<symbolic::Variable> lagrangian_gram_vars, verified_gram_vars,
-      separating_plane_vars;
-  std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>
-      separating_plane_to_lorentz_cone_constraints;
-  std::vector<std::vector<int>> separating_plane_to_tuples;
-  GenerateTuplesForCertification(q_star_, filtered_collision_pairs_,
-                                 &alternation_tuples, &lagrangian_gram_vars,
-                                 &verified_gram_vars, &separating_plane_vars,
-                                 &separating_plane_to_tuples,
-                                 &separating_plane_to_lorentz_cone_constraints);
-
-  auto prog = std::make_unique<solvers::MathematicalProgram>();
-
-  // Adds decision variables.
-  prog->AddDecisionVariables(separating_plane_vars);
-  symbolic::Variables mu_variables{mu_};
-  prog->AddIndeterminates(solvers::VectorIndeterminate<1>(mu_));
-
-  // a map to store polynomials which will have s0 and s1 in its coefficients
-  // for rapidly updating the coefficients for every new certification program
-  std::unordered_map<
-      symbolic::Polynomial,
-      std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>,
-      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
-      polynomial_to_monomial_to_binding_map;
-
-  symbolic::Expression coefficient_expression;
-  // For each rational numerator, add the constraint that the Lagrangian
-  // polynomials >= 0, and the verified polynomial >= 0.
-  //
-  // Recall that a univariate polynomial p(μ) is nonnegative on [0, 1] if and
-  // only if p(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
-  // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
-  // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS
-  for (const auto& tuple : alternation_tuples) {
-    symbolic::Polynomial verified_polynomial = tuple.rational_numerator;
-    // In this case we just need positivity
-    if (verified_polynomial.TotalDegree() == 0) {
-      for (const auto& [monomial, coeff] :
-           verified_polynomial.monomial_to_coefficient_map()) {
-        prog->AddLinearConstraint(coeff >= 0);
-      }
-    } else {
-      int d = verified_polynomial.TotalDegree() / 2;
-      auto [l, Ql] =
-          prog->NewSosPolynomial(mu_variables, 2 * d, option_.lagrangian_type);
-      if (verified_polynomial.TotalDegree() % 2 == 0) {
-        auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d - 2,
-                                              option_.lagrangian_type);
-        verified_polynomial -=
-            symbolic::Polynomial(l + v * mu_ * (symbolic::Polynomial(1) - mu_));
-      } else {
-        auto [v, Qv] = prog->NewSosPolynomial(mu_variables, 2 * d,
-                                              option_.lagrangian_type);
-        verified_polynomial -=
-            symbolic::Polynomial(l * mu_ + v * (symbolic::Polynomial(1) - mu_));
-      }
-      // preallocate linear equality constraints for the zero equality
-      // awaiting substitution of s0 and s1 also create a map from the
-      // monomial to the appropriate linear equality constraint
-      std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>
-          monomial_to_equality_constraint;
-      verified_polynomial.SetIndeterminates({mu_});
-      for (const auto& [monomial, coefficient] :
-           verified_polynomial.monomial_to_coefficient_map()) {
-        // construct dummy expression to ensure that the binding has the
-        // appropriate variables
-        coefficient_expression = 0;
-        for (const auto& v : coefficient.GetVariables()) {
-          coefficient_expression += v;
-        }
-        monomial_to_equality_constraint.insert(
-            {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
-      }
-
-      polynomial_to_monomial_to_binding_map.insert_or_assign(
-          verified_polynomial, monomial_to_equality_constraint);
-    }
-  }
-  return {std::move(prog), polynomial_to_monomial_to_binding_map};
-}
-
 void CspaceFreeLine::InitializeLineVariables(int num_positions) {
   s0_.resize(num_positions);
   s1_.resize(num_positions);
@@ -550,114 +437,6 @@ void CspaceFreeLine::InitializeLineVariables(int num_positions) {
   }
 }
 
-namespace internal {
-AllocatedCertificationProgram::AllocatedCertificationProgram(
-    std::unique_ptr<solvers::MathematicalProgram> prog,
-    std::unordered_map<
-        symbolic::Polynomial,
-        std::unordered_map<symbolic::Monomial,
-                           solvers::Binding<solvers::LinearEqualityConstraint>>,
-        std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
-        polynomial_to_monomial_to_bindings_map)
-    : prog_{std::move(prog)},
-      polynomial_to_monomial_to_bindings_map_{
-          polynomial_to_monomial_to_bindings_map} {};
-
-void internal::AllocatedCertificationProgram::
-    EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env) {
-  symbolic::Expression coefficient;
-  for (auto& [polynomial, monomial_to_binding] :
-       polynomial_to_monomial_to_bindings_map_) {
-    symbolic::Polynomial evaluated_polynomial = polynomial.EvaluatePartial(env);
-    // why do i need to do this??
-    evaluated_polynomial.SetIndeterminates(polynomial.indeterminates());
-
-    for (const auto& [monomial, binding] : monomial_to_binding) {
-      prog_->RemoveConstraint(binding);
-      // note that we do not explicitly check that evaluated polynomial and
-      // monomial_to_bindings contain the same monomials which could be
-      // dangerous.
-      coefficient = evaluated_polynomial.monomial_to_coefficient_map()
-                        .at(monomial)
-                        .Expand();
-      monomial_to_binding.insert_or_assign(
-          monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
-    }
-  }
-}
-
-// void internal::AllocatedCertificationProgram::
-//    EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env) {
-//  auto clock_start = std::chrono::system_clock::now();
-//  //  symbolic::Expression coefficient;
-//  std::for_each(
-//      std::execution::par, polynomial_to_monomial_to_bindings_map_.begin(),
-//      polynomial_to_monomial_to_bindings_map_.end(),
-//      [this, env](auto poly_to_monom_to_binding_item) {
-//        symbolic::Polynomial evaluated_polynomial =
-//            poly_to_monom_to_binding_item.first.EvaluatePartial(env);
-//        // why do i need to do this??
-//        evaluated_polynomial.SetIndeterminates(
-//            poly_to_monom_to_binding_item.first.indeterminates());
-//        symbolic::Expression coefficient;
-//        for (auto& [monomial, binding] :
-//        poly_to_monom_to_binding_item.second) {
-//        prog_->RemoveConstraint(binding);
-//        // note that we do not explicitly check that evaluated polynomial
-//        and
-//        // monomial_to_bindings contain the same monomials which could be
-//        // dangerous.
-//        coefficient = evaluated_polynomial.monomial_to_coefficient_map()
-//                          .at(monomial)
-//                          .Expand();
-//        try {
-//          poly_to_monom_to_binding_item.second.insert_or_assign(
-//              monomial, prog_->AddLinearEqualityConstraint(coefficient, 0));
-//        } catch (...) {
-//          std::cout << monomial << "\n";
-//          std::cout << evaluated_polynomial.monomial_to_coefficient_map()
-//                           .at(monomial)
-//                           .Expand()
-//                    << std::endl;
-//          std::cout << evaluated_polynomial.decision_variables() << "\n";
-//          std::cout << evaluated_polynomial.indeterminates() << "\n" <<
-//          std::endl; throw;
-//        }
-//      }
-//        // TODO(Alex.Amice) change the bindings in parallel as well
-////        std::for_each(
-////            std::execution::par,
-////            poly_to_monom_to_binding_item.second.begin(),
-////            poly_to_monom_to_binding_item.second.end(),
-////            [this, evaluated_polynomial,
-////             poly_to_monom_to_binding_item](auto monomial_to_binding) {
-////              this->prog_->RemoveConstraint(monomial_to_binding.second);
-////              symbolic::Expression coefficient =
-////                  evaluated_polynomial.monomial_to_coefficient_map()
-////                      .at(monomial_to_binding.first)
-////                      .Expand();
-////              poly_to_monom_to_binding_item.second.insert_or_assign(
-////                  monomial_to_binding.first,
-////                  prog_->AddLinearEqualityConstraint(coefficient, 0));
-////            });
-//      });
-//  auto clock_now = std::chrono::system_clock::now();
-//  drake::log() -> info(fmt::format(
-//      "Bindings updated in {} s",
-//      static_cast<float>(
-//      std::chrono::duration_cast<std::chrono::milliseconds>(clock_now -
-//                                                                  clock_start)
-//                .count()) /
-//            1000)
-//      );
-//}
-}  // namespace internal
-
-solvers::MathematicalProgramResult
-internal::AllocatedCertificationProgram::solve(
-    const solvers::SolverOptions& solver_options) {
-  return solvers::Solve(*(prog_.get()), std::nullopt, solver_options);
-}
 
 }  // namespace multibody
 }  // namespace drake

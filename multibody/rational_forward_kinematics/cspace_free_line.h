@@ -9,57 +9,6 @@
 namespace drake {
 namespace multibody {
 
-namespace internal {
-// Checks whether two polynomials are equal. Needed to build maps with
-// Polynomials as keys in the AllocateProgram method
-struct ComparePolynomials {
-  bool operator()(const symbolic::Polynomial& p1,
-                  const symbolic::Polynomial& p2) const {
-    return p1.CoefficientsAlmostEqual(p2, 1E-12);
-  }
-};
-
-// a class for storing the allocated certification program and constructing the
-// final program
-class AllocatedCertificationProgram {
- public:
-  AllocatedCertificationProgram() = default;
-
-  AllocatedCertificationProgram(
-      std::unique_ptr<solvers::MathematicalProgram> prog,
-      std::unordered_map<
-          symbolic::Polynomial,
-          std::unordered_map<
-              symbolic::Monomial,
-              solvers::Binding<solvers::LinearEqualityConstraint>>,
-          std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
-          polynomial_to_monomial_to_bindings_map);
-
-  void EvaluatePolynomialsAndUpdateProgram(symbolic::Environment env);
-
-  solvers::MathematicalProgramResult solve(
-      const solvers::SolverOptions& solver_options);
-
-  const solvers::MathematicalProgram* get_prog() const { return prog_.get(); }
-  const std::unordered_map<
-      symbolic::Polynomial,
-      std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>,
-      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
-  get_polynomial_to_monomial_to_bindings_map() const {
-    return polynomial_to_monomial_to_bindings_map_;
-  }
-
- private:
-  std::unique_ptr<solvers::MathematicalProgram> prog_;
-  std::unordered_map<
-      symbolic::Polynomial,
-      std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>,
-      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
-      polynomial_to_monomial_to_bindings_map_;
-};
-}  // namespace internal
 
 class CspaceLineTuple {
  public:
@@ -212,6 +161,14 @@ class CspaceFreeLine : public CspaceFreeRegion {
       std::vector<SeparatingPlane<double>>* separating_planes_sol,
       const solvers::SolverOptions& solver_options = solvers::SolverOptions());
   /**
+   * Certifies whether a set of lines is collision free in parallel.
+   */
+  bool CertifyTangentConfigurationSpaceLine(
+      const Eigen::Ref<const Eigen::MatrixXd>& s0,
+      const Eigen::Ref<const Eigen::MatrixXd>& s1,
+      std::vector<std::vector<SeparatingPlane<double>>>* separating_planes_sol_per_row,
+      const solvers::SolverOptions& solver_options = solvers::SolverOptions());
+  /**
    * Adds the constraint that all of the tuples in the @param i separating plane
    * are on the appropriate side of the plane to @param prog.
    * Assumes that @param prog contains the separating plane variables already
@@ -247,10 +204,9 @@ class CspaceFreeLine : public CspaceFreeRegion {
 
   VerificationOption option_;
 
-  // preallocated certification program
-  internal::AllocatedCertificationProgram allocated_certification_program_;
-
   std::list<CspaceLineTuple> tuples_;
+  std::mutex update_bindings_mutex_;
+
   VectorX<symbolic::Variable> separating_plane_vars_;
   /*
    * tuples can be grouped
@@ -263,8 +219,6 @@ class CspaceFreeLine : public CspaceFreeRegion {
       separating_plane_to_lorentz_cone_constraints_;
 
   void InitializeLineVariables(int num_positions);
-
-  internal::AllocatedCertificationProgram AllocateCertificationProgram() const;
 };
 
 }  // namespace multibody
