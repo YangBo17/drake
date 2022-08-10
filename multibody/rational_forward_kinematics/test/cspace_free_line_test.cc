@@ -182,8 +182,8 @@ class SinglePendulumTest : public ::testing::Test {
   std::unique_ptr<systems::Diagram<double>> diagram_;
   MultibodyPlant<double>* plant_;
   geometry::SceneGraph<double>* scene_graph_;
-  const Eigen::Matrix<double,1,1> q_star_0_{0.0};
-  const Eigen::Matrix<double,1,1> q_star_1_{1.0};
+  const Eigen::Matrix<double, 1, 1> q_star_0_{0.0};
+  const Eigen::Matrix<double, 1, 1> q_star_1_{1.0};
 
   std::vector<CspaceFreeRegion::CspacePolytopeTuple> alternation_tuples_;
   VectorX<symbolic::Variable> d_var_, lagrangian_gram_vars_,
@@ -193,6 +193,193 @@ class SinglePendulumTest : public ::testing::Test {
       separating_plane_to_lorentz_cone_constraints_;
 };
 
+GTEST_TEST(CspaceLineTupleConstructorTest, Test) {
+  int plant_deg = 2;
+  const symbolic::Variable mu{"mu"};
+  drake::VectorX<symbolic::Variable> s0{plant_deg};
+  drake::VectorX<symbolic::Variable> s1{plant_deg};
+  drake::VectorX<symbolic::Variable> a{plant_deg};
+  drake::VectorX<symbolic::Variable> b{plant_deg};
+  symbolic::Variables mu_s0_s1_vars{mu};
+
+  for (int i = 0; i < plant_deg; ++i) {
+    s0[i] = symbolic::Variable{fmt::format("s0_{}", i)};
+    s1[i] = symbolic::Variable{fmt::format("s1_{}", i)};
+    a[i] = symbolic::Variable{fmt::format("a_{}", i)};
+    b[i] = symbolic::Variable{fmt::format("b_{}", i)};
+    mu_s0_s1_vars.insert(s0[i]);
+    mu_s0_s1_vars.insert(s1[i]);
+  }
+
+  symbolic::Expression rational_numerator_odd_deg_expression =
+      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
+      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu;
+  symbolic::Expression rational_numerator_even_deg_expression =
+      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
+      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu * mu;
+
+  // the tuples have slightly different psatz expressions depending on their
+  // degree.
+  symbolic::Polynomial rational_numerator_odd_deg{
+      rational_numerator_odd_deg_expression, mu_s0_s1_vars};
+  symbolic::Polynomial rational_numerator_even_deg{
+      rational_numerator_even_deg_expression, mu_s0_s1_vars};
+
+  VerificationOption option;
+  CspaceLineTuple tuple_odd{mu, s0, s1, rational_numerator_odd_deg, option};
+  CspaceLineTuple tuple_even{mu, s0, s1, rational_numerator_even_deg, option};
+
+  auto get_expected_decision_variables =
+      [a, b](symbolic::Variables* expected_decision_variables,
+             CspaceLineTuple& tuple) {
+        expected_decision_variables->insert(a.data(), a.data() + a.size());
+        expected_decision_variables->insert(b.data(), b.data() + b.size());
+        for (int i = 0; i < tuple.get_Q_lambda().size(); ++i) {
+          expected_decision_variables->insert(
+              *(tuple.get_Q_lambda().data() + i));
+        }
+        for (int i = 0; i < tuple.get_Q_nu().size(); ++i) {
+          expected_decision_variables->insert(*(tuple.get_Q_nu().data() + i));
+        }
+      };
+
+  // check that the program has the correct decision variables and
+  // indeterminates
+  EXPECT_EQ(symbolic::Variables(tuple_odd.get_prog()->indeterminates()),
+            symbolic::Variables({mu}));
+
+  symbolic::Variables odd_decision_variables(
+      tuple_odd.get_prog()->decision_variables());
+  symbolic::Variables expected_decision_variables_odd;
+  get_expected_decision_variables(&expected_decision_variables_odd, tuple_odd);
+  EXPECT_EQ(odd_decision_variables, expected_decision_variables_odd);
+
+  symbolic::Variables even_decision_variables(
+      tuple_even.get_prog()->decision_variables());
+  symbolic::Variables expected_decision_variables_even;
+  get_expected_decision_variables(&expected_decision_variables_even,
+                                  tuple_even);
+  EXPECT_EQ(even_decision_variables, expected_decision_variables_even);
+
+  symbolic::Environment env;
+  for (int i = 0; i < plant_deg; i++) {
+    env.insert(s0[i], 0.);
+    env.insert(s1[i], 0.);
+  }
+
+  symbolic::Polynomial rational_numerator_odd_deg_evaled =
+      rational_numerator_odd_deg.EvaluatePartial(env);
+  symbolic::Polynomial rational_numerator_even_deg_evaled =
+      rational_numerator_even_deg.EvaluatePartial(env);
+  symbolic::Polynomial psatz_expected_odd =
+      rational_numerator_odd_deg -
+      (tuple_odd.get_lambda() * mu +
+       tuple_odd.get_nu() * (symbolic::Polynomial(1, {mu}) - mu));
+  psatz_expected_odd.SetIndeterminates({mu});
+  symbolic::Polynomial psatz_expected_even =
+      rational_numerator_even_deg -
+      (tuple_even.get_lambda() +
+       tuple_even.get_nu() * mu * (symbolic::Polynomial(1, {mu}) - mu));
+  psatz_expected_even.SetIndeterminates({mu});
+
+  EXPECT_TRUE(tuple_odd.get_p().Expand().EqualTo(psatz_expected_odd.Expand()));
+  EXPECT_TRUE(
+      tuple_even.get_p().Expand().EqualTo(psatz_expected_even.Expand()));
+  EXPECT_TRUE(tuple_odd.get_p().indeterminates() == symbolic::Variables({mu}));
+  EXPECT_TRUE(tuple_even.get_p().indeterminates() == symbolic::Variables({mu}));
+}
+
+bool test_psatz_binding(const CspaceLineTuple& tuple,
+                        const symbolic::Environment& env) {
+  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
+      psatz_bindings = tuple.get_psatz_bindings();
+  symbolic::Polynomial p_evaled = tuple.get_p().EvaluatePartial(env);
+  solvers::LinearEqualityConstraint* constraint;
+  EXPECT_EQ(psatz_bindings.size(),
+            p_evaled.monomial_to_coefficient_map().size());
+  for (const auto& binding : psatz_bindings) {
+    // extract the expression in each binding
+    constraint = binding.evaluator().get();
+    EXPECT_TRUE(constraint->num_constraints() == 1);
+    VectorX<symbolic::Expression> e(1);
+    constraint->Eval(binding.variables(), &e);
+    symbolic::Polynomial p_test{e[0] - constraint->upper_bound()[0]};
+    bool found = false;
+    // check that it is in fact the same expression as we expect
+    for (const auto& [monom, expr] : p_evaled.monomial_to_coefficient_map()) {
+      symbolic::Polynomial coeff{expr};
+      if (p_test.CoefficientsAlmostEqual(coeff, 1E-12)) {
+        found = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(found);
+  }
+  return true;
+}
+
+GTEST_TEST(CspaceLineTupleEvaluate_s0_s1, Test) {
+  int plant_deg = 2;
+  const symbolic::Variable mu{"mu"};
+  drake::VectorX<symbolic::Variable> s0{plant_deg};
+  drake::VectorX<symbolic::Variable> s1{plant_deg};
+  drake::VectorX<symbolic::Variable> a{plant_deg};
+  drake::VectorX<symbolic::Variable> b{plant_deg};
+  drake::VectorX<symbolic::Variable> a_and_b{2 * plant_deg};
+  symbolic::Variables mu_s0_s1_vars{mu};
+
+  for (int i = 0; i < plant_deg; ++i) {
+    s0[i] = symbolic::Variable{fmt::format("s0_{}", i)};
+    s1[i] = symbolic::Variable{fmt::format("s1_{}", i)};
+    a[i] = symbolic::Variable{fmt::format("a_{}", i)};
+    b[i] = symbolic::Variable{fmt::format("b_{}", i)};
+    a_and_b[2 * i] = a[i];
+    a_and_b[2 * i + 1] = b[i];
+    mu_s0_s1_vars.insert(s0[i]);
+    mu_s0_s1_vars.insert(s1[i]);
+  }
+
+  symbolic::Expression rational_numerator_odd_deg_expression =
+      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
+      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu;
+  symbolic::Expression rational_numerator_even_deg_expression =
+      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
+      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu * mu;
+
+  // the tuples have slightly different psatz expressions depending on their
+  // degree.
+
+  symbolic::Polynomial rational_numerator_odd_deg{
+      rational_numerator_odd_deg_expression, mu_s0_s1_vars};
+  symbolic::Polynomial rational_numerator_even_deg{
+      rational_numerator_even_deg_expression, mu_s0_s1_vars};
+  VerificationOption option;
+
+  CspaceLineTuple tuple_odd{mu, s0, s1, rational_numerator_odd_deg, option};
+  CspaceLineTuple tuple_even{mu, s0, s1, rational_numerator_odd_deg, option};
+
+  symbolic::Environment env;
+  Eigen::VectorXd s0_numeric{s0.size()};
+  Eigen::VectorXd s1_numeric{s1.size()};
+  for (int i = 0; i < plant_deg; i++) {
+    env.insert(s0[i], 1.);
+    s0_numeric[i] = env[s0[i]];
+    env.insert(s1[i], -2.);
+    s1_numeric[i] = env[s1[i]];
+  }
+
+  tuple_odd.Evaluate_s0_s1_map(env);
+  test_psatz_binding(tuple_odd, env);
+  tuple_odd.Evaluate_s0_s1(s0_numeric, s1_numeric);
+  test_psatz_binding(tuple_odd, env);
+
+  tuple_even.Evaluate_s0_s1_map(env);
+  test_psatz_binding(tuple_even, env);
+  tuple_even.Evaluate_s0_s1(s0_numeric, s1_numeric);
+  test_psatz_binding(tuple_even, env);
+}
+
+// TODO(Alex.Amice) write a more formal test
 TEST_F(DoublePendulumTest, TestCspaceFreeLineConstructor) {
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
                      SeparatingPlaneOrder::kAffine, std::nullopt);
@@ -344,48 +531,85 @@ TEST_F(DoublePendulumTest, TestGenerateRationalsForLinkOnOneSideOfPlane) {
   test_same_rationals(rationals_free_line_1, rationals_free_region_1);
 }
 
-TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
-  const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-                           SeparatingPlaneOrder::kAffine, std::nullopt);
+TEST_F(DoublePendulumTest, TestEvaluateTuplesForEndpoints) {
+  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
+                     SeparatingPlaneOrder::kAffine, std::nullopt);
+  Eigen::Vector2d s0{0.1, -1.0};
+  Eigen::Vector2d s1{-0.25, 0.9};
+  dut.EvaluateTuplesForEndpoints(s0, s1);
+  symbolic::Environment env;
+  for (int i = 0; i < dut.get_s0().size(); ++i) {
+    env.insert(dut.get_s0()[i], s0[i]);
+    env.insert(dut.get_s1()[i], s1[i]);
+  }
+  symbolic::Polynomial p_evaled =
+      dut.get_tuples()->front().get_p().EvaluatePartial(env);
 
-  dut.GenerateTuplesForCertification(
-      q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
-      &verified_gram_vars_, &separating_plane_vars_,
-      &separating_plane_to_tuples_,
-      &separating_plane_to_lorentz_cone_constraints_);
-  int rational_count = 0;
-  for (const auto& separating_plane : dut.separating_planes()) {
-    rational_count += multibody::GetVertices(
-                          separating_plane.positive_side_geometry->geometry())
-                          .cols() +
-                      multibody::GetVertices(
-                          separating_plane.negative_side_geometry->geometry())
-                          .cols();
+  for (const auto& tuple : *(dut.get_tuples())) {
+    test_psatz_binding(tuple, env);
   }
-  EXPECT_EQ(alternation_tuples_.size(), rational_count);
-
-  // we only care about the separating planes and the rationals in this tuple
-  int separating_plane_vars_count = 0;
-  for (const auto& separating_plane : dut.separating_planes()) {
-    separating_plane_vars_count += separating_plane.decision_variables.rows();
-  }
-  EXPECT_EQ(separating_plane_vars_.rows(), separating_plane_vars_count);
-  const symbolic::Variables separating_plane_vars_set{separating_plane_vars_};
-  EXPECT_EQ(separating_plane_vars_set.size(), separating_plane_vars_count);
-  // Now check separating_plane_to_tuples
-  EXPECT_EQ(separating_plane_to_tuples_.size(), dut.separating_planes().size());
-  std::unordered_set<int> tuple_indices_set;
-  for (const auto& tuple_indices : separating_plane_to_tuples_) {
-    for (int index : tuple_indices) {
-      EXPECT_EQ(tuple_indices_set.count(index), 0);
-      tuple_indices_set.emplace(index);
-      EXPECT_LT(index, rational_count);
-      EXPECT_GE(index, 0);
-    }
-  }
-  EXPECT_EQ(tuple_indices_set.size(), rational_count);
 }
 
+//
+// TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
+//  const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
+//                           SeparatingPlaneOrder::kAffine, std::nullopt);
+//
+//  dut.GenerateTuplesForCertification(
+//      q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
+//      &verified_gram_vars_, &separating_plane_vars_,
+//      &separating_plane_to_tuples_,
+//      &separating_plane_to_lorentz_cone_constraints_);
+//  int rational_count = 0;
+//  for (const auto& separating_plane : dut.separating_planes()) {
+//    rational_count += multibody::GetVertices(
+//                          separating_plane.positive_side_geometry->geometry())
+//                          .cols() +
+//                      multibody::GetVertices(
+//                          separating_plane.negative_side_geometry->geometry())
+//                          .cols();
+//  }
+//  EXPECT_EQ(alternation_tuples_.size(), rational_count);
+//
+//  // we only care about the separating planes and the rationals in this tuple
+//  int separating_plane_vars_count = 0;
+//  for (const auto& separating_plane : dut.separating_planes()) {
+//    separating_plane_vars_count += separating_plane.decision_variables.rows();
+//  }
+//  EXPECT_EQ(separating_plane_vars_.rows(), separating_plane_vars_count);
+//  const symbolic::Variables separating_plane_vars_set{separating_plane_vars_};
+//  EXPECT_EQ(separating_plane_vars_set.size(), separating_plane_vars_count);
+//  // Now check separating_plane_to_tuples
+//  EXPECT_EQ(separating_plane_to_tuples_.size(),
+//  dut.separating_planes().size()); std::unordered_set<int> tuple_indices_set;
+//  for (const auto& tuple_indices : separating_plane_to_tuples_) {
+//    for (int index : tuple_indices) {
+//      EXPECT_EQ(tuple_indices_set.count(index), 0);
+//      tuple_indices_set.emplace(index);
+//      EXPECT_LT(index, rational_count);
+//      EXPECT_GE(index, 0);
+//    }
+//  }
+//  EXPECT_EQ(tuple_indices_set.size(), rational_count);
+//}
+//
+
+TEST_F(DoublePendulumTest, TestAddCertifySeparatingPlaneConstraintToProg) {
+  solvers::SolverOptions solver_options;
+  solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
+  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
+                     SeparatingPlaneOrder::kAffine, q_star_0_, {}, {});
+
+  Eigen::Vector2d s0{0, 0};
+  Eigen::Vector2d s1{-0.25, 0.9};
+
+  dut.EvaluateTuplesForEndpoints(s0, s1);
+  solvers::MathematicalProgram prog = solvers::MathematicalProgram();
+  prog.AddDecisionVariables(dut.get_separating_plane_vars());
+  dut.AddCertifySeparatingPlaneConstraintToProg(&prog, 0);
+  EXPECT_TRUE(false);
+}
+//
 TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
   solvers::SolverOptions solver_options;
   solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
@@ -396,141 +620,146 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
   Eigen::Vector2d s1_good{-0.25, 0.9};
   Eigen::Vector2d s1_bad{0.9, 0.9};
   Eigen::Vector2d s1_out_of_limits{-2, -2};
+  std::vector<SeparatingPlane<double>> separating_planes_sol;
 
-  EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good));
-  EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad));
-  EXPECT_ANY_THROW(
-      dut.CertifyTangentConfigurationSpaceLine(s0, s1_out_of_limits));
+  EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good,
+                                                       &separating_planes_sol));
+  EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad,
+                                                        &separating_planes_sol));
+  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
+      s0, s1_out_of_limits, &separating_planes_sol));
 }
 
-GTEST_TEST(AllocatedCertificationProgramConstructorTest, Test) {
-  symbolic::Variable x{"x"};  // indeterminate
-  symbolic::Variable a{"a"};  // decision variable
-  symbolic::Variable b{"b"};  // decision variable
-  symbolic::Variable p{"p"};  // parameter we will replace
-  symbolic::Polynomial poly{2 * a * p * symbolic::pow(x, 2) +
-                                3 * b * symbolic::pow(p, 2) * x + 1 + b + p,
-                            symbolic::Variables{x}};
-  auto prog = std::make_unique<solvers::MathematicalProgram>();
-  solvers::VectorXDecisionVariable decision_variables{2};
-  decision_variables << a, b;
-  prog->AddDecisionVariables(decision_variables);
-  // some constraint
-  prog->AddLinearConstraint(a <= 0);
-
-  std::unordered_map<
-      symbolic::Polynomial,
-      std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>,
-      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
-      polynomial_to_monomial_to_binding_map;
-  symbolic::Expression coefficient_expression;
-  std::unordered_map<symbolic::Monomial,
-                     solvers::Binding<solvers::LinearEqualityConstraint>>
-      monomial_to_equality_constraint;
-  for (const auto& [monomial, coefficient] :
-       poly.monomial_to_coefficient_map()) {
-    // construct dummy expression to ensure that the binding has the
-    // appropriate variables
-    coefficient_expression = 0;
-    for (const auto& v : coefficient.GetVariables()) {
-      coefficient_expression += v;
-    }
-    monomial_to_equality_constraint.insert(
-        {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
-    polynomial_to_monomial_to_binding_map.insert_or_assign(
-        poly, monomial_to_equality_constraint);
-  }
-
-  EXPECT_NO_THROW(internal::AllocatedCertificationProgram(
-      std::move(prog), polynomial_to_monomial_to_binding_map));
-}
-
-GTEST_TEST(EvaluatePolynomialsAndUpdateProgram, Test) {
-  symbolic::Variable x{"x"};  // indeterminate
-  symbolic::Variable a{"a"};  // decision variable
-  symbolic::Variable b{"b"};  // decision variable
-  symbolic::Variable p{"p"};  // parameter we will replace
-  symbolic::Polynomial poly{2 * a * p * symbolic::pow(x, 2) +
-                                3 * b * symbolic::pow(p, 2) * x + 1 + b + p,
-                            symbolic::Variables{x}};
-  auto prog = std::make_unique<solvers::MathematicalProgram>();
-  solvers::VectorXDecisionVariable decision_variables{2};
-  decision_variables << a, b;
-  prog->AddDecisionVariables(decision_variables);
-
-  // some constraint
-  prog->AddLinearConstraint(a <= 0);
-
-  std::unordered_map<
-      symbolic::Polynomial,
-      std::unordered_map<symbolic::Monomial,
-                         solvers::Binding<solvers::LinearEqualityConstraint>>,
-      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
-      polynomial_to_monomial_to_binding_map;
-  symbolic::Expression coefficient_expression;
-  std::unordered_map<symbolic::Monomial,
-                     solvers::Binding<solvers::LinearEqualityConstraint>>
-      monomial_to_equality_constraint;
-  for (const auto& [monomial, coefficient] :
-       poly.monomial_to_coefficient_map()) {
-    // construct dummy expression to ensure that the binding has the
-    // appropriate variables
-    coefficient_expression = 0;
-    for (const auto& v : coefficient.GetVariables()) {
-      coefficient_expression += v;
-    }
-    monomial_to_equality_constraint.insert(
-        {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
-    polynomial_to_monomial_to_binding_map.insert_or_assign(
-        poly, monomial_to_equality_constraint);
-  }
-
-  internal::AllocatedCertificationProgram allocated_prog{
-      std::move(prog), polynomial_to_monomial_to_binding_map};
-  symbolic::Environment env{{p, 2.0}};
-
-  allocated_prog.EvaluatePolynomialsAndUpdateProgram(env);
-
-  auto prog_expected = std::make_unique<solvers::MathematicalProgram>();
-  prog_expected->AddDecisionVariables(decision_variables);
-  // some constraint
-  prog_expected->AddLinearConstraint(a <= 0);
-  prog_expected->AddLinearConstraint(2 * 2 * a == 0);  // 2 * a * p = 0
-  prog_expected->AddLinearConstraint(3 * 4 * b ==
-                                     0);  // 3 * b * symbolic::pow(p, 2) = 0
-  prog_expected->AddLinearConstraint(3 + b == 0);  // 1 + b + p = 0
-
-  std::cout << "testing decision variables" << std::endl;
-  EXPECT_EQ(allocated_prog.get_prog()->decision_variables(),
-            prog_expected->decision_variables());
-
-  // there are only linear constraints in this program
-  EXPECT_EQ(solvers::GetProgramType(*allocated_prog.get_prog()),
-            solvers::ProgramType::kLP);
-  EXPECT_EQ(solvers::GetProgramType(*prog_expected), solvers::ProgramType::kLP);
-  EXPECT_EQ(allocated_prog.get_prog()->linear_constraints().size(),
-            prog_expected->linear_constraints().size());
-  const double tol = 1E-12;
-  for (const auto& binding : allocated_prog.get_prog()->linear_constraints()) {
-    bool same_constraint_found = false;
-    for (const auto& binding_expected : prog_expected->linear_constraints()) {
-      same_constraint_found =
-          CompareMatrices(binding.evaluator()->GetDenseA(),
-                          binding_expected.evaluator()->GetDenseA(), tol) &&
-          CompareMatrices(binding.evaluator()->lower_bound(),
-                          binding_expected.evaluator()->lower_bound(), tol) &&
-          CompareMatrices(binding.evaluator()->upper_bound(),
-                          binding_expected.evaluator()->upper_bound(), tol) &&
-          CompareMatrices(binding.evaluator()->lower_bound(),
-                          binding_expected.evaluator()->upper_bound(), tol);
-      if (same_constraint_found) {
-        break;
-      }
-    }
-    EXPECT_TRUE(same_constraint_found);
-  }
-}
+//
+// GTEST_TEST(AllocatedCertificationProgramConstructorTest, Test) {
+//  symbolic::Variable x{"x"};  // indeterminate
+//  symbolic::Variable a{"a"};  // decision variable
+//  symbolic::Variable b{"b"};  // decision variable
+//  symbolic::Variable p{"p"};  // parameter we will replace
+//  symbolic::Polynomial poly{2 * a * p * symbolic::pow(x, 2) +
+//                                3 * b * symbolic::pow(p, 2) * x + 1 + b + p,
+//                            symbolic::Variables{x}};
+//  auto prog = std::make_unique<solvers::MathematicalProgram>();
+//  solvers::VectorXDecisionVariable decision_variables{2};
+//  decision_variables << a, b;
+//  prog->AddDecisionVariables(decision_variables);
+//  // some constraint
+//  prog->AddLinearConstraint(a <= 0);
+//
+//  std::unordered_map<
+//      symbolic::Polynomial,
+//      std::unordered_map<symbolic::Monomial,
+//                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+//      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
+//      polynomial_to_monomial_to_binding_map;
+//  symbolic::Expression coefficient_expression;
+//  std::unordered_map<symbolic::Monomial,
+//                     solvers::Binding<solvers::LinearEqualityConstraint>>
+//      monomial_to_equality_constraint;
+//  for (const auto& [monomial, coefficient] :
+//       poly.monomial_to_coefficient_map()) {
+//    // construct dummy expression to ensure that the binding has the
+//    // appropriate variables
+//    coefficient_expression = 0;
+//    for (const auto& v : coefficient.GetVariables()) {
+//      coefficient_expression += v;
+//    }
+//    monomial_to_equality_constraint.insert(
+//        {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
+//    polynomial_to_monomial_to_binding_map.insert_or_assign(
+//        poly, monomial_to_equality_constraint);
+//  }
+//
+//  EXPECT_NO_THROW(internal::AllocatedCertificationProgram(
+//      std::move(prog), polynomial_to_monomial_to_binding_map));
+//}
+//
+// GTEST_TEST(EvaluatePolynomialsAndUpdateProgram, Test) {
+//  symbolic::Variable x{"x"};  // indeterminate
+//  symbolic::Variable a{"a"};  // decision variable
+//  symbolic::Variable b{"b"};  // decision variable
+//  symbolic::Variable p{"p"};  // parameter we will replace
+//  symbolic::Polynomial poly{2 * a * p * symbolic::pow(x, 2) +
+//                                3 * b * symbolic::pow(p, 2) * x + 1 + b + p,
+//                            symbolic::Variables{x}};
+//  auto prog = std::make_unique<solvers::MathematicalProgram>();
+//  solvers::VectorXDecisionVariable decision_variables{2};
+//  decision_variables << a, b;
+//  prog->AddDecisionVariables(decision_variables);
+//
+//  // some constraint
+//  prog->AddLinearConstraint(a <= 0);
+//
+//  std::unordered_map<
+//      symbolic::Polynomial,
+//      std::unordered_map<symbolic::Monomial,
+//                         solvers::Binding<solvers::LinearEqualityConstraint>>,
+//      std::hash<symbolic::Polynomial>, internal::ComparePolynomials>
+//      polynomial_to_monomial_to_binding_map;
+//  symbolic::Expression coefficient_expression;
+//  std::unordered_map<symbolic::Monomial,
+//                     solvers::Binding<solvers::LinearEqualityConstraint>>
+//      monomial_to_equality_constraint;
+//  for (const auto& [monomial, coefficient] :
+//       poly.monomial_to_coefficient_map()) {
+//    // construct dummy expression to ensure that the binding has the
+//    // appropriate variables
+//    coefficient_expression = 0;
+//    for (const auto& v : coefficient.GetVariables()) {
+//      coefficient_expression += v;
+//    }
+//    monomial_to_equality_constraint.insert(
+//        {monomial, (prog->AddLinearEqualityConstraint(0, 0))});
+//    polynomial_to_monomial_to_binding_map.insert_or_assign(
+//        poly, monomial_to_equality_constraint);
+//  }
+//
+//  internal::AllocatedCertificationProgram allocated_prog{
+//      std::move(prog), polynomial_to_monomial_to_binding_map};
+//  symbolic::Environment env{{p, 2.0}};
+//
+//  allocated_prog.EvaluatePolynomialsAndUpdateProgram(env);
+//
+//  auto prog_expected = std::make_unique<solvers::MathematicalProgram>();
+//  prog_expected->AddDecisionVariables(decision_variables);
+//  // some constraint
+//  prog_expected->AddLinearConstraint(a <= 0);
+//  prog_expected->AddLinearConstraint(2 * 2 * a == 0);  // 2 * a * p = 0
+//  prog_expected->AddLinearConstraint(3 * 4 * b ==
+//                                     0);  // 3 * b * symbolic::pow(p, 2) = 0
+//  prog_expected->AddLinearConstraint(3 + b == 0);  // 1 + b + p = 0
+//
+//  EXPECT_EQ(allocated_prog.get_prog()->decision_variables(),
+//            prog_expected->decision_variables());
+//
+//  // there are only linear constraints in this program
+//  EXPECT_EQ(solvers::GetProgramType(*allocated_prog.get_prog()),
+//            solvers::ProgramType::kLP);
+//  EXPECT_EQ(solvers::GetProgramType(*prog_expected),
+//  solvers::ProgramType::kLP);
+//  EXPECT_EQ(allocated_prog.get_prog()->linear_constraints().size(),
+//            prog_expected->linear_constraints().size());
+//  const double tol = 1E-12;
+//  for (const auto& binding : allocated_prog.get_prog()->linear_constraints())
+//  {
+//    bool same_constraint_found = false;
+//    for (const auto& binding_expected : prog_expected->linear_constraints()) {
+//      same_constraint_found =
+//          CompareMatrices(binding.evaluator()->GetDenseA(),
+//                          binding_expected.evaluator()->GetDenseA(), tol) &&
+//          CompareMatrices(binding.evaluator()->lower_bound(),
+//                          binding_expected.evaluator()->lower_bound(), tol) &&
+//          CompareMatrices(binding.evaluator()->upper_bound(),
+//                          binding_expected.evaluator()->upper_bound(), tol) &&
+//          CompareMatrices(binding.evaluator()->lower_bound(),
+//                          binding_expected.evaluator()->upper_bound(), tol);
+//      if (same_constraint_found) {
+//        break;
+//      }
+//    }
+//    EXPECT_TRUE(same_constraint_found);
+//  }
+//}
 
 }  // namespace multibody
 }  // namespace drake

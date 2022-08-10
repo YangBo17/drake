@@ -667,7 +667,7 @@ class CspaceFreeRegion {
    * responsible for actually constructing the tuples and proves useful in the
    * CspaceFreeLine.
    */
-  void ConstructTuplesInMemory(
+  void ConstructTuples(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const FilteredCollisionPairs& filtered_collision_pairs, int C_rows,
       int t_rows,
@@ -679,6 +679,14 @@ class CspaceFreeRegion {
       std::vector<
           std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
           separating_plane_to_lorentz_cone_constraints) const;
+
+//  virtual void AllocateGramVariables(
+//      VectorX<symbolic::Variable>* lagrangian_gram_vars,
+//      VectorX<symbolic::Variable>* verified_gram_vars,
+//      std::vector<int>* t_lower_lagrangian_gram_lower_start,
+//      std::vector<int>* t_upper_lagrangian_gram_lower_start,
+//      const std::vector<LinkOnPlaneSideRational> rationals
+//      ) const;
 
   /**
    * Given t[i], t_lower and t_upper, construct the polynomial t - t_lower and

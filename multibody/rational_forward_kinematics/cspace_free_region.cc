@@ -658,13 +658,13 @@ void CspaceFreeRegion::GenerateTuplesForBilinearAlternation(
       t_upper);
   ConstructTBoundsPolynomial(t_monomials, *t_lower, *t_upper, t_minus_t_lower,
                              t_upper_minus_t);
-  ConstructTuplesInMemory(
+  ConstructTuples(
       q_star, filtered_collision_pairs, C_rows, t.rows(), alternation_tuples,
       lagrangian_gram_vars, verified_gram_vars, separating_plane_vars,
       separating_plane_to_tuples, separating_plane_to_lorentz_cone_constraints);
 }
 
-void CspaceFreeRegion::ConstructTuplesInMemory(
+void CspaceFreeRegion::ConstructTuples(
     const Eigen::Ref<const Eigen::VectorXd>& q_star,
     const FilteredCollisionPairs& filtered_collision_pairs, int C_rows,
     int t_rows,
@@ -771,6 +771,8 @@ void CspaceFreeRegion::ConstructTuplesInMemory(
     }
   }
 }
+
+
 
 std::unique_ptr<solvers::MathematicalProgram>
 CspaceFreeRegion::ConstructLagrangianProgram(
