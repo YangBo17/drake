@@ -78,19 +78,20 @@ CspaceLineTuple::CspaceLineTuple(
   prog_.AddDecisionVariables(separating_plane_variables_);
   p_.SetIndeterminates({mu});
 
-  auto extract_lower_part = [](const solvers::MatrixXDecisionVariable& sym_mat) {
-    const int size = sym_mat.rows() * (sym_mat.rows() + 1) / 2;
-    solvers::VectorXDecisionVariable vect;
-    vect.resize(size);
-    int count = 0;
-    for (int c = 0; c < static_cast<int>(sym_mat.rows()); ++c) {
-      for (int r = c; r < static_cast<int>(sym_mat.rows()); ++r) {
-        vect[count] = sym_mat(r, c);
-        ++count;
-      }
-    }
-    return vect;
-  };
+  auto extract_lower_part =
+      [](const solvers::MatrixXDecisionVariable& sym_mat) {
+        const int size = sym_mat.rows() * (sym_mat.rows() + 1) / 2;
+        solvers::VectorXDecisionVariable vect;
+        vect.resize(size);
+        int count = 0;
+        for (int c = 0; c < static_cast<int>(sym_mat.rows()); ++c) {
+          for (int r = c; r < static_cast<int>(sym_mat.rows()); ++r) {
+            vect[count] = sym_mat(r, c);
+            ++count;
+          }
+        }
+        return vect;
+      };
   // construct the Lagrangian variables and the Psatz equality constraints
   if (p_.TotalDegree() == 0) {
     for (const auto& [monomial, coeff] : p_.monomial_to_coefficient_map()) {
@@ -180,8 +181,9 @@ void CspaceFreeLine::EvaluateTuplesForEndpoints(
     const Eigen::Ref<const Eigen::VectorXd>& s0,
     const Eigen::Ref<const Eigen::VectorXd>& s1) {
   // TODO (Alex.Amice) parallelize this
-  std::for_each(std::execution::par_unseq, tuples_.begin(), tuples_.end(),
-                [s0, s1](auto&& tuple) { tuple.Evaluate_s0_s1(s0, s1); });
+
+    std::for_each(std::execution::par_unseq, tuples_.begin(), tuples_.end(),
+                  [s0, s1](auto&& tuple) { tuple.Evaluate_s0_s1(s0, s1); });
 }
 
 bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
@@ -210,13 +212,40 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
   //            this->CertifyPlane(plane_index,
   //            &(separating_planes_sol->at(plane_index)), solver_options);
   //      });
-  for (const auto& plane : separating_planes()) {
-    int plane_index = static_cast<int>(&plane - &(separating_planes()[0]));
-    is_success[plane_index] = this->CertifyPlane(
-        plane_index, &(separating_planes_sol->at(plane_index)), solver_options);
+
+  //TODO(Alex.Amice) parallelize this
+  clock_start = std::chrono::system_clock::now();
+//  for (const auto& plane : separating_planes()) {
+//    int plane_index = static_cast<int>(&plane - &(separating_planes()[0]));
+//    is_success[plane_index] = this->CertifyPlane(
+//        plane_index, &(separating_planes_sol->at(plane_index)), solver_options);
+//  }
+//bool ret = std::all_of(is_success.begin(), is_success.end(), [](bool val) {
+//    return val;
+//  });
+//return ret;
+  // make one big program
+  solvers::MathematicalProgram prog = solvers::MathematicalProgram();
+  prog.AddDecisionVariables(separating_plane_vars_);
+  for(int i = 0; i < static_cast<int>(separating_planes().size()); ++i){
+    AddCertifySeparatingPlaneConstraintToProg(&prog, i);
   }
-  return std::all_of(is_success.begin(), is_success.end(),
-                     [](bool val) { return val; });
+  auto result = solvers::Solve(prog, std::nullopt, solver_options);
+  if (result.is_success()) {
+    for(int i = 0; i < static_cast<int>(separating_planes().size()); ++i) {
+      separating_planes_sol->at(i) = GetSeparatingPlaneSolution(
+          this->separating_planes()[i], result);
+    }
+  }
+  clock_now = std::chrono::system_clock::now();
+  drake::log()->info(fmt::format(
+      "certified in {} s",
+      static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                             clock_now - clock_start)
+                             .count()) /
+          1000));
+  return result.is_success();
+
 }
 //
 // bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(

@@ -607,7 +607,6 @@ TEST_F(DoublePendulumTest, TestAddCertifySeparatingPlaneConstraintToProg) {
   solvers::MathematicalProgram prog = solvers::MathematicalProgram();
   prog.AddDecisionVariables(dut.get_separating_plane_vars());
   dut.AddCertifySeparatingPlaneConstraintToProg(&prog, 0);
-  EXPECT_TRUE(false);
 }
 //
 TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
@@ -626,8 +625,8 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
                                                        &separating_planes_sol));
   EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad,
                                                         &separating_planes_sol));
-  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
-      s0, s1_out_of_limits, &separating_planes_sol));
+//  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
+//      s0, s1_out_of_limits, &separating_planes_sol));
 }
 
 //

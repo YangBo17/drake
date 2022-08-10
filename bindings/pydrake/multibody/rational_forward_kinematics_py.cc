@@ -612,9 +612,19 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
       .def("get_mu", &CspaceFreeLine::get_mu, doc.CspaceFreeLine.get_mu.doc)
       .def("get_s0", &CspaceFreeLine::get_s0, doc.CspaceFreeLine.get_s0.doc)
       .def("get_s1", &CspaceFreeLine::get_s1, doc.CspaceFreeLine.get_s1.doc)
-      .def("CertifyTangentConfigurationSpaceLine",
-          &CspaceFreeLine::CertifyTangentConfigurationSpaceLine, py::arg("s0"),
-          py::arg("s1"), py::arg("solver_options") = solvers::SolverOptions(),
+      .def(
+          "CertifyTangentConfigurationSpaceLine",
+          [](CspaceFreeLine* self,
+              const Eigen::Ref<const Eigen::VectorXd>& s0,
+              const Eigen::Ref<const Eigen::VectorXd>& s1,
+              const solvers::SolverOptions& solver_options) {
+            std::vector<SeparatingPlane<double>> separating_planes_sol;
+            bool safe = self->CertifyTangentConfigurationSpaceLine(
+                s0, s1, &separating_planes_sol, solver_options);
+            return std::make_tuple(safe, separating_planes_sol);
+          },
+          py::arg("s0"), py::arg("s1"),
+          py::arg("solver_options") = solvers::SolverOptions(),
           doc.CspaceFreeLine.CertifyTangentConfigurationSpaceLine.doc);
   type_pack<symbolic::Polynomial, symbolic::RationalFunction> sym_pack;
   type_visit([m](auto dummy) { DoPoseDeclaration(m, dummy); }, sym_pack);
