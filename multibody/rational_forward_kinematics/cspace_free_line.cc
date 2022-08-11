@@ -274,6 +274,8 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     }
     return result.is_success()
   };
+  // TODO(Alex.Amice) COMPLETE THIS FUNCTION.
+  return true
 }
 
 std::vector<LinkOnPlaneSideRational>
