@@ -112,7 +112,7 @@ class SosConstraintTest : public ::testing::Test {
   }
 
   // Checks Q has all eigen values as approximately non-negatives.
-  // Precondition: result_ = Solve(prog_) has been called.
+  // Precondition: result_ = Solve(psatz_variables_and_psd_constraints_) has been called.
   void CheckPositiveDefiniteMatrix(
       const MatrixXDecisionVariable& Q,
       const Eigen::Ref<const VectorX<symbolic::Monomial>>& monomial_basis,

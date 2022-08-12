@@ -154,6 +154,8 @@ class IrisPlantVisualizer:
 
         self.color_dict = None
 
+        self.do_viz_2 = plant.num_positions() <= 3
+
     @property
     def collision_pairs_of_interest(self):
         return self._collision_pairs_of_interest
@@ -187,7 +189,8 @@ class IrisPlantVisualizer:
 
     def jupyter_cell(self,):
         display(self.vis.jupyter_cell())
-        display(self.vis2.jupyter_cell())
+        if self.do_viz_2:
+            display(self.vis2.jupyter_cell())
 
     def eval_cons(self, q, c, tol):
         if np.all(q >= self.q_lower_limits[:self.num_joints]) and \
@@ -373,12 +376,13 @@ class IrisPlantVisualizer:
         self.diagram.Publish(self.diagram_context)
         self.visualize_planes(idx_list)
         #don't change this order
-        self.meshcat2.SetObject(f"/s",
-                                Sphere(0.05),
-                                color)
-        self.meshcat2.SetTransform(f"/s",
-                                   RigidTransform(RotationMatrix(),
-                                                  s))
+        if self.do_viz_2:
+            self.meshcat2.SetObject(f"/s",
+                                    Sphere(0.05),
+                                    color)
+            self.meshcat2.SetTransform(f"/s",
+                                       RigidTransform(RotationMatrix(),
+                                                      s))
 
 
     def showres_s(self, s):

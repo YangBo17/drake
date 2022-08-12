@@ -9,7 +9,6 @@
 namespace drake {
 namespace multibody {
 
-
 class CspaceLineTuple {
  public:
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(CspaceLineTuple)
@@ -20,71 +19,93 @@ class CspaceLineTuple {
                   const symbolic::Polynomial& m_rational_numerator,
                   const VerificationOption& option);
 
-  void Evaluate_s0_s1_map(const symbolic::Environment& env);
+//  void Evaluate_s0_s1_map(const symbolic::Environment& env);
+//
+//  void Evaluate_s0_s1(const Eigen::Ref<const Eigen::VectorXd>& s0,
+//                      const Eigen::Ref<const Eigen::VectorXd>& s1);
 
-  void Evaluate_s0_s1(const Eigen::Ref<const Eigen::VectorXd>& s0,
-                      const Eigen::Ref<const Eigen::VectorXd>& s1);
 
-  const symbolic::Polynomial get_rational_numerator() const {
-    return rational_numerator_;
+
+  void AddTupleOnSideOfPlaneConstraint(solvers::MathematicalProgram *prog,
+                                       const Eigen::Ref<const Eigen::VectorXd>& s0,
+                                       const Eigen::Ref<const Eigen::VectorXd>& s1) const;
+
+//  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>> GetPsatzConstraint(const symbolic::Environment& env);
+
+//  const symbolic::Polynomial get_rational_numerator() const {
+//    return rational_numerator_;
+//  }
+
+  const solvers::MathematicalProgram* get_prog() const {
+    return &psatz_variables_and_psd_constraints_;
   }
-  const solvers::MathematicalProgram* get_prog() const { return &prog_; }
-  const symbolic::Polynomial get_lambda() const { return lambda_; }
-  const solvers::MatrixXDecisionVariable get_Q_lambda() const {
-    return Q_lambda_;
-  }
-  const solvers::MatrixXDecisionVariable get_Q_lambda_lower_part() const {
-    return Q_lambda_lower_part_;
-  }
-  const symbolic::Polynomial get_nu() const { return nu_; }
-  const solvers::MatrixXDecisionVariable get_Q_nu() const { return Q_nu_; }
-  const solvers::MatrixXDecisionVariable get_Q_nu_lower_part() const {
-    return Q_nu_lower_part_;
-  }
+
   const symbolic::Polynomial get_p() const { return p_; }
-  const solvers::VectorXDecisionVariable get_separating_planes_variables()
-      const {
-    return separating_plane_variables_;
-  }
 
-  const std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
-  get_psatz_bindings() const {
-    return psatz_bindings_;
-  }
+//  const symbolic::Polynomial get_lambda() const { return lambda_; }
+//  const solvers::MatrixXDecisionVariable get_Q_lambda() const {
+//    return Q_lambda_;
+//  }
+//  const solvers::MatrixXDecisionVariable get_Q_lambda_lower_part() const {
+//    return Q_lambda_lower_part_;
+//  }
+//  const symbolic::Polynomial get_nu() const { return nu_; }
+//  const solvers::MatrixXDecisionVariable get_Q_nu() const { return Q_nu_; }
+//  const solvers::MatrixXDecisionVariable get_Q_nu_lower_part() const {
+//    return Q_nu_lower_part_;
+//  }
+
+//  const solvers::VectorXDecisionVariable get_separating_planes_variables()
+//      const {
+//    return separating_plane_variables_;
+//  }
+
+//  const std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
+//  get_psatz_bindings() const {
+//    return psatz_bindings_;
+//  }
 
  private:
-  // This is the numerator of the rational aᵀx+b-δ or -δ-aᵀx-b which we will
-  // verify is positive
-  symbolic::Polynomial rational_numerator_;
-
   // program that stores the list of constraints required to certify this tuple
-  solvers::MathematicalProgram prog_;
+  solvers::MathematicalProgram psatz_variables_and_psd_constraints_;
+
+  //  a univariate polynomial q(μ) is nonnegative on [0, 1] if and
+  // only if q(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
+  // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
+  // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS. This polynomial is
+  // m_rational_numerator-q(μ)
+  symbolic::Polynomial p_;
 
   //  a univariate polynomial p(μ) is nonnegative on [0, 1] if and
   // only if p(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
   // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
   // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS. These are those polynomials
   // and their associated Gram matrices.
-  symbolic::Polynomial lambda_;
-  solvers::MatrixXDecisionVariable Q_lambda_;
-  // the lower triangular part of Q_lambda_ for ease of adding to programs
-  solvers::VectorXDecisionVariable Q_lambda_lower_part_;
-  symbolic::Polynomial nu_;
-  solvers::MatrixXDecisionVariable Q_nu_;
-  // the lower triangular part of Q_nu_ for ease of adding to programs
-  solvers::VectorXDecisionVariable Q_nu_lower_part_;
-  symbolic::Polynomial p_;
+//  symbolic::Polynomial lambda_;
+//  solvers::MatrixXDecisionVariable Q_lambda_;
+//  // the lower triangular part of Q_lambda_ for ease of adding to programs
+//  solvers::VectorXDecisionVariable Q_lambda_lower_part_;
+//  symbolic::Polynomial nu_;
+//  solvers::MatrixXDecisionVariable Q_nu_;
+//  // the lower triangular part of Q_nu_ for ease of adding to programs
+//  solvers::VectorXDecisionVariable Q_nu_lower_part_;
 
-  symbolic::Variables s_vars_;
+
+//
+//  symbolic::Variables s_vars_;
+  // the symbolic start of the free line
   drake::VectorX<drake::symbolic::Variable> s0_;
   // the symbolic end of the free line
   drake::VectorX<drake::symbolic::Variable> s1_;
-
-  solvers::VectorXDecisionVariable separating_plane_variables_;
-
-  // bindings for p(μ) - λ(μ) + ν(μ)*μ*(1-μ) = 0
-  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
-      psatz_bindings_;
+//
+//  // bindings for p(μ) - λ(μ) + ν(μ)*μ*(1-μ) = 0
+//  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
+//      psatz_bindings_;
+ private: // Methods
+  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>> AddPsatzConstraintToProg(
+      solvers::MathematicalProgram* prog,
+                      const Eigen::Ref<const Eigen::VectorXd>& s0,
+                      const Eigen::Ref<const Eigen::VectorXd>& s1) const;
 };
 
 /**
@@ -159,15 +180,16 @@ class CspaceFreeLine : public CspaceFreeRegion {
       const Eigen::Ref<const Eigen::VectorXd>& s0,
       const Eigen::Ref<const Eigen::VectorXd>& s1,
       std::vector<SeparatingPlane<double>>* separating_planes_sol,
-      const solvers::SolverOptions& solver_options = solvers::SolverOptions());
+      const solvers::SolverOptions& solver_options = solvers::SolverOptions()) const;
   /**
    * Certifies whether a set of lines is collision free in parallel.
    */
-  bool CertifyTangentConfigurationSpaceLine(
+  std::vector<bool> CertifyTangentConfigurationSpaceLine(
       const Eigen::Ref<const Eigen::MatrixXd>& s0,
       const Eigen::Ref<const Eigen::MatrixXd>& s1,
-      std::vector<std::vector<SeparatingPlane<double>>>* separating_planes_sol_per_row,
-      const solvers::SolverOptions& solver_options = solvers::SolverOptions());
+      std::vector<std::vector<SeparatingPlane<double>>>*
+      separating_planes_sol_per_row, const solvers::SolverOptions&
+      solver_options = solvers::SolverOptions())  const;
   /**
    * Adds the constraint that all of the tuples in the @param i separating plane
    * are on the appropriate side of the plane to @param prog.
@@ -175,7 +197,9 @@ class CspaceFreeLine : public CspaceFreeRegion {
    * and has μ set as the indeterminate already.
    */
   void AddCertifySeparatingPlaneConstraintToProg(
-      solvers::MathematicalProgram* prog, int i) const;
+      solvers::MathematicalProgram* prog, int i,
+      const Eigen::Ref<const Eigen::VectorXd>& s0,
+      const Eigen::Ref<const Eigen::VectorXd>& s1) const;
 
  protected:
   /**
