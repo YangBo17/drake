@@ -36,55 +36,21 @@ SeparatingPlane<double> GetSeparatingPlaneSolution(
 }  // namespace
 
 CspaceLineTuple::CspaceLineTuple(
-    const symbolic::Variable& mu, const drake::VectorX<symbolic::Variable>& s0,
+    const symbolic::Variable& mu,
+    const drake::VectorX<symbolic::Variable>& s0,
     const drake::VectorX<symbolic::Variable>& s1,
     const symbolic::Polynomial& m_rational_numerator,
     const VerificationOption& option)
-    :  // rational_numerator_{m_rational_numerator},
-      psatz_variables_and_psd_constraints_{solvers::MathematicalProgram()},
+    :
       p_{m_rational_numerator},
-      //      s_vars_{},
+      psatz_variables_and_psd_constraints_{solvers::MathematicalProgram()},
       s0_{s0},
       s1_{s1} {
-  // check that m_rational_numerator was passed with the expected indeterminates
-  //  symbolic::Variables rational_numerator_indeterminates_expected{mu};
 
-  // this map will be used to construct the default evaluation environment for
-  // s0 and s1 later. This is put here to avoid looping over the set of
-  // variables twice.
-  //  std::unordered_map<symbolic::Variable, double> map;
-  //  for (int i = 0; i < s0.size(); ++i) {
-  //    map.insert({s0[i], 0});
-  //    rational_numerator_indeterminates_expected.insert(s0[i]);
-  //  }
-  //  for (int i = 0; i < s1.size(); ++i) {
-  //    map.insert({s1[i], 0});
-  //    rational_numerator_indeterminates_expected.insert(s1[i]);
-  //  }
-  //
-  //  DRAKE_ASSERT(rational_numerator_indeterminates_expected.IsSupersetOf(
-  //      rational_numerator_.indeterminates()));
-  //
-  //  s_vars_ = rational_numerator_indeterminates_expected;
-  //  s_vars_.erase(mu);
   psatz_variables_and_psd_constraints_.AddIndeterminates(
       solvers::VectorIndeterminate<1>(mu));
   p_.SetIndeterminates({mu});
 
-  //  auto extract_lower_part =
-  //      [](const solvers::MatrixXDecisionVariable& sym_mat) {
-  //        const int size = sym_mat.rows() * (sym_mat.rows() + 1) / 2;
-  //        solvers::VectorXDecisionVariable vect;
-  //        vect.resize(size);
-  //        int count = 0;
-  //        for (int c = 0; c < static_cast<int>(sym_mat.rows()); ++c) {
-  //          for (int r = c; r < static_cast<int>(sym_mat.rows()); ++r) {
-  //            vect[count] = sym_mat(r, c);
-  //            ++count;
-  //          }
-  //        }
-  //        return vect;
-  //      };
   // construct the Lagrangian variables and the Psatz equality constraints
   //  a univariate polynomial p(μ) is nonnegative on [0, 1] if and
   // only if p(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
@@ -96,45 +62,19 @@ CspaceLineTuple::CspaceLineTuple(
     auto [lambda, Q_lambda] =
         psatz_variables_and_psd_constraints_.NewSosPolynomial(
             {mu}, 2 * d, option.lagrangian_type, "Sl");
-    //    lambda_ = l;
-    //    Q_lambda_ = Ql;
-    //    Q_lambda_lower_part_ = extract_lower_part(Q_lambda_);
-
+    std::cout << lambda << std::endl;
     if (p_.TotalDegree() % 2 == 0) {
       auto [nu, Q_nu] = psatz_variables_and_psd_constraints_.NewSosPolynomial(
           {mu}, 2 * d - 2, option.lagrangian_type, "Sv");
-      //      nu_ = v;
-      //      Q_nu_ = Qv;
-      //      Q_nu_lower_part_ = extract_lower_part(Q_nu_);
-      //      p_ -= lambda_ + nu_ * mu * (symbolic::Polynomial(1, {mu}) - mu);
       p_ -= lambda + nu * mu * (symbolic::Polynomial(1, {mu}) - mu);
     } else {
       auto [nu, Q_nu] = psatz_variables_and_psd_constraints_.NewSosPolynomial(
           {mu}, 2 * d, option.lagrangian_type, "Sv");
-      //      nu_ = v;
-      //      Q_nu_ = Qv;
-      //      Q_nu_lower_part_ = extract_lower_part(Q_nu_);
       p_ -= lambda * mu + nu * (symbolic::Polynomial(1, {mu}) - mu);
     }
   }
   p_ = p_.Expand();
-  //  psatz_bindings_ =
-  //  psatz_variables_and_psd_constraints_.AddEqualityConstraintBetweenPolynomials(
-  //      p_.EvaluatePartial(symbolic::Environment{map}),
-  //      symbolic::Polynomial());
 }
-
-// void CspaceLineTuple::Evaluate_s0_s1_map(const symbolic::Environment& env) {
-//  // TODO(Alex.Amice) is this check worth doing?
-//  DRAKE_DEMAND(env.domain() == s_vars_);
-//
-//  for (const auto& binding : psatz_bindings_) {
-//    psatz_variables_and_psd_constraints_.RemoveConstraint(binding);
-//  }
-//  psatz_bindings_ =
-//  psatz_variables_and_psd_constraints_.AddEqualityConstraintBetweenPolynomials(
-//      p_.EvaluatePartial(env), symbolic::Polynomial());
-//}
 
 std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
 CspaceLineTuple::AddPsatzConstraintToProg(
@@ -154,6 +94,7 @@ void CspaceLineTuple::AddTupleOnSideOfPlaneConstraint(
     solvers::MathematicalProgram* prog,
     const Eigen::Ref<const Eigen::VectorXd>& s0,
     const Eigen::Ref<const Eigen::VectorXd>& s1) const {
+  // p_ is a constant and therefore must be non-negative to be a non-negative function
   if (p_.TotalDegree() == 0) {
     for (const auto& [monomial, coeff] : p_.monomial_to_coefficient_map()) {
       prog->AddLinearConstraint(coeff >= 0);
@@ -170,19 +111,6 @@ void CspaceLineTuple::AddTupleOnSideOfPlaneConstraint(
     AddPsatzConstraintToProg(prog, s0, s1);
   }
 }
-
-// void CspaceLineTuple::Evaluate_s0_s1(
-//    const Eigen::Ref<const Eigen::VectorXd>& s0,
-//    const Eigen::Ref<const Eigen::VectorXd>& s1) {
-//  DRAKE_DEMAND(s0.size() == s0_.size());
-//  DRAKE_DEMAND(s1.size() == s1_.size());
-//  symbolic::Environment env;
-//  for (int i = 0; i < s0.size(); ++i) {
-//    env.insert(s0_[i], s0[i]);
-//    env.insert(s1_[i], s1[i]);
-//  }
-//  Evaluate_s0_s1_map(env);
-//}
 
 CspaceFreeLine::CspaceFreeLine(
     const systems::Diagram<double>& diagram,
@@ -212,32 +140,16 @@ CspaceFreeLine::CspaceFreeLine(
       &separating_plane_to_lorentz_cone_constraints_);
 }
 
-// void CspaceFreeLine::EvaluateTuplesForEndpoints(
-//    const Eigen::Ref<const Eigen::VectorXd>& s0,
-//    const Eigen::Ref<const Eigen::VectorXd>& s1) {
-//  std::for_each(std::execution::par, tuples_.begin(), tuples_.end(),
-//                [s0, s1](auto&& tuple) { tuple.Evaluate_s0_s1(s0, s1); });
-//}
-
 bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     const Eigen::Ref<const Eigen::VectorXd>& s0,
     const Eigen::Ref<const Eigen::VectorXd>& s1,
     std::vector<SeparatingPlane<double>>* separating_planes_sol,
     const solvers::SolverOptions& solver_options) const {
-  auto clock_start = std::chrono::system_clock::now();
-  //  EvaluateTuplesForEndpoints(s0, s1);
-  auto clock_now = std::chrono::system_clock::now();
-  //  drake::log()->info(fmt::format(
-  //      "Bindings updated in {} s",
-  //      static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
-  //                             clock_now - clock_start)
-  //                             .count()) /
-  //          1000));
   std::vector<bool> is_success(separating_planes().size());
   separating_planes_sol->resize(separating_planes().size());
 
-  // TODO(Alex.Amice) parallelize this
-  clock_start = std::chrono::system_clock::now();
+  // TODO(Alex.Amice) parallelize the certification of each plane.
+  auto clock_start = std::chrono::system_clock::now();
   //  std::for_each(std::execution::par_unseq, separating_planes().begin(),
   //                separating_planes().end(),
   //                [&is_success, &separating_planes_sol, &solver_options,
@@ -268,9 +180,10 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     AddCertifySeparatingPlaneConstraintToProg(&prog, i, s0, s1);
   }
   auto result = solvers::Solve(prog, std::nullopt, solver_options);
-  clock_now = std::chrono::system_clock::now();
-  drake::log()->info(fmt::format(
-      "certified in {} s",
+  auto clock_now = std::chrono::system_clock::now();
+  drake::log()->debug(fmt::format(
+      "Line\n s0: {}\n s1: {}\n certified in {} s",
+      s0, s1,
       static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
                              clock_now - clock_start)
                              .count()) /
@@ -284,7 +197,7 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
   bool ret = result.is_success();
   return ret;
 }
-//
+
 std::vector<bool> CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     const Eigen::Ref<const Eigen::MatrixXd>& s0,
     const Eigen::Ref<const Eigen::MatrixXd>& s1,
@@ -336,12 +249,12 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
   auto clock_start = std::chrono::system_clock::now();
   auto clock_end = std::chrono::system_clock::now();
   for (const auto& rational : generic_rationals) {
-    drake::log()->info(fmt::format("Building rational {}/{}", ctr, num_rats));
+    drake::log()->debug(fmt::format("Building rational {}/{}", ctr, num_rats));
 
     clock_start = std::chrono::system_clock::now();
     numerator_expr = rational.rational.numerator().ToExpression();
     clock_end = std::chrono::system_clock::now();
-    drake::log()->info(fmt::format(
+    drake::log()->debug(fmt::format(
         "numerator to expression {} s",
         static_cast<float>(
             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
@@ -353,10 +266,7 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
     symbolic::Expression numerator_substituted =
         numerator_expr.Substitute(t_to_line_subs_map_);
     clock_end = std::chrono::system_clock::now();
-    //    drake::log()->info(fmt::format(
-    //        "numerator substituted is {} s",
-    //        numerator_substituted));
-    drake::log()->info(fmt::format(
+    drake::log()->debug(fmt::format(
         "numerator substituted in {} s",
         static_cast<float>(
             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
@@ -368,10 +278,7 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
     numerator_poly =
         symbolic::Polynomial(numerator_substituted, symbolic::Variables{mu_});
     clock_end = std::chrono::system_clock::now();
-    //    drake::log()->info(fmt::format(
-    //        "numerator poly is {} s",
-    //        numerator_poly));
-    drake::log()->info(fmt::format(
+    drake::log()->debug(fmt::format(
         "numerator poly constructed in {} s. Has degree: {}",
         static_cast<float>(
             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
@@ -379,12 +286,6 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
                 .count()) /
             1000,
         numerator_poly.TotalDegree()));
-    //    drake::log()->info(fmt::format(
-    //      "numerator evaluated in {} s",
-    //      static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
-    //                             clock_end - clock_start)
-    //                             .count()) /
-    //          1000));
 
     clock_start = std::chrono::system_clock::now();
     denominator_expr = rational.rational.denominator().ToExpression();
@@ -392,7 +293,7 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
         symbolic::Polynomial(denominator_expr.Substitute(t_to_line_subs_map_),
                              symbolic::Variables{mu_});
     clock_end = std::chrono::system_clock::now();
-    drake::log()->info(fmt::format(
+    drake::log()->debug(fmt::format(
         "denominator evaluated in {} s",
         static_cast<float>(
             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
@@ -407,33 +308,10 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
         rational.other_side_link_geometry, rational.a_A, rational.b,
         rational.plane_side, rational.plane_order,
         rational.lorentz_cone_constraints);
-    drake::log()->info(fmt::format(
-        "rational emplaced in {} s",
-        static_cast<float>(
-            std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
-                                                                  clock_start)
-                .count()) /
-            1000));
-    drake::log()->info(fmt::format("Done rational {}/{}", ctr, num_rats));
+    drake::log()->debug(fmt::format("Done rational {}/{}", ctr, num_rats));
     ctr++;
   }
   return rationals;
-}
-
-void CspaceFreeLine::GenerateTuplesForCertification(
-    const Eigen::Ref<const Eigen::VectorXd>& q_star,
-    const FilteredCollisionPairs& filtered_collision_pairs,
-    std::vector<CspaceFreeRegion::CspacePolytopeTuple>* alternation_tuples,
-    VectorX<symbolic::Variable>* lagrangian_gram_vars,
-    VectorX<symbolic::Variable>* verified_gram_vars,
-    VectorX<symbolic::Variable>* separating_plane_vars,
-    std::vector<std::vector<int>>* separating_plane_to_tuples,
-    std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
-        separating_plane_to_lorentz_cone_constraints) const {
-  ConstructTuples(q_star, filtered_collision_pairs, 0, 1, alternation_tuples,
-                  lagrangian_gram_vars, verified_gram_vars,
-                  separating_plane_vars, separating_plane_to_tuples,
-                  separating_plane_to_lorentz_cone_constraints);
 }
 
 void CspaceFreeLine::GenerateTuplesForCertification(
@@ -511,20 +389,6 @@ void CspaceFreeLine::AddCertifySeparatingPlaneConstraintToProg(
     ++ctr;
   }
 }
-
-// bool CspaceFreeLine::CertifyPlane(
-//    int plane_index, SeparatingPlane<double>* separating_plane_sol,
-//    const solvers::SolverOptions& solver_options) const {
-//  solvers::MathematicalProgram prog = solvers::MathematicalProgram();
-//  prog.AddDecisionVariables(separating_plane_vars_);
-//  AddCertifySeparatingPlaneConstraintToProg(&prog, plane_index);
-//  auto result = solvers::Solve(prog, std::nullopt, solver_options);
-//  if (result.is_success()) {
-//    *separating_plane_sol = GetSeparatingPlaneSolution(
-//        this->separating_planes()[plane_index], result);
-//  }
-//  return result.is_success();
-//}
 
 void CspaceFreeLine::InitializeLineVariables(int num_positions) {
   s0_.resize(num_positions);

@@ -192,104 +192,79 @@ class SinglePendulumTest : public ::testing::Test {
   std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>
       separating_plane_to_lorentz_cone_constraints_;
 };
+
+GTEST_TEST(CspaceLineTupleConstructorTest, Test) {
+  int plant_deg = 2;
+  const symbolic::Variable mu{"mu"};
+  drake::VectorX<symbolic::Variable> s0{plant_deg};
+  drake::VectorX<symbolic::Variable> s1{plant_deg};
+  drake::VectorX<symbolic::Variable> a{plant_deg};
+  drake::VectorX<symbolic::Variable> b{plant_deg};
+  symbolic::Variables mu_s0_s1_vars{mu};
+
+  for (int i = 0; i < plant_deg; ++i) {
+    s0[i] = symbolic::Variable{fmt::format("s0_{}", i)};
+    s1[i] = symbolic::Variable{fmt::format("s1_{}", i)};
+    a[i] = symbolic::Variable{fmt::format("a_{}", i)};
+    b[i] = symbolic::Variable{fmt::format("b_{}", i)};
+    mu_s0_s1_vars.insert(s0[i]);
+    mu_s0_s1_vars.insert(s1[i]);
+  }
+
+  symbolic::Expression rational_numerator_odd_deg_expression =
+      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
+      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu;
+  symbolic::Expression rational_numerator_even_deg_expression =
+      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
+      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu * mu;
+
+  // the tuples have slightly different psatz expressions depending on their
+  // degree.
+  symbolic::Polynomial rational_numerator_odd_deg{
+      rational_numerator_odd_deg_expression, mu_s0_s1_vars};
+  symbolic::Polynomial rational_numerator_even_deg{
+      rational_numerator_even_deg_expression, mu_s0_s1_vars};
+
+  VerificationOption option;
+  CspaceLineTuple tuple_odd{mu, s0, s1, rational_numerator_odd_deg, option};
+  CspaceLineTuple tuple_even{mu, s0, s1, rational_numerator_even_deg, option};
+
+  auto test_count_psatz_variables_and_constraints = [&mu](const CspaceLineTuple&
+                                                              tuple) {
+    const solvers::MathematicalProgram*
+        psatz_variables_and_psd_constraints_prog =
+            tuple.get_psatz_variables_and_psd_constraints_();
+    EXPECT_EQ(psatz_variables_and_psd_constraints_prog->indeterminates().size(), 1);
+    EXPECT_EQ(psatz_variables_and_psd_constraints_prog->indeterminates()(0), mu);
+    EXPECT_EQ(psatz_variables_and_psd_constraints_prog
+                  ->positive_semidefinite_constraints()
+                  .size(),
+              2);
+
+    int expected_number_of_decision_variables;
+    double d = tuple.get_p().TotalDegree() / 2;
+    if (tuple.get_p().TotalDegree() % 2 == 0) {
+      // Have one PSD matrix of size (d+1)^2 and one of size (d)^2 but only
+      // count the upper triangular part
+      expected_number_of_decision_variables =
+          static_cast<int>((d + 1) * (d + 2) / 2 + (d) * (d + 1) / 2);
+    } else {
+      // Have two PSD matrices of size (d+1)^2 but only count the upper
+      // triangular part.
+      expected_number_of_decision_variables =
+          static_cast<int>((d + 1) * (d + 2));
+    }
+    EXPECT_EQ(
+        psatz_variables_and_psd_constraints_prog->decision_variables().size(),
+        expected_number_of_decision_variables);
+  };
+
+  test_count_psatz_variables_and_constraints(tuple_odd);
+  test_count_psatz_variables_and_constraints(tuple_even);
+  EXPECT_TRUE(false);
+}
 //
-//GTEST_TEST(CspaceLineTupleConstructorTest, Test) {
-//  int plant_deg = 2;
-//  const symbolic::Variable mu{"mu"};
-//  drake::VectorX<symbolic::Variable> s0{plant_deg};
-//  drake::VectorX<symbolic::Variable> s1{plant_deg};
-//  drake::VectorX<symbolic::Variable> a{plant_deg};
-//  drake::VectorX<symbolic::Variable> b{plant_deg};
-//  symbolic::Variables mu_s0_s1_vars{mu};
-//
-//  for (int i = 0; i < plant_deg; ++i) {
-//    s0[i] = symbolic::Variable{fmt::format("s0_{}", i)};
-//    s1[i] = symbolic::Variable{fmt::format("s1_{}", i)};
-//    a[i] = symbolic::Variable{fmt::format("a_{}", i)};
-//    b[i] = symbolic::Variable{fmt::format("b_{}", i)};
-//    mu_s0_s1_vars.insert(s0[i]);
-//    mu_s0_s1_vars.insert(s1[i]);
-//  }
-//
-//  symbolic::Expression rational_numerator_odd_deg_expression =
-//      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
-//      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu;
-//  symbolic::Expression rational_numerator_even_deg_expression =
-//      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
-//      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu * mu;
-//
-//  // the tuples have slightly different psatz expressions depending on their
-//  // degree.
-//  symbolic::Polynomial rational_numerator_odd_deg{
-//      rational_numerator_odd_deg_expression, mu_s0_s1_vars};
-//  symbolic::Polynomial rational_numerator_even_deg{
-//      rational_numerator_even_deg_expression, mu_s0_s1_vars};
-//
-//  VerificationOption option;
-//  CspaceLineTuple tuple_odd{mu, s0, s1, rational_numerator_odd_deg, option};
-//  CspaceLineTuple tuple_even{mu, s0, s1, rational_numerator_even_deg, option};
-//
-//  auto get_expected_decision_variables =
-//      [a, b](symbolic::Variables* expected_decision_variables,
-//             CspaceLineTuple& tuple) {
-//        expected_decision_variables->insert(a.data(), a.data() + a.size());
-//        expected_decision_variables->insert(b.data(), b.data() + b.size());
-//        for (int i = 0; i < tuple.get_Q_lambda().size(); ++i) {
-//          expected_decision_variables->insert(
-//              *(tuple.get_Q_lambda().data() + i));
-//        }
-//        for (int i = 0; i < tuple.get_Q_nu().size(); ++i) {
-//          expected_decision_variables->insert(*(tuple.get_Q_nu().data() + i));
-//        }
-//      };
-//
-//  // check that the program has the correct decision variables and
-//  // indeterminates
-//  EXPECT_EQ(symbolic::Variables(tuple_odd.get_prog()->indeterminates()),
-//            symbolic::Variables({mu}));
-//
-//  symbolic::Variables odd_decision_variables(
-//      tuple_odd.get_prog()->decision_variables());
-//  symbolic::Variables expected_decision_variables_odd;
-//  get_expected_decision_variables(&expected_decision_variables_odd, tuple_odd);
-//  EXPECT_EQ(odd_decision_variables, expected_decision_variables_odd);
-//
-//  symbolic::Variables even_decision_variables(
-//      tuple_even.get_prog()->decision_variables());
-//  symbolic::Variables expected_decision_variables_even;
-//  get_expected_decision_variables(&expected_decision_variables_even,
-//                                  tuple_even);
-//  EXPECT_EQ(even_decision_variables, expected_decision_variables_even);
-//
-//  symbolic::Environment env;
-//  for (int i = 0; i < plant_deg; i++) {
-//    env.insert(s0[i], 0.);
-//    env.insert(s1[i], 0.);
-//  }
-//
-//  symbolic::Polynomial rational_numerator_odd_deg_evaled =
-//      rational_numerator_odd_deg.EvaluatePartial(env);
-//  symbolic::Polynomial rational_numerator_even_deg_evaled =
-//      rational_numerator_even_deg.EvaluatePartial(env);
-//  symbolic::Polynomial psatz_expected_odd =
-//      rational_numerator_odd_deg -
-//      (tuple_odd.get_lambda() * mu +
-//       tuple_odd.get_nu() * (symbolic::Polynomial(1, {mu}) - mu));
-//  psatz_expected_odd.SetIndeterminates({mu});
-//  symbolic::Polynomial psatz_expected_even =
-//      rational_numerator_even_deg -
-//      (tuple_even.get_lambda() +
-//       tuple_even.get_nu() * mu * (symbolic::Polynomial(1, {mu}) - mu));
-//  psatz_expected_even.SetIndeterminates({mu});
-//
-//  EXPECT_TRUE(tuple_odd.get_p().Expand().EqualTo(psatz_expected_odd.Expand()));
-//  EXPECT_TRUE(
-//      tuple_even.get_p().Expand().EqualTo(psatz_expected_even.Expand()));
-//  EXPECT_TRUE(tuple_odd.get_p().indeterminates() == symbolic::Variables({mu}));
-//  EXPECT_TRUE(tuple_even.get_p().indeterminates() == symbolic::Variables({mu}));
-//}
-//
-//bool test_psatz_binding(const CspaceLineTuple& tuple,
+// bool test_psatz_binding(const CspaceLineTuple& tuple,
 //                        const symbolic::Environment& env) {
 //  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
 //      psatz_bindings = tuple.get_psatz_bindings();
@@ -316,67 +291,6 @@ class SinglePendulumTest : public ::testing::Test {
 //    EXPECT_TRUE(found);
 //  }
 //  return true;
-//}
-//
-//GTEST_TEST(CspaceLineTupleEvaluate_s0_s1, Test) {
-//  int plant_deg = 2;
-//  const symbolic::Variable mu{"mu"};
-//  drake::VectorX<symbolic::Variable> s0{plant_deg};
-//  drake::VectorX<symbolic::Variable> s1{plant_deg};
-//  drake::VectorX<symbolic::Variable> a{plant_deg};
-//  drake::VectorX<symbolic::Variable> b{plant_deg};
-//  drake::VectorX<symbolic::Variable> a_and_b{2 * plant_deg};
-//  symbolic::Variables mu_s0_s1_vars{mu};
-//
-//  for (int i = 0; i < plant_deg; ++i) {
-//    s0[i] = symbolic::Variable{fmt::format("s0_{}", i)};
-//    s1[i] = symbolic::Variable{fmt::format("s1_{}", i)};
-//    a[i] = symbolic::Variable{fmt::format("a_{}", i)};
-//    b[i] = symbolic::Variable{fmt::format("b_{}", i)};
-//    a_and_b[2 * i] = a[i];
-//    a_and_b[2 * i + 1] = b[i];
-//    mu_s0_s1_vars.insert(s0[i]);
-//    mu_s0_s1_vars.insert(s1[i]);
-//  }
-//
-//  symbolic::Expression rational_numerator_odd_deg_expression =
-//      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
-//      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu;
-//  symbolic::Expression rational_numerator_even_deg_expression =
-//      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
-//      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu * mu;
-//
-//  // the tuples have slightly different psatz expressions depending on their
-//  // degree.
-//
-//  symbolic::Polynomial rational_numerator_odd_deg{
-//      rational_numerator_odd_deg_expression, mu_s0_s1_vars};
-//  symbolic::Polynomial rational_numerator_even_deg{
-//      rational_numerator_even_deg_expression, mu_s0_s1_vars};
-//  VerificationOption option;
-//
-//  CspaceLineTuple tuple_odd{mu, s0, s1, rational_numerator_odd_deg, option};
-//  CspaceLineTuple tuple_even{mu, s0, s1, rational_numerator_odd_deg, option};
-//
-//  symbolic::Environment env;
-//  Eigen::VectorXd s0_numeric{s0.size()};
-//  Eigen::VectorXd s1_numeric{s1.size()};
-//  for (int i = 0; i < plant_deg; i++) {
-//    env.insert(s0[i], 1.);
-//    s0_numeric[i] = env[s0[i]];
-//    env.insert(s1[i], -2.);
-//    s1_numeric[i] = env[s1[i]];
-//  }
-//
-//  tuple_odd.Evaluate_s0_s1_map(env);
-//  test_psatz_binding(tuple_odd, env);
-//  tuple_odd.Evaluate_s0_s1(s0_numeric, s1_numeric);
-//  test_psatz_binding(tuple_odd, env);
-//
-//  tuple_even.Evaluate_s0_s1_map(env);
-//  test_psatz_binding(tuple_even, env);
-//  tuple_even.Evaluate_s0_s1(s0_numeric, s1_numeric);
-//  test_psatz_binding(tuple_even, env);
 //}
 
 // TODO(Alex.Amice) write a more formal test
@@ -531,7 +445,7 @@ TEST_F(DoublePendulumTest, TestGenerateRationalsForLinkOnOneSideOfPlane) {
   test_same_rationals(rationals_free_line_1, rationals_free_region_1);
 }
 
-//TEST_F(DoublePendulumTest, TestEvaluateTuplesForEndpoints) {
+// TEST_F(DoublePendulumTest, TestEvaluateTuplesForEndpoints) {
 //  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
 //                     SeparatingPlaneOrder::kAffine, std::nullopt);
 //  Eigen::Vector2d s0{0.1, -1.0};
@@ -594,7 +508,7 @@ TEST_F(DoublePendulumTest, TestGenerateRationalsForLinkOnOneSideOfPlane) {
 //}
 //
 
-//TEST_F(DoublePendulumTest, TestAddCertifySeparatingPlaneConstraintToProg) {
+// TEST_F(DoublePendulumTest, TestAddCertifySeparatingPlaneConstraintToProg) {
 //  solvers::SolverOptions solver_options;
 //  solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
 //  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
@@ -622,10 +536,10 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
 
   EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good,
                                                        &separating_planes_sol));
-  EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_bad,
-                                                        &separating_planes_sol));
-//  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
-//      s0, s1_out_of_limits, &separating_planes_sol));
+  EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(
+      s0, s1_bad, &separating_planes_sol));
+  //  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
+  //      s0, s1_out_of_limits, &separating_planes_sol));
 }
 
 TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLineParrallel) {
@@ -645,14 +559,14 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLineParrallel) {
   s1 << s1_good_vec, s1_bad_vec, s1_out_of_limits_vec;
 
   std::vector<std::vector<SeparatingPlane<double>>> separating_planes_sol;
-  std::vector<bool> safe_bools = dut.CertifyTangentConfigurationSpaceLine(s0, s1,
-                                                       &separating_planes_sol);
+  std::vector<bool> safe_bools =
+      dut.CertifyTangentConfigurationSpaceLine(s0, s1, &separating_planes_sol);
 
   EXPECT_TRUE(safe_bools[0]);
   EXPECT_FALSE(safe_bools[1]);
   EXPECT_FALSE(safe_bools[2]);
-//  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
-//      s0, s1_out_of_limits, &separating_planes_sol));
+  //  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
+  //      s0, s1_out_of_limits, &separating_planes_sol));
 }
 
 //

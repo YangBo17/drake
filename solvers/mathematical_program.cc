@@ -24,6 +24,7 @@
 #include "drake/solvers/binding.h"
 #include "drake/solvers/decision_variable.h"
 #include "drake/solvers/sos_basis_generator.h"
+#include <iostream>
 
 namespace drake {
 namespace solvers {
@@ -251,6 +252,7 @@ symbolic::Polynomial MathematicalProgram::NewSosPolynomial(
   DRAKE_ASSERT(gramian.rows() == monomial_basis.rows());
   const symbolic::Polynomial p =
       ComputePolynomialFromMonomialBasisAndGramMatrix(monomial_basis, gramian);
+
   switch (type) {
     case MathematicalProgram::NonnegativePolynomial::kSos: {
       AddPositiveSemidefiniteConstraint(gramian);
@@ -263,6 +265,10 @@ symbolic::Polynomial MathematicalProgram::NewSosPolynomial(
     case MathematicalProgram::NonnegativePolynomial::kDsos: {
       AddPositiveDiagonallyDominantMatrixConstraint(
           gramian.cast<symbolic::Expression>());
+      break;
+    }
+    default: {
+      throw std::runtime_error("Passed NonnegativePolynomial type is either unsupported or unitialized");
       break;
     }
   }

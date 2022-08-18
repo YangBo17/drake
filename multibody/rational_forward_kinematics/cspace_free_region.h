@@ -121,8 +121,12 @@ void CalcPlane(const VectorX<T>& decision_variables,
  * polynomials (sos, dsos, sdsos).
  */
 struct VerificationOption {
-  solvers::MathematicalProgram::NonnegativePolynomial link_polynomial_type;
-  solvers::MathematicalProgram::NonnegativePolynomial lagrangian_type;
+  solvers::MathematicalProgram::NonnegativePolynomial link_polynomial_type =
+      solvers::MathematicalProgram::NonnegativePolynomial::kSos;
+  solvers::MathematicalProgram::NonnegativePolynomial lagrangian_type =
+      solvers::MathematicalProgram::NonnegativePolynomial::kSos;
+//  solvers::MathematicalProgram::NonnegativePolynomial link_polynomial_type;
+//  solvers::MathematicalProgram::NonnegativePolynomial lagrangian_type;
 };
 
 /**
@@ -680,13 +684,13 @@ class CspaceFreeRegion {
           std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
           separating_plane_to_lorentz_cone_constraints) const;
 
-//  virtual void AllocateGramVariables(
-//      VectorX<symbolic::Variable>* lagrangian_gram_vars,
-//      VectorX<symbolic::Variable>* verified_gram_vars,
-//      std::vector<int>* t_lower_lagrangian_gram_lower_start,
-//      std::vector<int>* t_upper_lagrangian_gram_lower_start,
-//      const std::vector<LinkOnPlaneSideRational> rationals
-//      ) const;
+  //  virtual void AllocateGramVariables(
+  //      VectorX<symbolic::Variable>* lagrangian_gram_vars,
+  //      VectorX<symbolic::Variable>* verified_gram_vars,
+  //      std::vector<int>* t_lower_lagrangian_gram_lower_start,
+  //      std::vector<int>* t_upper_lagrangian_gram_lower_start,
+  //      const std::vector<LinkOnPlaneSideRational> rationals
+  //      ) const;
 
   /**
    * Given t[i], t_lower and t_upper, construct the polynomial t - t_lower and

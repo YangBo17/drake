@@ -19,56 +19,19 @@ class CspaceLineTuple {
                   const symbolic::Polynomial& m_rational_numerator,
                   const VerificationOption& option);
 
-//  void Evaluate_s0_s1_map(const symbolic::Environment& env);
-//
-//  void Evaluate_s0_s1(const Eigen::Ref<const Eigen::VectorXd>& s0,
-//                      const Eigen::Ref<const Eigen::VectorXd>& s1);
+  void AddTupleOnSideOfPlaneConstraint(
+      solvers::MathematicalProgram* prog,
+      const Eigen::Ref<const Eigen::VectorXd>& s0,
+      const Eigen::Ref<const Eigen::VectorXd>& s1) const;
 
-
-
-  void AddTupleOnSideOfPlaneConstraint(solvers::MathematicalProgram *prog,
-                                       const Eigen::Ref<const Eigen::VectorXd>& s0,
-                                       const Eigen::Ref<const Eigen::VectorXd>& s1) const;
-
-//  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>> GetPsatzConstraint(const symbolic::Environment& env);
-
-//  const symbolic::Polynomial get_rational_numerator() const {
-//    return rational_numerator_;
-//  }
-
-  const solvers::MathematicalProgram* get_prog() const {
+  const solvers::MathematicalProgram* get_psatz_variables_and_psd_constraints_()
+      const {
     return &psatz_variables_and_psd_constraints_;
   }
 
   const symbolic::Polynomial get_p() const { return p_; }
 
-//  const symbolic::Polynomial get_lambda() const { return lambda_; }
-//  const solvers::MatrixXDecisionVariable get_Q_lambda() const {
-//    return Q_lambda_;
-//  }
-//  const solvers::MatrixXDecisionVariable get_Q_lambda_lower_part() const {
-//    return Q_lambda_lower_part_;
-//  }
-//  const symbolic::Polynomial get_nu() const { return nu_; }
-//  const solvers::MatrixXDecisionVariable get_Q_nu() const { return Q_nu_; }
-//  const solvers::MatrixXDecisionVariable get_Q_nu_lower_part() const {
-//    return Q_nu_lower_part_;
-//  }
-
-//  const solvers::VectorXDecisionVariable get_separating_planes_variables()
-//      const {
-//    return separating_plane_variables_;
-//  }
-
-//  const std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
-//  get_psatz_bindings() const {
-//    return psatz_bindings_;
-//  }
-
  private:
-  // program that stores the list of constraints required to certify this tuple
-  solvers::MathematicalProgram psatz_variables_and_psd_constraints_;
-
   //  a univariate polynomial q(μ) is nonnegative on [0, 1] if and
   // only if q(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
   // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
@@ -76,36 +39,24 @@ class CspaceLineTuple {
   // m_rational_numerator-q(μ)
   symbolic::Polynomial p_;
 
-  //  a univariate polynomial p(μ) is nonnegative on [0, 1] if and
-  // only if p(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
-  // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
-  // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS. These are those polynomials
-  // and their associated Gram matrices.
-//  symbolic::Polynomial lambda_;
-//  solvers::MatrixXDecisionVariable Q_lambda_;
-//  // the lower triangular part of Q_lambda_ for ease of adding to programs
-//  solvers::VectorXDecisionVariable Q_lambda_lower_part_;
-//  symbolic::Polynomial nu_;
-//  solvers::MatrixXDecisionVariable Q_nu_;
-//  // the lower triangular part of Q_nu_ for ease of adding to programs
-//  solvers::VectorXDecisionVariable Q_nu_lower_part_;
+  // A program which stores the psd variables and constraints associated to λ
+  // and ν.
+  solvers::MathematicalProgram psatz_variables_and_psd_constraints_;
 
-
-//
-//  symbolic::Variables s_vars_;
   // the symbolic start of the free line
   drake::VectorX<drake::symbolic::Variable> s0_;
   // the symbolic end of the free line
   drake::VectorX<drake::symbolic::Variable> s1_;
-//
-//  // bindings for p(μ) - λ(μ) + ν(μ)*μ*(1-μ) = 0
-//  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
-//      psatz_bindings_;
- private: // Methods
-  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>> AddPsatzConstraintToProg(
-      solvers::MathematicalProgram* prog,
-                      const Eigen::Ref<const Eigen::VectorXd>& s0,
-                      const Eigen::Ref<const Eigen::VectorXd>& s1) const;
+
+ private:  // Methods
+  /**
+   * Adds the constraints that p_(s0,s1, mu) = 0 to the program prog as well as
+   * the decision variables associated to λ and ν
+   */
+  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
+  AddPsatzConstraintToProg(solvers::MathematicalProgram* prog,
+                           const Eigen::Ref<const Eigen::VectorXd>& s0,
+                           const Eigen::Ref<const Eigen::VectorXd>& s1) const;
 };
 
 /**
@@ -125,23 +76,25 @@ class CspaceFreeLine : public CspaceFreeRegion {
                  std::optional<Eigen::VectorXd> q_star,
                  const FilteredCollisionPairs& filtered_collision_pairs = {},
                  const VerificationOption& option = {});
-
+  /**
+   * Generate all the tuples for certification of lines
+   * @param q_star: the point around which the stereographic projection will be taken
+   * @param filtered_collision_pairs: pairs of geometries which are filtered out from the collision checking
+   * @param tuples: a vector to fill with CspaceLineTuples
+   * @param separating_plane_vars: All of the variables in the separating
+   * plane aᵀx + b = 0.
+   * @param separating_plane_to_tuples: alternation_tuples can be grouped
+   * based on the separating planes. separating_plane_to_tuples[i] are the
+   * indices in alternation_tuples such that these tuples are all for
+   * this->separating_planes()[i].
+   * @param separating_plane_to_lorentz_cone_constraints: If the collision
+   * geometry is not a polyhedron, but instead ellipsoid, capsules or cylinders,
+   * we will also impose Lorentz cone constraints.
+   */
   void GenerateTuplesForCertification(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const FilteredCollisionPairs& filtered_collision_pairs,
       std::list<CspaceLineTuple>* tuples,
-      VectorX<symbolic::Variable>* separating_plane_vars,
-      std::vector<std::vector<int>>* separating_plane_to_tuples,
-      std::vector<
-          std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
-          separating_plane_to_lorentz_cone_constraints) const;
-
-  void GenerateTuplesForCertification(
-      const Eigen::Ref<const Eigen::VectorXd>& q_star,
-      const FilteredCollisionPairs& filtered_collision_pairs,
-      std::vector<CspaceFreeLine::CspacePolytopeTuple>* alternation_tuples,
-      VectorX<symbolic::Variable>* lagrangian_gram_vars,
-      VectorX<symbolic::Variable>* verified_gram_vars,
       VectorX<symbolic::Variable>* separating_plane_vars,
       std::vector<std::vector<int>>* separating_plane_to_tuples,
       std::vector<
@@ -161,16 +114,10 @@ class CspaceFreeLine : public CspaceFreeRegion {
       const FilteredCollisionPairs& filtered_collision_pairs) const override;
 
   /**
-   * Updates the constraints in tuples_ for a new set of endpoints.
-   */
-  void EvaluateTuplesForEndpoints(const Eigen::Ref<const Eigen::VectorXd>& s0,
-                                  const Eigen::Ref<const Eigen::VectorXd>& s1);
-
-  /**
    * Certifies whether the line μ*s₀ + (1−μ)*s₁. If the return is true, a formal
-   * proof of non-collision is generated. If the result is false there may be no
-   * collisions but this fact cannot be certified with the constructed SOS
-   * program.
+   * proof of non-collision is generated and populates separating_planes_sol. If
+   * the result is false there may be no collisions but this fact cannot be
+   * certified with the constructed SOS program.
    * @param s0
    * @param s1
    * @param solver_options
@@ -180,7 +127,8 @@ class CspaceFreeLine : public CspaceFreeRegion {
       const Eigen::Ref<const Eigen::VectorXd>& s0,
       const Eigen::Ref<const Eigen::VectorXd>& s1,
       std::vector<SeparatingPlane<double>>* separating_planes_sol,
-      const solvers::SolverOptions& solver_options = solvers::SolverOptions()) const;
+      const solvers::SolverOptions& solver_options =
+          solvers::SolverOptions()) const;
   /**
    * Certifies whether a set of lines is collision free in parallel.
    */
@@ -188,8 +136,11 @@ class CspaceFreeLine : public CspaceFreeRegion {
       const Eigen::Ref<const Eigen::MatrixXd>& s0,
       const Eigen::Ref<const Eigen::MatrixXd>& s1,
       std::vector<std::vector<SeparatingPlane<double>>>*
-      separating_planes_sol_per_row, const solvers::SolverOptions&
-      solver_options = solvers::SolverOptions())  const;
+          separating_planes_sol_per_row,
+      const solvers::SolverOptions& solver_options =
+          solvers::SolverOptions()) const;
+
+ protected:
   /**
    * Adds the constraint that all of the tuples in the @param i separating plane
    * are on the appropriate side of the plane to @param prog.
@@ -200,16 +151,6 @@ class CspaceFreeLine : public CspaceFreeRegion {
       solvers::MathematicalProgram* prog, int i,
       const Eigen::Ref<const Eigen::VectorXd>& s0,
       const Eigen::Ref<const Eigen::VectorXd>& s1) const;
-
- protected:
-  /**
-   * runs the certification program for a separating plane. Returns true if the
-   * program succeeds in certification. If it succeeds then separating_plane_sol
-   * is filled with the solution.
-   */
-  bool CertifyPlane(int i, SeparatingPlane<double>* separating_plane_sol,
-                    const solvers::SolverOptions& solver_options =
-                        solvers::SolverOptions()) const;
 
  private:
   // the variable of the line going from 0 to 1
