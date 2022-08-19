@@ -658,10 +658,10 @@ void CspaceFreeRegion::GenerateTuplesForBilinearAlternation(
       t_upper);
   ConstructTBoundsPolynomial(t_monomials, *t_lower, *t_upper, t_minus_t_lower,
                              t_upper_minus_t);
-  ConstructTuples(
-      q_star, filtered_collision_pairs, C_rows, t.rows(), alternation_tuples,
-      lagrangian_gram_vars, verified_gram_vars, separating_plane_vars,
-      separating_plane_to_tuples, separating_plane_to_lorentz_cone_constraints);
+  ConstructTuples(q_star, filtered_collision_pairs, C_rows, t.rows(),
+                  alternation_tuples, lagrangian_gram_vars, verified_gram_vars,
+                  separating_plane_vars, separating_plane_to_tuples,
+                  separating_plane_to_lorentz_cone_constraints);
 }
 
 void CspaceFreeRegion::ConstructTuples(
@@ -771,8 +771,6 @@ void CspaceFreeRegion::ConstructTuples(
     }
   }
 }
-
-
 
 std::unique_ptr<solvers::MathematicalProgram>
 CspaceFreeRegion::ConstructLagrangianProgram(
@@ -1342,63 +1340,57 @@ bool FindLagrangianAndSeparatingPlanesMultiThread(
         }
         return active_plane_count;
       };
-  if (num_threads > 0) {
-    // We implement the "thread pool" idea here, by following
-    // MonteCarloSimulationParallel class. This implementation doesn't use
-    // openMP library. Storage for active parallel SOS operations.
-    std::list<std::future<int>> active_operations;
-    // Keep track of how many SOS have been dispatched already.
-    int sos_dispatched = 0;
-    // If any SOS is infeasible, then we terminate all other SOS and report
-    // failure.
-    bool found_infeasible = false;
-    while (
-        (active_operations.size() > 0 || sos_dispatched < num_active_planes) &&
-        !found_infeasible) {
-      // Check for completed operations.
-      for (auto operation = active_operations.begin();
-           operation != active_operations.end();) {
-        if (IsFutureReady(*operation)) {
-          // This call to future.get() is necessary to propagate any exception
-          // thrown during SOS setup/solve.
-          const int active_plane_count = operation->get();
-          drake::log()->debug("SOS {} completed, is_success {}",
-                              active_plane_count,
-                              is_success[active_plane_count].value());
-          if (!(is_success[active_plane_count].value())) {
-            found_infeasible = true;
-            break;
-          }
-          // Erase returns iterator to the next node in the list.
-          operation = active_operations.erase(operation);
-        } else {
-          // Advance to next node in the list.
-          ++operation;
+
+  if (num_threads <= 0) {
+    // If num threads isn't specified use the maximum number of threads optimal
+    // for hardware.
+    num_threads = static_cast<int>(std::thread::hardware_concurrency());
+  }
+
+  // We implement the "thread pool" idea here, by following
+  // MonteCarloSimulationParallel class. This implementation doesn't use
+  // openMP library. Storage for active parallel SOS operations.
+  std::list<std::future<int>> active_operations;
+  // Keep track of how many SOS have been dispatched already.
+  int sos_dispatched = 0;
+  // If any SOS is infeasible, then we terminate all other SOS and report
+  // failure.
+  bool found_infeasible = false;
+  while ((active_operations.size() > 0 || sos_dispatched < num_active_planes) &&
+         !found_infeasible) {
+    // Check for completed operations.
+    for (auto operation = active_operations.begin();
+         operation != active_operations.end();) {
+      if (IsFutureReady(*operation)) {
+        // This call to future.get() is necessary to propagate any exception
+        // thrown during SOS setup/solve.
+        const int active_plane_count = operation->get();
+        drake::log()->debug("SOS {} completed, is_success {}",
+                            active_plane_count,
+                            is_success[active_plane_count].value());
+        if (!(is_success[active_plane_count].value())) {
+          found_infeasible = true;
+          break;
         }
+        // Erase returns iterator to the next node in the list.
+        operation = active_operations.erase(operation);
+      } else {
+        // Advance to next node in the list.
+        ++operation;
       }
+    }
 
-      // Dispatch new SOS.
-      while (static_cast<int>(active_operations.size()) < num_threads &&
-             sos_dispatched < num_active_planes) {
-        active_operations.emplace_back(std::async(
-            std::launch::async, std::move(solve_small_sos), sos_dispatched));
-        drake::log()->debug("SOS {} dispatched", sos_dispatched);
-        ++sos_dispatched;
-      }
+    // Dispatch new SOS.
+    while (static_cast<int>(active_operations.size()) < num_threads &&
+           sos_dispatched < num_active_planes) {
+      active_operations.emplace_back(std::async(
+          std::launch::async, std::move(solve_small_sos), sos_dispatched));
+      drake::log()->debug("SOS {} dispatched", sos_dispatched);
+      ++sos_dispatched;
+    }
 
-      // Wait a bit before checking for completion.
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-  } else {
-    // Create as many threads as possible and join all threads.
-    std::vector<std::thread> threads;
-    for (int active_plane_count = 0; active_plane_count < num_active_planes;
-         ++active_plane_count) {
-      threads.push_back(std::thread(solve_small_sos, active_plane_count));
-    }
-    for (auto& th : threads) {
-      th.join();
-    }
+    // Wait a bit before checking for completion.
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
   if (std::all_of(is_success.begin(), is_success.end(),
                   [](std::optional<bool> flag) {

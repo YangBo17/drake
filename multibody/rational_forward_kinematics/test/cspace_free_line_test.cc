@@ -1,5 +1,7 @@
 #include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
 
+#include <algorithm>
+
 #include <gtest/gtest.h>
 
 #include "drake/common/test_utilities/eigen_matrix_compare.h"
@@ -233,23 +235,35 @@ GTEST_TEST(CspaceLineTupleConstructorTest, Test) {
                                                               tuple) {
     const solvers::MathematicalProgram*
         psatz_variables_and_psd_constraints_prog =
-            tuple.get_psatz_variables_and_psd_constraints_();
-    EXPECT_EQ(psatz_variables_and_psd_constraints_prog->indeterminates().size(), 1);
-    EXPECT_EQ(psatz_variables_and_psd_constraints_prog->indeterminates()(0), mu);
+            tuple.get_psatz_variables_and_psd_constraints();
+
+    // Check that we have the right number of indeterminates.
+    EXPECT_EQ(psatz_variables_and_psd_constraints_prog->indeterminates().size(),
+              1);
+    EXPECT_EQ(psatz_variables_and_psd_constraints_prog->indeterminates()(0),
+              mu);
+
+    // Check that we have the right number of PSD constraints. There should be
+    // one for each multiplier.
     EXPECT_EQ(psatz_variables_and_psd_constraints_prog
                   ->positive_semidefinite_constraints()
                   .size(),
               2);
+    // Check that we only have the PSD constraints
+    EXPECT_EQ(
+        psatz_variables_and_psd_constraints_prog->GetAllConstraints().size(),
+        2);
 
+    // Check that the multipliers are of the correct size.
     int expected_number_of_decision_variables;
     double d = tuple.get_p().TotalDegree() / 2;
     if (tuple.get_p().TotalDegree() % 2 == 0) {
-      // Have one PSD matrix of size (d+1)^2 and one of size (d)^2 but only
+      // We have one PSD matrix of size (d+1)^2 and one of size (d)^2 but only
       // count the upper triangular part
       expected_number_of_decision_variables =
           static_cast<int>((d + 1) * (d + 2) / 2 + (d) * (d + 1) / 2);
     } else {
-      // Have two PSD matrices of size (d+1)^2 but only count the upper
+      // We have two PSD matrices of size (d+1)^2 but only count the upper
       // triangular part.
       expected_number_of_decision_variables =
           static_cast<int>((d + 1) * (d + 2));
@@ -261,37 +275,135 @@ GTEST_TEST(CspaceLineTupleConstructorTest, Test) {
 
   test_count_psatz_variables_and_constraints(tuple_odd);
   test_count_psatz_variables_and_constraints(tuple_even);
-  EXPECT_TRUE(false);
 }
-//
-// bool test_psatz_binding(const CspaceLineTuple& tuple,
-//                        const symbolic::Environment& env) {
-//  std::vector<solvers::Binding<solvers::LinearEqualityConstraint>>
-//      psatz_bindings = tuple.get_psatz_bindings();
-//  symbolic::Polynomial p_evaled = tuple.get_p().EvaluatePartial(env);
-//  solvers::LinearEqualityConstraint* constraint;
-//  EXPECT_EQ(psatz_bindings.size(),
-//            p_evaled.monomial_to_coefficient_map().size());
-//  for (const auto& binding : psatz_bindings) {
-//    // extract the expression in each binding
-//    constraint = binding.evaluator().get();
-//    EXPECT_TRUE(constraint->num_constraints() == 1);
-//    VectorX<symbolic::Expression> e(1);
-//    constraint->Eval(binding.variables(), &e);
-//    symbolic::Polynomial p_test{e[0] - constraint->upper_bound()[0]};
-//    bool found = false;
-//    // check that it is in fact the same expression as we expect
-//    for (const auto& [monom, expr] : p_evaled.monomial_to_coefficient_map()) {
-//      symbolic::Polynomial coeff{expr};
-//      if (p_test.CoefficientsAlmostEqual(coeff, 1E-12)) {
-//        found = true;
-//        break;
-//      }
-//    }
-//    EXPECT_TRUE(found);
-//  }
-//  return true;
-//}
+
+GTEST_TEST(CspaceLineTupleAddTupleOnSideOfPlaneConstraint, Test) {
+  int plant_deg = 2;
+  const symbolic::Variable mu{"mu"};
+  drake::VectorX<symbolic::Variable> s0{plant_deg};
+  drake::VectorX<symbolic::Variable> s1{plant_deg};
+  drake::VectorX<symbolic::Variable> a{plant_deg};
+  drake::VectorX<symbolic::Variable> b{plant_deg};
+  symbolic::Variables mu_s0_s1_vars{mu};
+
+  for (int i = 0; i < plant_deg; ++i) {
+    s0[i] = symbolic::Variable{fmt::format("s0_{}", i)};
+    s1[i] = symbolic::Variable{fmt::format("s1_{}", i)};
+    a[i] = symbolic::Variable{fmt::format("a_{}", i)};
+    b[i] = symbolic::Variable{fmt::format("b_{}", i)};
+    mu_s0_s1_vars.insert(s0[i]);
+    mu_s0_s1_vars.insert(s1[i]);
+  }
+
+  symbolic::Expression rational_numerator_expression =
+      a[0] * s0[0] * s1[1] + a[1] * s0[1] * s1[0] * mu +
+      b[0] * s1[1] * mu * mu + b[1] * s0[0] * mu * mu * mu;
+
+  // the tuples have slightly different psatz expressions depending on their
+  // degree.
+  symbolic::Polynomial rational_numerator{rational_numerator_expression,
+                                          mu_s0_s1_vars};
+
+  VerificationOption option;
+  CspaceLineTuple tuple{mu, s0, s1, rational_numerator, option};
+
+  solvers::MathematicalProgram prog;
+  prog.AddIndeterminates(solvers::VectorIndeterminate<1>(mu));
+  prog.AddDecisionVariables(a);
+  prog.AddDecisionVariables(b);
+
+  Eigen::Vector2d s0_val(1.5, 2);
+  Eigen::Vector2d s1_val(1 / 2, 1.5);
+  tuple.AddTupleOnSideOfPlaneConstraint(&prog, s0_val, s1_val);
+  VectorX<symbolic::Variable> expected_decision_variables(
+      a.size() + b.size() +
+      tuple.get_psatz_variables_and_psd_constraints()
+          ->decision_variables()
+          .size());
+  int ctr = 0;
+  for (int i = 0; i < a.size(); ++i) {
+    expected_decision_variables(ctr) = a(i);
+    ++ctr;
+  }
+  for (int i = 0; i < b.size(); ++i) {
+    expected_decision_variables(ctr) = b(i);
+    ++ctr;
+  }
+  for (int i = 0; i < tuple.get_psatz_variables_and_psd_constraints()
+                          ->decision_variables()
+                          .size();
+       ++i) {
+    expected_decision_variables(ctr) =
+        tuple.get_psatz_variables_and_psd_constraints()->decision_variables()(
+            i);
+    ++ctr;
+  }
+
+  EXPECT_EQ(prog.decision_variables(), expected_decision_variables);
+  EXPECT_EQ(prog.positive_semidefinite_constraints().size(),
+            tuple.get_psatz_variables_and_psd_constraints()
+                ->positive_semidefinite_constraints()
+                .size());
+  symbolic::Environment env = {
+      {s0[0], s0_val[0]},
+      {s0[1], s0_val[1]},
+      {s1[0], s1_val[0]},
+      {s1[1], s1_val[1]},
+  };
+
+  symbolic::Environment env_with_zero_psd = env;
+  for (int i = 0; i < tuple.get_psatz_variables_and_psd_constraints()
+                          ->decision_variables()
+                          .size();
+       ++i) {
+    env_with_zero_psd.insert(
+        tuple.get_psatz_variables_and_psd_constraints()->decision_variables()(
+            i),
+        0);
+  }
+  //  symbolic::Environment env_with_two_psd = env;
+  //  for(int i = 0; i <
+  //  tuple.get_psatz_variables_and_psd_constraints()->decision_variables().size();
+  //  ++i) {
+  //    env_with_zero_psd.insert(tuple.get_psatz_variables_and_psd_constraints()->decision_variables()(i),
+  //    2);
+  //  }
+
+  symbolic::Polynomial rational_numerator_eval =
+      rational_numerator.EvaluatePartial(env);
+  symbolic::Polynomial p_evaled_s0_s1_and_psatz =
+      tuple.get_p().EvaluatePartial(env_with_zero_psd);
+  rational_numerator_eval.SetIndeterminates({mu});
+  p_evaled_s0_s1_and_psatz.SetIndeterminates({mu});
+
+  EXPECT_TRUE(rational_numerator.Expand().CoefficientsAlmostEqual(
+      p_evaled_s0_s1_and_psatz.Expand(), 1E-12));
+
+  solvers::LinearConstraint* constraint;
+  symbolic::Polynomial evaled_constraint;
+  for (const auto& binding : prog.GetAllLinearConstraints()) {
+    bool found = false;
+    constraint = binding.evaluator().get();
+    VectorX<symbolic::Expression> e(1);
+    constraint->Eval(binding.variables(), &e);
+    evaled_constraint =
+        symbolic::Polynomial(e[0].EvaluatePartial(env_with_zero_psd));
+    std::cout << "Evaled constraint: " << evaled_constraint << std::endl;
+    std::cout << "Evaled rational_numerator_eval: " << rational_numerator_eval << std::endl;
+    for (const auto& [mono, coeff] :
+         rational_numerator_eval.monomial_to_coefficient_map()) {
+      if (evaled_constraint.Expand().CoefficientsAlmostEqual(
+              symbolic::Polynomial(coeff).Expand(), 1E-12)) {
+        std::cout<< "Im in here" << std::endl;
+        found = true;
+        break;
+      }
+      std::cout << "internal loop: " << found << std::endl;
+    }
+    std::cout << "value of found right before: " << found << std::endl;
+    EXPECT_TRUE(found);
+  }
+}
 
 // TODO(Alex.Amice) write a more formal test
 TEST_F(DoublePendulumTest, TestCspaceFreeLineConstructor) {
@@ -445,84 +557,8 @@ TEST_F(DoublePendulumTest, TestGenerateRationalsForLinkOnOneSideOfPlane) {
   test_same_rationals(rationals_free_line_1, rationals_free_region_1);
 }
 
-// TEST_F(DoublePendulumTest, TestEvaluateTuplesForEndpoints) {
-//  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-//                     SeparatingPlaneOrder::kAffine, std::nullopt);
-//  Eigen::Vector2d s0{0.1, -1.0};
-//  Eigen::Vector2d s1{-0.25, 0.9};
-//  dut.EvaluateTuplesForEndpoints(s0, s1);
-//  symbolic::Environment env;
-//  for (int i = 0; i < dut.get_s0().size(); ++i) {
-//    env.insert(dut.get_s0()[i], s0[i]);
-//    env.insert(dut.get_s1()[i], s1[i]);
-//  }
-//  symbolic::Polynomial p_evaled =
-//      dut.get_tuples()->front().get_p().EvaluatePartial(env);
-//
-//  for (const auto& tuple : *(dut.get_tuples())) {
-//    test_psatz_binding(tuple, env);
-//  }
-//}
-
-//
-// TEST_F(DoublePendulumTest, TestGenerateTuplesForCertification) {
-//  const CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-//                           SeparatingPlaneOrder::kAffine, std::nullopt);
-//
-//  dut.GenerateTuplesForCertification(
-//      q_star_0_, {}, &alternation_tuples_, &lagrangian_gram_vars_,
-//      &verified_gram_vars_, &separating_plane_vars_,
-//      &separating_plane_to_tuples_,
-//      &separating_plane_to_lorentz_cone_constraints_);
-//  int rational_count = 0;
-//  for (const auto& separating_plane : dut.separating_planes()) {
-//    rational_count += multibody::GetVertices(
-//                          separating_plane.positive_side_geometry->geometry())
-//                          .cols() +
-//                      multibody::GetVertices(
-//                          separating_plane.negative_side_geometry->geometry())
-//                          .cols();
-//  }
-//  EXPECT_EQ(alternation_tuples_.size(), rational_count);
-//
-//  // we only care about the separating planes and the rationals in this tuple
-//  int separating_plane_vars_count = 0;
-//  for (const auto& separating_plane : dut.separating_planes()) {
-//    separating_plane_vars_count += separating_plane.decision_variables.rows();
-//  }
-//  EXPECT_EQ(separating_plane_vars_.rows(), separating_plane_vars_count);
-//  const symbolic::Variables separating_plane_vars_set{separating_plane_vars_};
-//  EXPECT_EQ(separating_plane_vars_set.size(), separating_plane_vars_count);
-//  // Now check separating_plane_to_tuples
-//  EXPECT_EQ(separating_plane_to_tuples_.size(),
-//  dut.separating_planes().size()); std::unordered_set<int> tuple_indices_set;
-//  for (const auto& tuple_indices : separating_plane_to_tuples_) {
-//    for (int index : tuple_indices) {
-//      EXPECT_EQ(tuple_indices_set.count(index), 0);
-//      tuple_indices_set.emplace(index);
-//      EXPECT_LT(index, rational_count);
-//      EXPECT_GE(index, 0);
-//    }
-//  }
-//  EXPECT_EQ(tuple_indices_set.size(), rational_count);
-//}
-//
-
-// TEST_F(DoublePendulumTest, TestAddCertifySeparatingPlaneConstraintToProg) {
-//  solvers::SolverOptions solver_options;
-//  solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
-//  CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
-//                     SeparatingPlaneOrder::kAffine, q_star_0_, {}, {});
-//
-//  Eigen::Vector2d s0{0, 0};
-//  Eigen::Vector2d s1{-0.25, 0.9};
-//
-//  solvers::MathematicalProgram prog = solvers::MathematicalProgram();
-//  prog.AddDecisionVariables(dut.get_separating_plane_vars());
-//  dut.AddCertifySeparatingPlaneConstraintToProg(&prog, 0, s0, s1);
-//}
-//
-TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
+TEST_F(DoublePendulumTest,
+       TestCertifyTangentConfigurationSpaceLineSinglePoints) {
   solvers::SolverOptions solver_options;
   solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
@@ -538,35 +574,52 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLine) {
                                                        &separating_planes_sol));
   EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(
       s0, s1_bad, &separating_planes_sol));
-  //  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
-  //      s0, s1_out_of_limits, &separating_planes_sol));
+  EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(
+      s0, s1_out_of_limits, &separating_planes_sol));
 }
 
-TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLineParrallel) {
+TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLinesParrallel) {
   solvers::SolverOptions solver_options;
   solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
                      SeparatingPlaneOrder::kAffine, q_star_0_, {}, {});
 
-  Eigen::Vector2d s0_vec{0, 0};
   Eigen::Vector2d s1_good_vec{-0.25, 0.9};
   Eigen::Vector2d s1_bad_vec{0.9, 0.9};
   Eigen::Vector2d s1_out_of_limits_vec{-2, -2};
 
-  Eigen::MatrixXd s0(3, 2);
+  Eigen::MatrixXd s0 = Eigen::MatrixXd::Zero(3, 2);
   Eigen::MatrixXd s1(3, 2);
-  s0 << s0_vec, s0_vec, s0_vec;
-  s1 << s1_good_vec, s1_bad_vec, s1_out_of_limits_vec;
+  s1.row(0) = s1_good_vec;
+  s1.row(1) = s1_bad_vec;
+  s1.row(2) = s1_out_of_limits_vec;
 
   std::vector<std::vector<SeparatingPlane<double>>> separating_planes_sol;
   std::vector<bool> safe_bools =
-      dut.CertifyTangentConfigurationSpaceLine(s0, s1, &separating_planes_sol);
+      dut.CertifyTangentConfigurationSpaceLines(s0, s1, &separating_planes_sol);
 
-  EXPECT_TRUE(safe_bools[0]);
-  EXPECT_FALSE(safe_bools[1]);
-  EXPECT_FALSE(safe_bools[2]);
-  //  EXPECT_ANY_THROW(dut.CertifyTangentConfigurationSpaceLine(
-  //      s0, s1_out_of_limits, &separating_planes_sol));
+  EXPECT_TRUE(safe_bools.at(0));
+  EXPECT_FALSE(safe_bools.at(1));
+  EXPECT_FALSE(safe_bools.at(2));
+
+  // Run a very large number of certifications to make sure that there are no
+  // accidental data races.
+  constexpr int N = 1000;
+  Eigen::MatrixXd s0_2 = Eigen::MatrixXd::Zero(N, 2);
+  Eigen::MatrixXd s1_2(N, 2);
+  s1_2.col(0) = -0.25 * Eigen::MatrixXd::Ones(N, 1),
+  s1_2.col(1) = 0.9 * Eigen::MatrixXd::Ones(N, 1);
+
+  std::vector<bool> safe_bools2 = dut.CertifyTangentConfigurationSpaceLines(
+      s0_2, s1_2, &separating_planes_sol);
+  int num_not_cert = 0;
+  for (const auto& b : safe_bools2) {
+    if (!b) {
+      ++num_not_cert;
+    }
+  }
+  EXPECT_TRUE(std::all_of(safe_bools2.begin(), safe_bools2.end(),
+                          [](bool val) { return val; }));
 }
 
 //

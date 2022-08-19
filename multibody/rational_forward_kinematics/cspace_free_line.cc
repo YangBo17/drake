@@ -1,6 +1,7 @@
 #include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
 
 #include <execution>
+#include <future>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -36,17 +37,14 @@ SeparatingPlane<double> GetSeparatingPlaneSolution(
 }  // namespace
 
 CspaceLineTuple::CspaceLineTuple(
-    const symbolic::Variable& mu,
-    const drake::VectorX<symbolic::Variable>& s0,
+    const symbolic::Variable& mu, const drake::VectorX<symbolic::Variable>& s0,
     const drake::VectorX<symbolic::Variable>& s1,
     const symbolic::Polynomial& m_rational_numerator,
     const VerificationOption& option)
-    :
-      p_{m_rational_numerator},
+    : p_{m_rational_numerator},
       psatz_variables_and_psd_constraints_{solvers::MathematicalProgram()},
       s0_{s0},
       s1_{s1} {
-
   psatz_variables_and_psd_constraints_.AddIndeterminates(
       solvers::VectorIndeterminate<1>(mu));
   p_.SetIndeterminates({mu});
@@ -62,7 +60,6 @@ CspaceLineTuple::CspaceLineTuple(
     auto [lambda, Q_lambda] =
         psatz_variables_and_psd_constraints_.NewSosPolynomial(
             {mu}, 2 * d, option.lagrangian_type, "Sl");
-    std::cout << lambda << std::endl;
     if (p_.TotalDegree() % 2 == 0) {
       auto [nu, Q_nu] = psatz_variables_and_psd_constraints_.NewSosPolynomial(
           {mu}, 2 * d - 2, option.lagrangian_type, "Sv");
@@ -94,7 +91,8 @@ void CspaceLineTuple::AddTupleOnSideOfPlaneConstraint(
     solvers::MathematicalProgram* prog,
     const Eigen::Ref<const Eigen::VectorXd>& s0,
     const Eigen::Ref<const Eigen::VectorXd>& s1) const {
-  // p_ is a constant and therefore must be non-negative to be a non-negative function
+  // p_ is a constant and therefore must be non-negative to be a non-negative
+  // function
   if (p_.TotalDegree() == 0) {
     for (const auto& [monomial, coeff] : p_.monomial_to_coefficient_map()) {
       prog->AddLinearConstraint(coeff >= 0);
@@ -145,6 +143,10 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     const Eigen::Ref<const Eigen::VectorXd>& s1,
     std::vector<SeparatingPlane<double>>* separating_planes_sol,
     const solvers::SolverOptions& solver_options) const {
+  if (not PointInJointLimits(s0) || not PointInJointLimits(s1)) {
+    return false;
+  }
+
   std::vector<bool> is_success(separating_planes().size());
   separating_planes_sol->resize(separating_planes().size());
 
@@ -182,8 +184,7 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
   auto result = solvers::Solve(prog, std::nullopt, solver_options);
   auto clock_now = std::chrono::system_clock::now();
   drake::log()->debug(fmt::format(
-      "Line\n s0: {}\n s1: {}\n certified in {} s",
-      s0, s1,
+      "Line\n s0: {}\n s1: {}\n certified in {} s", s0, s1,
       static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(
                              clock_now - clock_start)
                              .count()) /
@@ -198,7 +199,20 @@ bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
   return ret;
 }
 
-std::vector<bool> CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
+namespace {
+// Checks if a future has completed execution.
+// This function is taken from monte_carlo.cc. It will be used in the "thread
+// pool" implementation (which doesn't use openMP).
+template <typename T>
+bool IsFutureReady(const std::future<T>& future) {
+  // future.wait_for() is the only method to check the status of a future
+  // without waiting for it to complete.
+  const std::future_status status =
+      future.wait_for(std::chrono::milliseconds(1));
+  return (status == std::future_status::ready);
+}
+}  // namespace
+std::vector<bool> CspaceFreeLine::CertifyTangentConfigurationSpaceLines(
     const Eigen::Ref<const Eigen::MatrixXd>& s0,
     const Eigen::Ref<const Eigen::MatrixXd>& s1,
     std::vector<std::vector<SeparatingPlane<double>>>*
@@ -207,25 +221,67 @@ std::vector<bool> CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
   DRAKE_DEMAND(s0.rows() == s1.rows());
   DRAKE_DEMAND(s0.cols() == s1.cols());
 
-  std::vector<bool> ret;
-  ret.resize(s0.rows());
+  // cannot use vector of bools as they aren't thread safe like other types.
+  std::vector<uint8_t> pair_is_safe(s0.rows(), 0);
   separating_planes_sol_per_row->resize(s0.rows());
   // Create as many threads as possible and join all threads.
-  const auto certify_line = [this, &ret, &s0, &s1, &solver_options,
+  const auto certify_line = [this, &pair_is_safe, &s0, &s1, &solver_options,
                              &separating_planes_sol_per_row](int i) {
     solvers::MathematicalProgram prog = solvers::MathematicalProgram();
-    ret.at(i) = this->CertifyTangentConfigurationSpaceLine(
+    pair_is_safe.at(i) = this->CertifyTangentConfigurationSpaceLine(
         s0.row(i), s1.row(i), &(separating_planes_sol_per_row->at(i)),
-        solver_options);
+        solver_options) ? 1 : 0;
+    return i;
   };
-  std::vector<std::thread> threads;
-  for (int i = 0; i < s0.rows(); ++i) {
-    threads.emplace_back(std::thread(certify_line, i));
+
+  // We implement the "thread pool" idea here, by following
+  // MonteCarloSimulationParallel class. This implementation doesn't use
+  // openMP library. Storage for active parallel SOS operations.
+
+  // use as many threads as optimal for hardware.
+  unsigned int num_threads = std::thread::hardware_concurrency();
+  drake::log()->debug("Certifying with {} threads", num_threads);
+  std::list<std::future<int>> active_operations;
+  // Keep track of how many certifications have been dispatched already.
+  int certs_dispatched = 0;
+  while ((active_operations.size() > 0 || certs_dispatched < s0.rows())) {
+    // Check for completed operations.
+    for (auto operation = active_operations.begin();
+         operation != active_operations.end();) {
+      if (IsFutureReady(*operation)) {
+        // This call to future.get() is necessary to propagate any exception
+        // thrown during certification setup/solve.
+        const int certification_count = operation->get();
+        drake::log()->debug(
+            "Pair s0: {}, s1: {} completed, is_collision free = {}",
+            s0.row(certification_count), s1.row(certification_count),
+            pair_is_safe.at(certification_count));
+        // Erase returns iterator to the next node in the list.
+        operation = active_operations.erase(operation);
+      } else {
+        // Advance to next node in the list.
+        ++operation;
+      }
+    }
+
+    // Dispatch new certification.
+    while (active_operations.size() < num_threads &&
+           certs_dispatched < s0.rows()) {
+      active_operations.emplace_back(std::async(
+          std::launch::async, std::move(certify_line), certs_dispatched));
+      drake::log()->debug("Certification of {}/{} dispatched", certs_dispatched+1,
+                          s0.rows());
+      ++certs_dispatched;
+    }
+    // Wait a bit before checking for completion.
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
-  for (auto& th : threads) {
-    th.join();
+
+  std::vector<bool> pair_is_safe_bool(pair_is_safe.size());
+  for(int i = 0; i < static_cast<int>(pair_is_safe.size()); ++i){
+    pair_is_safe_bool.at(i) = pair_is_safe.at(i) > 0;
   }
-  return ret;
+  return pair_is_safe_bool;
 }
 
 std::vector<LinkOnPlaneSideRational>
@@ -388,6 +444,19 @@ void CspaceFreeLine::AddCertifySeparatingPlaneConstraintToProg(
     }
     ++ctr;
   }
+}
+
+bool CspaceFreeLine::PointInJointLimits(
+    const Eigen::Ref<const Eigen::VectorXd>& s) const {
+  const Eigen::VectorXd s_min =
+      this->rational_forward_kinematics().plant().GetPositionLowerLimits();
+  const Eigen::VectorXd s_max =
+      this->rational_forward_kinematics().plant().GetPositionUpperLimits();
+  DRAKE_DEMAND(s.size() == s_min.size());
+  for (int i = 0; i < s.size(); ++i) {
+    if (s(i) < s_min(i) || s_max(i) < s(i)) return false;
+  }
+  return true;
 }
 
 void CspaceFreeLine::InitializeLineVariables(int num_positions) {

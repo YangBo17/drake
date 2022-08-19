@@ -24,7 +24,7 @@ class CspaceLineTuple {
       const Eigen::Ref<const Eigen::VectorXd>& s0,
       const Eigen::Ref<const Eigen::VectorXd>& s1) const;
 
-  const solvers::MathematicalProgram* get_psatz_variables_and_psd_constraints_()
+  const solvers::MathematicalProgram* get_psatz_variables_and_psd_constraints()
       const {
     return &psatz_variables_and_psd_constraints_;
   }
@@ -132,7 +132,7 @@ class CspaceFreeLine : public CspaceFreeRegion {
   /**
    * Certifies whether a set of lines is collision free in parallel.
    */
-  std::vector<bool> CertifyTangentConfigurationSpaceLine(
+  std::vector<bool> CertifyTangentConfigurationSpaceLines(
       const Eigen::Ref<const Eigen::MatrixXd>& s0,
       const Eigen::Ref<const Eigen::MatrixXd>& s1,
       std::vector<std::vector<SeparatingPlane<double>>>*
@@ -151,6 +151,8 @@ class CspaceFreeLine : public CspaceFreeRegion {
       solvers::MathematicalProgram* prog, int i,
       const Eigen::Ref<const Eigen::VectorXd>& s0,
       const Eigen::Ref<const Eigen::VectorXd>& s1) const;
+
+  bool PointInJointLimits(const Eigen::Ref<const Eigen::VectorXd>& s) const;
 
  private:
   // the variable of the line going from 0 to 1
