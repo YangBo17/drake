@@ -52,7 +52,7 @@ CspaceLineTuple::CspaceLineTuple(
   p_.SetIndeterminates({mu});
 
   // construct the Lagrangian variables and the Psatz equality constraints
-  //  a univariate polynomial p(μ) is nonnegative on [0, 1] if and
+  // a univariate polynomial p(μ) is nonnegative on [0, 1] if and
   // only if p(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
   // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
   // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS. These are those polynomials
