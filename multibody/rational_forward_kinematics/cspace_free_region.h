@@ -121,8 +121,10 @@ void CalcPlane(const VectorX<T>& decision_variables,
  * polynomials (sos, dsos, sdsos).
  */
 struct VerificationOption {
-  solvers::MathematicalProgram::NonnegativePolynomial link_polynomial_type;
-  solvers::MathematicalProgram::NonnegativePolynomial lagrangian_type;
+  solvers::MathematicalProgram::NonnegativePolynomial link_polynomial_type =
+      solvers::MathematicalProgram::NonnegativePolynomial::kSos;
+  solvers::MathematicalProgram::NonnegativePolynomial lagrangian_type =
+      solvers::MathematicalProgram::NonnegativePolynomial::kSos;
 };
 
 /**
