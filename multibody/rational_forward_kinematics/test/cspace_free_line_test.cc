@@ -376,7 +376,7 @@ GTEST_TEST(CspaceLineTupleAddTupleOnSideOfPlaneConstraint, Test) {
   rational_numerator_eval.SetIndeterminates({mu});
   p_evaled_s0_s1_and_psatz.SetIndeterminates({mu});
 
-  EXPECT_TRUE(rational_numerator.Expand().CoefficientsAlmostEqual(
+  EXPECT_TRUE(rational_numerator_eval.Expand().CoefficientsAlmostEqual(
       p_evaled_s0_s1_and_psatz.Expand(), 1E-12));
 
   solvers::LinearConstraint* constraint;
@@ -388,20 +388,15 @@ GTEST_TEST(CspaceLineTupleAddTupleOnSideOfPlaneConstraint, Test) {
     constraint->Eval(binding.variables(), &e);
     evaled_constraint =
         symbolic::Polynomial(e[0].EvaluatePartial(env_with_zero_psd));
-    std::cout << "Evaled constraint: " << evaled_constraint << std::endl;
-    std::cout << "Evaled rational_numerator_eval: " << rational_numerator_eval << std::endl;
     for (const auto& [mono, coeff] :
          rational_numerator_eval.monomial_to_coefficient_map()) {
       if (evaled_constraint.Expand().CoefficientsAlmostEqual(
               symbolic::Polynomial(coeff).Expand(), 1E-12)) {
-        std::cout<< "Im in here" << std::endl;
         found = true;
         break;
       }
-      std::cout << "internal loop: " << found << std::endl;
     }
-    std::cout << "value of found right before: " << found << std::endl;
-    EXPECT_TRUE(found);
+    EXPECT_TRUE(found || evaled_constraint.Expand().EqualTo(symbolic::Polynomial()));
   }
 }
 
@@ -409,8 +404,8 @@ GTEST_TEST(CspaceLineTupleAddTupleOnSideOfPlaneConstraint, Test) {
 TEST_F(DoublePendulumTest, TestCspaceFreeLineConstructor) {
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
                      SeparatingPlaneOrder::kAffine, std::nullopt);
-  EXPECT_TRUE(dut.get_s0().size() == 2);
-  EXPECT_TRUE(dut.get_s1().size() == 2);
+  EXPECT_EQ(dut.get_s0().size(), 2);
+  EXPECT_EQ(dut.get_s1().size(), 2);
 }
 
 // Evaluates whether two polynomials with indeterminates that have the same name
@@ -560,7 +555,6 @@ TEST_F(DoublePendulumTest, TestGenerateRationalsForLinkOnOneSideOfPlane) {
 TEST_F(DoublePendulumTest,
        TestCertifyTangentConfigurationSpaceLineSinglePoints) {
   solvers::SolverOptions solver_options;
-  solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
                      SeparatingPlaneOrder::kAffine, q_star_0_, {}, {});
 
@@ -570,17 +564,17 @@ TEST_F(DoublePendulumTest,
   Eigen::Vector2d s1_out_of_limits{-2, -2};
   std::vector<SeparatingPlane<double>> separating_planes_sol;
 
-  EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(s0, s1_good,
-                                                       &separating_planes_sol));
+  EXPECT_TRUE(dut.CertifyTangentConfigurationSpaceLine(
+      s0, s1_good, solver_options, &separating_planes_sol));
   EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(
-      s0, s1_bad, &separating_planes_sol));
+      s0, s1_bad, solver_options, &separating_planes_sol));
   EXPECT_FALSE(dut.CertifyTangentConfigurationSpaceLine(
-      s0, s1_out_of_limits, &separating_planes_sol));
+      s0, s1_out_of_limits, solver_options, &separating_planes_sol));
 }
 
 TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLinesParrallel) {
   solvers::SolverOptions solver_options;
-  solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
+//  solver_options.SetOption(solvers::CommonSolverOption::kPrintToConsole, 1);
   CspaceFreeLine dut(*diagram_, plant_, scene_graph_,
                      SeparatingPlaneOrder::kAffine, q_star_0_, {}, {});
 
@@ -595,8 +589,8 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLinesParrallel) {
   s1.row(2) = s1_out_of_limits_vec;
 
   std::vector<std::vector<SeparatingPlane<double>>> separating_planes_sol;
-  std::vector<bool> safe_bools =
-      dut.CertifyTangentConfigurationSpaceLines(s0, s1, &separating_planes_sol);
+  std::vector<bool> safe_bools = dut.CertifyTangentConfigurationSpaceLines(
+      s0, s1, solver_options, &separating_planes_sol);
 
   EXPECT_TRUE(safe_bools.at(0));
   EXPECT_FALSE(safe_bools.at(1));
@@ -609,9 +603,9 @@ TEST_F(DoublePendulumTest, TestCertifyTangentConfigurationSpaceLinesParrallel) {
   Eigen::MatrixXd s1_2(N, 2);
   s1_2.col(0) = -0.25 * Eigen::MatrixXd::Ones(N, 1),
   s1_2.col(1) = 0.9 * Eigen::MatrixXd::Ones(N, 1);
-
+  solvers::SolverOptions options;
   std::vector<bool> safe_bools2 = dut.CertifyTangentConfigurationSpaceLines(
-      s0_2, s1_2, &separating_planes_sol);
+      s0_2, s1_2, options, &separating_planes_sol);
   int num_not_cert = 0;
   for (const auto& b : safe_bools2) {
     if (!b) {

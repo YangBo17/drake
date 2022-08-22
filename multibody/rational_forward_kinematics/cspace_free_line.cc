@@ -49,12 +49,8 @@ CspaceLineTuple::CspaceLineTuple(
       solvers::VectorIndeterminate<1>(mu));
   p_.SetIndeterminates({mu});
 
-  // construct the Lagrangian variables and the Psatz equality constraints
-  // a univariate polynomial p(μ) is nonnegative on [0, 1] if and
-  // only if p(μ) = λ(μ) + ν(μ)*μ*(1-μ) if deg(p) = 2d with deg(λ) ≤ 2d and
-  // deg(ν) ≤ 2d - 2 p(μ) = λ(μ)*μ + ν(μ)*(1-μ) if deg(p) = 2d + 1 with
-  // deg(λ) ≤ 2d and deg(ν) ≤ 2d and λ, ν are SOS. These are those polynomials
-  // and their associated Gram matrices.
+  // Constructs the multiplier polynomials and their associated Gram matrices as
+  // well as the polynomial p_.
   if (p_.TotalDegree() > 0) {
     int d = p_.TotalDegree() / 2;
     auto [lambda, Q_lambda] =
@@ -83,6 +79,7 @@ CspaceLineTuple::AddPsatzConstraintToProg(
     env.insert(s0_[i], s0[i]);
     env.insert(s1_[i], s1[i]);
   }
+  // Imposing the constraint that p(μ) = 0 by substituting s0 and s1 with their corresponding values.
   return prog->AddEqualityConstraintBetweenPolynomials(p_.EvaluatePartial(env),
                                                        symbolic::Polynomial());
 }
@@ -120,16 +117,17 @@ CspaceFreeLine::CspaceFreeLine(
     : CspaceFreeRegion(diagram, plant, scene_graph, plane_order,
                        CspaceRegionType::kAxisAlignedBoundingBox),
       mu_{symbolic::Variable("mu")},
+      s0_{symbolic::MakeVectorContinuousVariable(plant->num_positions(), "s0")},
+      s1_{symbolic::MakeVectorContinuousVariable(plant->num_positions(), "s1")},
       filtered_collision_pairs_{filtered_collision_pairs},
-      option_{option} {
+      option_{option}
+      {
   if (q_star.has_value()) {
     DRAKE_DEMAND(q_star.value().size() == plant->num_positions());
     q_star_ = q_star.value();
   } else {
     q_star_ = Eigen::VectorXd::Zero(plant->num_positions());
   }
-
-  InitializeLineVariables(plant->num_positions());
 
   // allocate all the tuples
   GenerateTuplesForCertification(
@@ -141,9 +139,9 @@ CspaceFreeLine::CspaceFreeLine(
 bool CspaceFreeLine::CertifyTangentConfigurationSpaceLine(
     const Eigen::Ref<const Eigen::VectorXd>& s0,
     const Eigen::Ref<const Eigen::VectorXd>& s1,
-    std::vector<SeparatingPlane<double>>* separating_planes_sol,
-    const solvers::SolverOptions& solver_options) const {
-  if (not PointInJointLimits(s0) || not PointInJointLimits(s1)) {
+    const solvers::SolverOptions& solver_options,
+    std::vector<SeparatingPlane<double>>* separating_planes_sol) const {
+  if (!PointInJointLimits(s0) || !PointInJointLimits(s1)) {
     return false;
   }
 
@@ -215,22 +213,23 @@ bool IsFutureReady(const std::future<T>& future) {
 std::vector<bool> CspaceFreeLine::CertifyTangentConfigurationSpaceLines(
     const Eigen::Ref<const Eigen::MatrixXd>& s0,
     const Eigen::Ref<const Eigen::MatrixXd>& s1,
+    const solvers::SolverOptions& solver_options,
     std::vector<std::vector<SeparatingPlane<double>>>*
-        separating_planes_sol_per_row,
-    const solvers::SolverOptions& solver_options) const {
+        separating_planes_sol_per_row) const {
   DRAKE_DEMAND(s0.rows() == s1.rows());
   DRAKE_DEMAND(s0.cols() == s1.cols());
 
   // cannot use vector of bools as they aren't thread safe like other types.
   std::vector<uint8_t> pair_is_safe(s0.rows(), 0);
   separating_planes_sol_per_row->resize(s0.rows());
-  // Create as many threads as possible and join all threads.
   const auto certify_line = [this, &pair_is_safe, &s0, &s1, &solver_options,
                              &separating_planes_sol_per_row](int i) {
     solvers::MathematicalProgram prog = solvers::MathematicalProgram();
     pair_is_safe.at(i) = this->CertifyTangentConfigurationSpaceLine(
-        s0.row(i), s1.row(i), &(separating_planes_sol_per_row->at(i)),
-        solver_options) ? 1 : 0;
+                             s0.row(i), s1.row(i), solver_options,
+                             &(separating_planes_sol_per_row->at(i)))
+                             ? 1
+                             : 0;
     return i;
   };
 
@@ -269,8 +268,8 @@ std::vector<bool> CspaceFreeLine::CertifyTangentConfigurationSpaceLines(
            certs_dispatched < s0.rows()) {
       active_operations.emplace_back(std::async(
           std::launch::async, std::move(certify_line), certs_dispatched));
-      drake::log()->debug("Certification of {}/{} dispatched", certs_dispatched+1,
-                          s0.rows());
+      drake::log()->debug("Certification of {}/{} dispatched",
+                          certs_dispatched + 1, s0.rows());
       ++certs_dispatched;
     }
     // Wait a bit before checking for completion.
@@ -278,7 +277,7 @@ std::vector<bool> CspaceFreeLine::CertifyTangentConfigurationSpaceLines(
   }
 
   std::vector<bool> pair_is_safe_bool(pair_is_safe.size());
-  for(int i = 0; i < static_cast<int>(pair_is_safe.size()); ++i){
+  for (int i = 0; i < static_cast<int>(pair_is_safe.size()); ++i) {
     pair_is_safe_bool.at(i) = pair_is_safe.at(i) > 0;
   }
   return pair_is_safe_bool;
@@ -289,9 +288,29 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
     const Eigen::Ref<const Eigen::VectorXd>& q_star,
     const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs)
     const {
+  // First we reuse the code from CspaceFreeRegion to obtain the rational
+  // forward kinematics expressions for all the objects in the scene
   std::vector<LinkOnPlaneSideRational> generic_rationals =
       CspaceFreeRegion::GenerateRationalsForLinkOnOneSideOfPlane(
           q_star, filtered_collision_pairs);
+
+  // Now we will perform the substitution t = μ*s₀ + (1−μ)*s₁ to take the
+  // forward kinematics from an n-variate function in t to a univariate function
+  // in μ. First we precompute the map for performing substitution from t to
+  // μ*s₀
+  // + (1−μ)*s₁
+  std::unordered_map<symbolic::Variable, symbolic::Expression>
+      t_to_line_subs_map;
+  const drake::VectorX<drake::symbolic::Variable>& t =
+      (this->rational_forward_kinematics()).t();
+  for (int i = 0;
+       i < ((this->rational_forward_kinematics()).plant().num_positions());
+       ++i) {
+    // equivalent to μ*s₀ + (1−μ)*s₁ but requires less traversal in
+    // sustitutions
+    t_to_line_subs_map[t[i]] = (s0_[i] - s1_[i]) * mu_ + s1_[i];
+  }
+
   std::vector<LinkOnPlaneSideRational> rationals;
   int num_rats = generic_rationals.size();
   rationals.reserve(num_rats);
@@ -319,8 +338,9 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
             1000));
 
     clock_start = std::chrono::system_clock::now();
+
     symbolic::Expression numerator_substituted =
-        numerator_expr.Substitute(t_to_line_subs_map_);
+        numerator_expr.Substitute(t_to_line_subs_map);
     clock_end = std::chrono::system_clock::now();
     drake::log()->debug(fmt::format(
         "numerator substituted in {} s",
@@ -346,7 +366,7 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
     clock_start = std::chrono::system_clock::now();
     denominator_expr = rational.rational.denominator().ToExpression();
     denominator_poly =
-        symbolic::Polynomial(denominator_expr.Substitute(t_to_line_subs_map_),
+        symbolic::Polynomial(denominator_expr.Substitute(t_to_line_subs_map),
                              symbolic::Variables{mu_});
     clock_end = std::chrono::system_clock::now();
     drake::log()->debug(fmt::format(
@@ -454,28 +474,11 @@ bool CspaceFreeLine::PointInJointLimits(
       this->rational_forward_kinematics().plant().GetPositionUpperLimits();
   DRAKE_DEMAND(s.size() == s_min.size());
   for (int i = 0; i < s.size(); ++i) {
-    if (s(i) < s_min(i) || s_max(i) < s(i)) return false;
+    if (s(i) < s_min(i) || s_max(i) < s(i)) {return false;}
   }
   return true;
 }
 
-void CspaceFreeLine::InitializeLineVariables(int num_positions) {
-  s0_.resize(num_positions);
-  s1_.resize(num_positions);
-  for (int i = 0; i < num_positions; ++i) {
-    s0_[i] = drake::symbolic::Variable("s0[" + std::to_string(i) + "]");
-    s1_[i] = drake::symbolic::Variable("s1[" + std::to_string(i) + "]");
-  }
-
-  const drake::VectorX<drake::symbolic::Variable> t =
-      (this->rational_forward_kinematics()).t();
-  for (int i = 0;
-       i < ((this->rational_forward_kinematics()).plant().num_positions());
-       ++i) {
-    // equivalent to μ*s₀ + (1−μ)*s₁ but requires less traversal in sustitutions
-    t_to_line_subs_map_[t[i]] = (s0_[i] - s1_[i]) * mu_ + s1_[i];
-  }
-}
 
 }  // namespace multibody
 }  // namespace drake

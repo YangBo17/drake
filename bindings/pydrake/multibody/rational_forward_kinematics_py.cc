@@ -620,7 +620,7 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
               const solvers::SolverOptions& solver_options) {
             std::vector<SeparatingPlane<double>> separating_planes_sol;
             bool safe = self->CertifyTangentConfigurationSpaceLine(
-                s0, s1, &separating_planes_sol, solver_options);
+                s0, s1, solver_options, &separating_planes_sol);
             return std::make_tuple(safe, separating_planes_sol);
           },
           py::arg("s0"), py::arg("s1"),
@@ -634,7 +634,7 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
               const solvers::SolverOptions& solver_options) {
             std::vector<std::vector<SeparatingPlane<double>>> separating_planes_sol;
             std::vector<bool> safe = self->CertifyTangentConfigurationSpaceLines(
-                s0, s1, &separating_planes_sol, solver_options);
+                s0, s1, solver_options, &separating_planes_sol);
             return std::make_tuple(safe, separating_planes_sol);
           },
           py::arg("s0"), py::arg("s1"),
