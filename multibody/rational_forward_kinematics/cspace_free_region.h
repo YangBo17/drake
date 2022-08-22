@@ -125,8 +125,6 @@ struct VerificationOption {
       solvers::MathematicalProgram::NonnegativePolynomial::kSos;
   solvers::MathematicalProgram::NonnegativePolynomial lagrangian_type =
       solvers::MathematicalProgram::NonnegativePolynomial::kSos;
-//  solvers::MathematicalProgram::NonnegativePolynomial link_polynomial_type;
-//  solvers::MathematicalProgram::NonnegativePolynomial lagrangian_type;
 };
 
 /**
@@ -295,8 +293,7 @@ class CspaceFreeRegion {
    * This function loops over all pair of collision geometries  that are not in
    * filtered_collision_pair.
    */
-  virtual std::vector<LinkOnPlaneSideRational>
-  GenerateRationalsForLinkOnOneSideOfPlane(
+  std::vector<LinkOnPlaneSideRational> GenerateRationalsForLinkOnOneSideOfPlane(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs)
       const;
