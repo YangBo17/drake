@@ -293,7 +293,8 @@ class CspaceFreeRegion {
    * This function loops over all pair of collision geometries  that are not in
    * filtered_collision_pair.
    */
-  std::vector<LinkOnPlaneSideRational> GenerateRationalsForLinkOnOneSideOfPlane(
+  virtual std::vector<LinkOnPlaneSideRational>
+  GenerateRationalsForLinkOnOneSideOfPlane(
       const Eigen::Ref<const Eigen::VectorXd>& q_star,
       const CspaceFreeRegion::FilteredCollisionPairs& filtered_collision_pairs)
       const;
@@ -688,17 +689,6 @@ class CspaceFreeRegion {
   //      std::vector<int>* t_upper_lagrangian_gram_lower_start,
   //      const std::vector<LinkOnPlaneSideRational> rationals
   //      ) const;
-
-  /**
-   * Given t[i], t_lower and t_upper, construct the polynomial t - t_lower and
-   * t_upper - t.
-   */
-  static void ConstructTBoundsPolynomial(
-      const std::vector<symbolic::Monomial>& t_monomial,
-      const Eigen::Ref<const Eigen::VectorXd>& t_lower,
-      const Eigen::Ref<const Eigen::VectorXd>& t_upper,
-      VectorX<symbolic::Polynomial>* t_minus_t_lower,
-      VectorX<symbolic::Polynomial>* t_upper_minus_t);
 
   /**
    * Impose the constraint

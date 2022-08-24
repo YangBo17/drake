@@ -468,10 +468,12 @@ void CspaceFreeLine::AddCertifySeparatingPlaneConstraintToProg(
 
 bool CspaceFreeLine::PointInJointLimits(
     const Eigen::Ref<const Eigen::VectorXd>& s) const {
-  const Eigen::VectorXd s_min =
+  const Eigen::VectorXd q_min =
       this->rational_forward_kinematics().plant().GetPositionLowerLimits();
-  const Eigen::VectorXd s_max =
+  const Eigen::VectorXd q_max =
       this->rational_forward_kinematics().plant().GetPositionUpperLimits();
+  const Eigen::VectorXd s_min = this->rational_forward_kinematics().ComputeTValue(q_min, this->q_star_);
+  const Eigen::VectorXd s_max = this->rational_forward_kinematics().ComputeTValue(q_max, this->q_star_);
   DRAKE_DEMAND(s.size() == s_min.size());
   for (int i = 0; i < s.size(); ++i) {
     if (s(i) < s_min(i) || s_max(i) < s(i)) {return false;}

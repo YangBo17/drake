@@ -424,7 +424,10 @@ CspaceFreeRegion::GenerateRationalsForLinkOnOneSideOfPlane(
   return rationals;
 }
 
-void CspaceFreeRegion::ConstructTBoundsPolynomial(
+namespace {
+// Given t[i], t_lower and t_upper, construct the polynomial t - t_lower and
+// t_upper - t.
+void ConstructTBoundsPolynomial(
     const std::vector<symbolic::Monomial>& t_monomial,
     const Eigen::Ref<const Eigen::VectorXd>& t_lower,
     const Eigen::Ref<const Eigen::VectorXd>& t_upper,
@@ -442,6 +445,7 @@ void CspaceFreeRegion::ConstructTBoundsPolynomial(
     (*t_upper_minus_t)(i) = symbolic::Polynomial(map_upper);
   }
 }
+}  // namespace
 
 /**
  * Impose the constraint
@@ -522,6 +526,7 @@ void CspaceFreeRegion::AddNonnegativeConstraintForGeometryOnOneSideOfPlane(
     prog->AddLinearEqualityConstraint(term.second, 0);
   }
 }
+
 
 CspaceFreeRegion::CspacePolytopeProgramReturn
 CspaceFreeRegion::ConstructProgramForCspacePolytope(
