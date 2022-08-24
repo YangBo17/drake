@@ -79,7 +79,8 @@ CspaceLineTuple::AddPsatzConstraintToProg(
     env.insert(s0_[i], s0[i]);
     env.insert(s1_[i], s1[i]);
   }
-  // Imposing the constraint that p(μ) = 0 by substituting s0 and s1 with their corresponding values.
+  // Imposing the constraint that p(μ) = 0 by substituting s0 and s1 with their
+  // corresponding values.
   return prog->AddEqualityConstraintBetweenPolynomials(p_.EvaluatePartial(env),
                                                        symbolic::Polynomial());
 }
@@ -120,8 +121,7 @@ CspaceFreeLine::CspaceFreeLine(
       s0_{symbolic::MakeVectorContinuousVariable(plant->num_positions(), "s0")},
       s1_{symbolic::MakeVectorContinuousVariable(plant->num_positions(), "s1")},
       filtered_collision_pairs_{filtered_collision_pairs},
-      option_{option}
-      {
+      option_{option} {
   if (q_star.has_value()) {
     DRAKE_DEMAND(q_star.value().size() == plant->num_positions());
     q_star_ = q_star.value();
@@ -317,8 +317,6 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
 
   symbolic::Expression numerator_expr;
   symbolic::Polynomial numerator_poly;
-  symbolic::Expression denominator_expr;
-  symbolic::Polynomial denominator_poly;
   int ctr = 0;
 
   auto clock_start = std::chrono::system_clock::now();
@@ -364,22 +362,8 @@ CspaceFreeLine::GenerateRationalsForLinkOnOneSideOfPlane(
         numerator_poly.TotalDegree()));
 
     clock_start = std::chrono::system_clock::now();
-    denominator_expr = rational.rational.denominator().ToExpression();
-    denominator_poly =
-        symbolic::Polynomial(denominator_expr.Substitute(t_to_line_subs_map),
-                             symbolic::Variables{mu_});
-    clock_end = std::chrono::system_clock::now();
-    drake::log()->debug(fmt::format(
-        "denominator evaluated in {} s",
-        static_cast<float>(
-            std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
-                                                                  clock_start)
-                .count()) /
-            1000));
-
-    clock_start = std::chrono::system_clock::now();
     rationals.emplace_back(
-        symbolic::RationalFunction(numerator_poly, denominator_poly),
+        symbolic::RationalFunction(numerator_poly, symbolic::Polynomial(1)),
         rational.link_geometry, rational.expressed_body_index,
         rational.other_side_link_geometry, rational.a_A, rational.b,
         rational.plane_side, rational.plane_order,
@@ -472,15 +456,18 @@ bool CspaceFreeLine::PointInJointLimits(
       this->rational_forward_kinematics().plant().GetPositionLowerLimits();
   const Eigen::VectorXd q_max =
       this->rational_forward_kinematics().plant().GetPositionUpperLimits();
-  const Eigen::VectorXd s_min = this->rational_forward_kinematics().ComputeTValue(q_min, this->q_star_);
-  const Eigen::VectorXd s_max = this->rational_forward_kinematics().ComputeTValue(q_max, this->q_star_);
+  const Eigen::VectorXd s_min =
+      this->rational_forward_kinematics().ComputeTValue(q_min, this->q_star_);
+  const Eigen::VectorXd s_max =
+      this->rational_forward_kinematics().ComputeTValue(q_max, this->q_star_);
   DRAKE_DEMAND(s.size() == s_min.size());
   for (int i = 0; i < s.size(); ++i) {
-    if (s(i) < s_min(i) || s_max(i) < s(i)) {return false;}
+    if (s(i) < s_min(i) || s_max(i) < s(i)) {
+      return false;
+    }
   }
   return true;
 }
-
 
 }  // namespace multibody
 }  // namespace drake
