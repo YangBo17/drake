@@ -1,6 +1,3 @@
-//
-// Created by amice on 11/8/21.
-//
 #include "pybind11/eigen.h"
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
@@ -10,6 +7,7 @@
 #include "drake/bindings/pydrake/common/value_pybind.h"
 #include "drake/bindings/pydrake/pydrake_pybind.h"
 #include "drake/multibody/rational_forward_kinematics/collision_geometry.h"
+#include "drake/multibody/rational_forward_kinematics/cspace_free_line.h"
 #include "drake/multibody/rational_forward_kinematics/cspace_free_region.h"
 #include "drake/multibody/rational_forward_kinematics/generate_monomial_basis_util.h"
 #include "drake/multibody/rational_forward_kinematics/rational_forward_kinematics.h"
@@ -203,7 +201,7 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
       .def_readonly("other_side_link_geometry",
           &LinkOnPlaneSideRational::other_side_link_geometry,
           doc.LinkOnPlaneSideRational.other_side_link_geometry.doc)
-      .def_readonly("a_A", &LinkOnPlaneSideRational::a_A,
+      .def_readonly("a_A", &LinkOnPlaneSideRational::a_A, py_rvp::copy,
           doc.LinkOnPlaneSideRational.a_A.doc)
       .def_readonly(
           "b", &LinkOnPlaneSideRational::b, doc.LinkOnPlaneSideRational.b.doc)
@@ -362,6 +360,10 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
           doc.CspaceFreeRegion.CspacePolytopeTuple.monomial_basis.doc);
 
   cspace_cls
+      // note that the output of this function is now useless as
+      // separating_plane_to_lorentz_cone_constraints can return as a list of
+      // empty lists and so has the wrong type to pass to
+      // ConstructLagrangainProgram
       .def(
           "GenerateTuplesForBilinearAlternation",
           [](const CspaceFreeRegion* self,
@@ -594,6 +596,50 @@ PYBIND11_MODULE(rational_forward_kinematics, m) {
       py::arg("filename"), py::arg("plant"), py::arg("scene_graph"),
       doc.ReadCspacePolytopeFromFile.doc);
 
+  // CspaceFreeLine
+  py::class_<CspaceFreeLine>(m, "CspaceFreeLine", doc.CspaceFreeLine.doc)
+      .def(py::init<const systems::Diagram<double>&,
+               const multibody::MultibodyPlant<double>*,
+               const geometry::SceneGraph<double>*,
+               multibody::SeparatingPlaneOrder, std::optional<Eigen::VectorXd>,
+               const CspaceFreeRegion::FilteredCollisionPairs&,
+               const multibody::VerificationOption&>(),
+          py::arg("diagram"), py::arg("plant"), py::arg("scene_graph"),
+          py::arg("plane_order"), py::arg("q_star") = std::nullopt,
+          py::arg("filtered_collision_pairs") =
+              CspaceFreeRegion::FilteredCollisionPairs(),
+          py::arg("option") = VerificationOption(), doc.CspaceFreeLine.ctor.doc)
+      .def("get_mu", &CspaceFreeLine::get_mu, doc.CspaceFreeLine.get_mu.doc)
+      .def("get_s0", &CspaceFreeLine::get_s0, doc.CspaceFreeLine.get_s0.doc)
+      .def("get_s1", &CspaceFreeLine::get_s1, doc.CspaceFreeLine.get_s1.doc)
+      .def(
+          "CertifyTangentConfigurationSpaceLine",
+          [](CspaceFreeLine* self,
+              const Eigen::Ref<const Eigen::VectorXd>& s0,
+              const Eigen::Ref<const Eigen::VectorXd>& s1,
+              const solvers::SolverOptions& solver_options) {
+            std::vector<SeparatingPlane<double>> separating_planes_sol;
+            bool safe = self->CertifyTangentConfigurationSpaceLine(
+                s0, s1, solver_options, &separating_planes_sol);
+            return std::make_tuple(safe, separating_planes_sol);
+          },
+          py::arg("s0"), py::arg("s1"),
+          py::arg("solver_options") = solvers::SolverOptions(),
+          doc.CspaceFreeLine.CertifyTangentConfigurationSpaceLine.doc)
+      .def(
+          "CertifyTangentConfigurationSpaceLines",
+          [](CspaceFreeLine* self,
+              const Eigen::Ref<const Eigen::MatrixXd>& s0,
+              const Eigen::Ref<const Eigen::MatrixXd>& s1,
+              const solvers::SolverOptions& solver_options) {
+            std::vector<std::vector<SeparatingPlane<double>>> separating_planes_sol;
+            std::vector<bool> safe = self->CertifyTangentConfigurationSpaceLines(
+                s0, s1, solver_options, &separating_planes_sol);
+            return std::make_tuple(safe, separating_planes_sol);
+          },
+          py::arg("s0"), py::arg("s1"),
+          py::arg("solver_options") = solvers::SolverOptions(),
+          doc.CspaceFreeLine.CertifyTangentConfigurationSpaceLines.doc);
   type_pack<symbolic::Polynomial, symbolic::RationalFunction> sym_pack;
   type_visit([m](auto dummy) { DoPoseDeclaration(m, dummy); }, sym_pack);
   type_visit([m](auto dummy) { DoScalarDependentDefinitions(m, dummy); },

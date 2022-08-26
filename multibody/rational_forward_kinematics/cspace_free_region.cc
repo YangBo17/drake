@@ -179,7 +179,12 @@ void AddMaximizeEigenValueGeometricMean(
     Z_diag_vec(i) = Z_lower(Z_lower_count);
     Z_lower_count += X_rows - i;
   }
-  prog->AddMaximizeGeometricMeanCost(Z_diag_vec);
+  if (Z_diag_vec.rows() > 1) {
+    prog->AddMaximizeGeometricMeanCost(Z_diag_vec);
+  } else {
+    // enables adding this cost on 1d plants
+    prog->AddLinearCost(-Eigen::VectorXd::Ones(1), 0, Z_diag_vec);
+  }
 }
 
 // Return the smallest d >= n where d = power(2, k);
@@ -440,6 +445,7 @@ void ConstructTBoundsPolynomial(
     (*t_upper_minus_t)(i) = symbolic::Polynomial(map_upper);
   }
 }
+}  // namespace
 
 /**
  * Impose the constraint
@@ -462,7 +468,7 @@ void ConstructTBoundsPolynomial(
  * @param[out] verified_polynomial p(t) - l_polytope(t)ᵀ(d - C*t) -
  * l_lower(t)ᵀ(t-t_lower) - l_upper(t)ᵀ(t_upper-t)
  */
-void AddNonnegativeConstraintForGeometryOnOneSideOfPlane(
+void CspaceFreeRegion::AddNonnegativeConstraintForGeometryOnOneSideOfPlane(
     solvers::MathematicalProgram* prog,
     const symbolic::RationalFunction& polytope_on_one_side_rational,
     const VectorX<symbolic::Polynomial>& d_minus_Ct,
@@ -520,7 +526,7 @@ void AddNonnegativeConstraintForGeometryOnOneSideOfPlane(
     prog->AddLinearEqualityConstraint(term.second, 0);
   }
 }
-}  // namespace
+
 
 CspaceFreeRegion::CspacePolytopeProgramReturn
 CspaceFreeRegion::ConstructProgramForCspacePolytope(
@@ -657,7 +663,23 @@ void CspaceFreeRegion::GenerateTuplesForBilinearAlternation(
       t_upper);
   ConstructTBoundsPolynomial(t_monomials, *t_lower, *t_upper, t_minus_t_lower,
                              t_upper_minus_t);
+  ConstructTuples(q_star, filtered_collision_pairs, C_rows, t.rows(),
+                  alternation_tuples, lagrangian_gram_vars, verified_gram_vars,
+                  separating_plane_vars, separating_plane_to_tuples,
+                  separating_plane_to_lorentz_cone_constraints);
+}
 
+void CspaceFreeRegion::ConstructTuples(
+    const Eigen::Ref<const Eigen::VectorXd>& q_star,
+    const FilteredCollisionPairs& filtered_collision_pairs, int C_rows,
+    int t_rows,
+    std::vector<CspaceFreeRegion::CspacePolytopeTuple>* alternation_tuples,
+    VectorX<symbolic::Variable>* lagrangian_gram_vars,
+    VectorX<symbolic::Variable>* verified_gram_vars,
+    VectorX<symbolic::Variable>* separating_plane_vars,
+    std::vector<std::vector<int>>* separating_plane_to_tuples,
+    std::vector<std::vector<solvers::Binding<solvers::LorentzConeConstraint>>>*
+        separating_plane_to_lorentz_cone_constraints) const {
   // Build tuples.
   const auto rationals = GenerateRationalsForLinkOnOneSideOfPlane(
       q_star, filtered_collision_pairs);
@@ -679,23 +701,22 @@ void CspaceFreeRegion::GenerateTuplesForBilinearAlternation(
     FindMonomialBasisForPolytopicRegion(
         rational_forward_kinematics_, rationals[i],
         &map_chain_to_monomial_basis, &monomial_basis_chain);
-    std::vector<int> polytope_lagrangian_gram_lower_start(C->rows());
+    std::vector<int> polytope_lagrangian_gram_lower_start(C_rows);
     const int gram_lower_size =
         monomial_basis_chain.rows() * (monomial_basis_chain.rows() + 1) / 2;
-    for (int j = 0; j < C->rows(); ++j) {
+    for (int j = 0; j < C_rows; ++j) {
       polytope_lagrangian_gram_lower_start[j] =
           lagrangian_gram_vars_count + j * gram_lower_size;
     }
-    std::vector<int> t_lower_lagrangian_gram_lower_start(t.rows());
-    for (int j = 0; j < t.rows(); ++j) {
+    std::vector<int> t_lower_lagrangian_gram_lower_start(t_rows);
+    for (int j = 0; j < t_rows; ++j) {
       t_lower_lagrangian_gram_lower_start[j] =
-          lagrangian_gram_vars_count + (C->rows() + j) * gram_lower_size;
+          lagrangian_gram_vars_count + (C_rows + j) * gram_lower_size;
     }
-    std::vector<int> t_upper_lagrangian_gram_lower_start(t.rows());
-    for (int j = 0; j < t.rows(); ++j) {
+    std::vector<int> t_upper_lagrangian_gram_lower_start(t_rows);
+    for (int j = 0; j < t_rows; ++j) {
       t_upper_lagrangian_gram_lower_start[j] =
-          lagrangian_gram_vars_count +
-          (C->rows() + t.rows() + j) * gram_lower_size;
+          lagrangian_gram_vars_count + (C_rows + t_rows + j) * gram_lower_size;
     }
     alternation_tuples->emplace_back(
         rationals[i].rational.numerator(), polytope_lagrangian_gram_lower_start,
@@ -711,7 +732,7 @@ void CspaceFreeRegion::GenerateTuplesForBilinearAlternation(
     // Each Gram matrix is of size monomial_basis_chain.rows() *
     // (monomial_basis_chain.rows() + 1) / 2. Each rational needs C.rows() + 2 *
     // t.rows() Lagrangians.
-    lagrangian_gram_vars_count += gram_lower_size * (C_rows + 2 * t.rows());
+    lagrangian_gram_vars_count += gram_lower_size * (C_rows + 2 * t_rows);
     verified_gram_vars_count +=
         monomial_basis_chain.rows() * (monomial_basis_chain.rows() + 1) / 2;
   }
@@ -792,19 +813,23 @@ CspaceFreeRegion::ConstructLagrangianProgram(
   for (int i = 0; i < t.rows(); ++i) {
     t_monomials.emplace_back(t(i));
   }
-  VectorX<symbolic::Polynomial> d_minus_Ct;
-  CalcDminusCt<double>(C, d, t_monomials, &d_minus_Ct);
   VectorX<symbolic::Polynomial> t_minus_t_lower(t.rows());
   VectorX<symbolic::Polynomial> t_upper_minus_t(t.rows());
   ConstructTBoundsPolynomial(t_monomials, t_lower, t_upper, &t_minus_t_lower,
                              &t_upper_minus_t);
-  // find the redundant inequalities.
+
+  VectorX<symbolic::Polynomial> d_minus_Ct;
   std::unordered_set<int> C_redundant_indices, t_lower_redundant_indices,
       t_upper_redundant_indices;
-  if (redundant_tighten.has_value()) {
-    FindRedundantInequalities(C, d, t_lower, t_upper, redundant_tighten.value(),
-                              &C_redundant_indices, &t_lower_redundant_indices,
-                              &t_upper_redundant_indices);
+  if (C.rows() > 0) {
+    CalcDminusCt<double>(C, d, t_monomials, &d_minus_Ct);
+    // find the redundant inequalities.
+    if (redundant_tighten.has_value()) {
+      FindRedundantInequalities(C, d, t_lower, t_upper,
+                                redundant_tighten.value(), &C_redundant_indices,
+                                &t_lower_redundant_indices,
+                                &t_upper_redundant_indices);
+    }
   }
   // For each rational numerator, add the constraint that the Lagrangian
   // polynomials >= 0, and the verified polynomial >= 0.
@@ -828,7 +853,7 @@ CspaceFreeRegion::ConstructLagrangianProgram(
     // This lambda does these things.
     // If redundant = False, namely this constraint is not redundant, then
     // 1. Compute the Gram matrix.
-    // 2. Constraint the Gram matrix to be PSD.
+    // 2. Constrain the Gram matrix to be PSD.
     // 3. subtract lagrangian(t) * constraint_polynomial from
     // verified_polynomial.
     // If redundant = True, then
@@ -864,7 +889,7 @@ CspaceFreeRegion::ConstructLagrangianProgram(
                            C_redundant_indices.count(i) > 0);
     }
     // Handle lagrangian l_lower(t) and l_upper(t).
-    for (int i = 0; i < t.rows(); ++i) {
+    for (int i = 0; i < t_minus_t_lower.rows(); ++i) {
       constrain_lagrangian(tuple.t_lower_lagrangian_gram_lower_start[i],
                            tuple.monomial_basis, t_minus_t_lower(i),
                            t_lower_redundant_indices.count(i) > 0);
@@ -1320,63 +1345,57 @@ bool FindLagrangianAndSeparatingPlanesMultiThread(
         }
         return active_plane_count;
       };
-  if (num_threads > 0) {
-    // We implement the "thread pool" idea here, by following
-    // MonteCarloSimulationParallel class. This implementation doesn't use
-    // openMP library. Storage for active parallel SOS operations.
-    std::list<std::future<int>> active_operations;
-    // Keep track of how many SOS have been dispatched already.
-    int sos_dispatched = 0;
-    // If any SOS is infeasible, then we terminate all other SOS and report
-    // failure.
-    bool found_infeasible = false;
-    while (
-        (active_operations.size() > 0 || sos_dispatched < num_active_planes) &&
-        !found_infeasible) {
-      // Check for completed operations.
-      for (auto operation = active_operations.begin();
-           operation != active_operations.end();) {
-        if (IsFutureReady(*operation)) {
-          // This call to future.get() is necessary to propagate any exception
-          // thrown during SOS setup/solve.
-          const int active_plane_count = operation->get();
-          drake::log()->debug("SOS {} completed, is_success {}",
-                              active_plane_count,
-                              is_success[active_plane_count].value());
-          if (!(is_success[active_plane_count].value())) {
-            found_infeasible = true;
-            break;
-          }
-          // Erase returns iterator to the next node in the list.
-          operation = active_operations.erase(operation);
-        } else {
-          // Advance to next node in the list.
-          ++operation;
+
+  if (num_threads <= 0) {
+    // If num threads isn't specified use the maximum number of threads optimal
+    // for hardware.
+    num_threads = static_cast<int>(std::thread::hardware_concurrency());
+  }
+
+  // We implement the "thread pool" idea here, by following
+  // MonteCarloSimulationParallel class. This implementation doesn't use
+  // openMP library. Storage for active parallel SOS operations.
+  std::list<std::future<int>> active_operations;
+  // Keep track of how many SOS have been dispatched already.
+  int sos_dispatched = 0;
+  // If any SOS is infeasible, then we terminate all other SOS and report
+  // failure.
+  bool found_infeasible = false;
+  while ((active_operations.size() > 0 || sos_dispatched < num_active_planes) &&
+         !found_infeasible) {
+    // Check for completed operations.
+    for (auto operation = active_operations.begin();
+         operation != active_operations.end();) {
+      if (IsFutureReady(*operation)) {
+        // This call to future.get() is necessary to propagate any exception
+        // thrown during SOS setup/solve.
+        const int active_plane_count = operation->get();
+        drake::log()->debug("SOS {} completed, is_success {}",
+                            active_plane_count,
+                            is_success[active_plane_count].value());
+        if (!(is_success[active_plane_count].value())) {
+          found_infeasible = true;
+          break;
         }
+        // Erase returns iterator to the next node in the list.
+        operation = active_operations.erase(operation);
+      } else {
+        // Advance to next node in the list.
+        ++operation;
       }
+    }
 
-      // Dispatch new SOS.
-      while (static_cast<int>(active_operations.size()) < num_threads &&
-             sos_dispatched < num_active_planes) {
-        active_operations.emplace_back(std::async(
-            std::launch::async, std::move(solve_small_sos), sos_dispatched));
-        drake::log()->debug("SOS {} dispatched", sos_dispatched);
-        ++sos_dispatched;
-      }
+    // Dispatch new SOS.
+    while (static_cast<int>(active_operations.size()) < num_threads &&
+           sos_dispatched < num_active_planes) {
+      active_operations.emplace_back(std::async(
+          std::launch::async, std::move(solve_small_sos), sos_dispatched));
+      drake::log()->debug("SOS {} dispatched", sos_dispatched);
+      ++sos_dispatched;
+    }
 
-      // Wait a bit before checking for completion.
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-  } else {
-    // Create as many threads as possible and join all threads.
-    std::vector<std::thread> threads;
-    for (int active_plane_count = 0; active_plane_count < num_active_planes;
-         ++active_plane_count) {
-      threads.push_back(std::thread(solve_small_sos, active_plane_count));
-    }
-    for (auto& th : threads) {
-      th.join();
-    }
+    // Wait a bit before checking for completion.
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
   if (std::all_of(is_success.begin(), is_success.end(),
                   [](std::optional<bool> flag) {

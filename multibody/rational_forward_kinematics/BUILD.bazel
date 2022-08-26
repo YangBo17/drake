@@ -28,6 +28,7 @@ drake_cc_package_library(
     visibility = ["//visibility:public"],
     deps = [
         ":collision_geometry",
+        ":cspace_free_line",
         ":cspace_free_region",
         ":generate_monomial_basis_util",
         ":plane_side",
@@ -115,6 +116,28 @@ drake_cc_library(
     ],
 )
 
+drake_cc_library(
+    name = "cspace_free_line",
+    srcs = [
+        "cspace_free_line.cc",
+    ],
+    hdrs = [
+        "cspace_free_line.h",
+    ],
+    deps = [
+        ":collision_geometry",
+        ":cspace_free_region",
+        ":generate_monomial_basis_util",
+        ":plane_side",
+        ":rational_forward_kinematics_core",
+        ":redundant_inequality_pruning",
+        "//geometry/optimization:convex_set",
+        "//solvers:mathematical_program",
+        "//solvers:mathematical_program_result",
+        "//solvers:mosek_solver",
+    ],
+)
+
 # === test/ ===
 drake_cc_library(
     name = "rational_forward_kinematics_test_utilities",
@@ -152,6 +175,21 @@ drake_cc_googletest(
         "//common/test_utilities:eigen_matrix_compare",
         "//common/test_utilities:symbolic_test_util",
         "//multibody/inverse_kinematics",
+    ],
+)
+
+drake_cc_googletest(
+    name = "cspace_free_line_test",
+    timeout = "long",
+    deps = [
+        ":cspace_free_line",
+        ":rational_forward_kinematics_test_utilities",
+        "//common/test_utilities:eigen_matrix_compare",
+        "//common/test_utilities:symbolic_test_util",
+        "//multibody/inverse_kinematics",
+        "//multibody/parsing:parser",
+        "//solvers:get_program_type",
+        "//systems/framework:diagram_builder",
     ],
 )
 
