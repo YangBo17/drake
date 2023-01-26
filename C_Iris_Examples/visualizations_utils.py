@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import meshcat
 from pydrake.all import (MathematicalProgram, le, SnoptSolver)
 from functools import partial
 import mcubes

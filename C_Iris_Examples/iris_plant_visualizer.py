@@ -15,10 +15,8 @@ from IPython.display import display
 from scipy.spatial import Delaunay, ConvexHull
 from scipy.linalg import block_diag
 
-from pydrake.all import MeshcatVisualizer, StartMeshcat, MeshcatVisualizer, DiagramBuilder, \
+from pydrake.all import MeshcatVisualizer, StartMeshcat, DiagramBuilder, \
     AddMultibodyPlantSceneGraph, TriangleSurfaceMesh, Rgba, SurfaceTriangle, Sphere
-
-
 
 
 class IrisPlantVisualizer:
@@ -27,12 +25,14 @@ class IrisPlantVisualizer:
         self.meshcat2 = StartMeshcat()
         self.meshcat1.Delete()
         self.meshcat2.Delete()
-        self.vis = MeshcatVisualizer.AddToBuilder(builder, scene_graph, self.meshcat1)
-
+        self.vis = MeshcatVisualizer.AddToBuilder(
+            builder, scene_graph, self.meshcat1)
 
         builder2 = DiagramBuilder()
-        plant2, scene_graph2 = AddMultibodyPlantSceneGraph(builder2, time_step=0.0)
-        self.vis2 = MeshcatVisualizer.AddToBuilder(builder2, scene_graph2, self.meshcat2)
+        plant2, scene_graph2 = AddMultibodyPlantSceneGraph(
+            builder2, time_step=0.0)
+        self.vis2 = MeshcatVisualizer.AddToBuilder(
+            builder2, scene_graph2, self.meshcat2)
 
         self.plant = plant
 
@@ -47,34 +47,43 @@ class IrisPlantVisualizer:
         # the point around which we construct the stereographic projection
         self.q_star = kwargs.get('q_star', np.zeros(self.num_joints))
         self.q_lower_limits = plant.GetPositionLowerLimits()
-        self.s_lower_limits = self.forward_kin.ComputeSValue(self.q_lower_limits, self.q_star)
+        self.s_lower_limits = self.forward_kin.ComputeSValue(
+            self.q_lower_limits, self.q_star)
         tmp = -1
-        self.q_lower_limits = viz_utils.stretch_array_to_3d(self.q_lower_limits,tmp)
-        self.s_lower_limits = viz_utils.stretch_array_to_3d(self.s_lower_limits,tmp)
+        self.q_lower_limits = viz_utils.stretch_array_to_3d(
+            self.q_lower_limits, tmp)
+        self.s_lower_limits = viz_utils.stretch_array_to_3d(
+            self.s_lower_limits, tmp)
 
         self.q_upper_limits = plant.GetPositionUpperLimits()
-        self.s_upper_limits = self.forward_kin.ComputeSValue(self.q_upper_limits, self.q_star)
-        self.q_upper_limits = viz_utils.stretch_array_to_3d(self.q_upper_limits)
-        self.s_upper_limits = viz_utils.stretch_array_to_3d(self.s_upper_limits)
+        self.s_upper_limits = self.forward_kin.ComputeSValue(
+            self.q_upper_limits, self.q_star)
+        self.q_upper_limits = viz_utils.stretch_array_to_3d(
+            self.q_upper_limits)
+        self.s_upper_limits = viz_utils.stretch_array_to_3d(
+            self.s_upper_limits)
 
         self.viz_role = kwargs.get('viz_role', Role.kIllustration)
 
         self.diagram = self.builder.Build()
 
-
-
         builder2.Build()
         # self.meshcat1.load()
         self.diagram_context = self.diagram.CreateDefaultContext()
-        self.plant_context = plant.GetMyMutableContextFromRoot(self.diagram_context)
+        self.plant_context = plant.GetMyMutableContextFromRoot(
+            self.diagram_context)
         self.diagram.Publish(self.diagram_context)
         self.simulator = Simulator(self.diagram, self.diagram_context)
         self.simulator.Initialize()
 
         self.ik = InverseKinematics(plant, self.plant_context)
         min_dist = 1e-5
-        self.collision_constraint = self.ik.AddMinimumDistanceConstraint(min_dist, 0.01)
-        self.col_func_handle = partial(self.eval_cons, c=self.collision_constraint, tol=min_dist)
+        self.collision_constraint = self.ik.AddMinimumDistanceConstraint(
+            min_dist, 0.01)
+        self.col_func_handle = partial(
+            self.eval_cons,
+            c=self.collision_constraint,
+            tol=min_dist)
         self.col_func_handle_rational = partial(self.eval_cons_rational)
 
         # construct collision pairs
@@ -90,32 +99,21 @@ class IrisPlantVisualizer:
         for p in self.pairs:
             pair_set.add(p[0])
             pair_set.add(p[1])
-        self.geom_ids = self.inspector.GetGeometryIds(GeometrySet(list(pair_set)))
+        self.geom_ids = self.inspector.GetGeometryIds(
+            GeometrySet(list(pair_set)))
         # self.link_poses_by_body_index_rat_pose = self.forward_kin.CalcLinkPoses(self.q_star,
         #                                                                         self.plant.world_body().index())
         # self.X_WA_list = [p.asRigidTransformExpr() for p in self.link_poses_by_body_index_rat_pose]
-        self.body_indexes_by_geom_id = {geom:
-                                            plant.GetBodyFromFrameId(self.inspector.GetFrameId(geom)).index() for geom
-                                        in
-                                        self.geom_ids}
+        self.body_indexes_by_geom_id = {geom: plant.GetBodyFromFrameId(
+            self.inspector.GetFrameId(geom)).index() for geom in self.geom_ids}
         self.hpoly_sets_in_self_frame_by_geom_id = {
-            geom: self.MakeFromHPolyhedronSceneGraph(self.query, geom, self.inspector.GetFrameId(geom))
-            for geom in self.geom_ids}
+            geom: self.MakeFromHPolyhedronSceneGraph(
+                self.query, geom, self.inspector.GetFrameId(geom)) for geom in self.geom_ids}
         self.vpoly_sets_in_self_frame_by_geom_id = {
-            geom: self.MakeFromVPolytopeSceneGraph(self.query, geom, self.inspector.GetFrameId(geom))
-            for geom in self.geom_ids}
-        #
-        # self.s_space_vertex_world_position_by_geom_id = {}
-        # for geom in self.geom_ids:
-        #     VPoly = self.vpoly_sets_in_self_frame_by_geom_id[geom]
-        #     num_verts = VPoly.vertices().shape[1]
-        #     X_WA = self.X_WA_list[int(self.body_indexes_by_geom_id[geom])]
-        #     R_WA = X_WA.rotation().matrix()
-        #     p_WA = X_WA.translation()
-        #     vert_pos = R_WA @ (VPoly.vertices()) + np.repeat(p_WA[:, np.newaxis], num_verts, 1)
-        #     self.s_space_vertex_world_position_by_geom_id[geom] = vert_pos
+            geom: self.MakeFromVPolytopeSceneGraph(
+                self.query, geom, self.inspector.GetFrameId(geom)) for geom in self.geom_ids}
 
-        #plotting planes setup
+        # plotting planes setup
         x = np.linspace(-1, 1, 3)
         y = np.linspace(-1, 1, 3)
         width = 0.1
@@ -129,31 +127,32 @@ class IrisPlantVisualizer:
         self.tri = Delaunay(verts)
         self.plane_triangles = self.tri.simplices
         tmp = self.tri.points[:, :]
-        self.plane_verts = np.concatenate((tmp, 0 * tmp[:, 0].reshape(-1, 1)), axis=1)
-        self.plane_verts = np.vstack([self.plane_verts,
-                                      np.concatenate((tmp[::-1], 0.1 * np.ones_like(tmp[:, 0].reshape(-1, 1))), axis=1)])
+        self.plane_verts = np.concatenate(
+            (tmp, 0 * tmp[:, 0].reshape(-1, 1)), axis=1)
+        self.plane_verts = np.vstack([self.plane_verts, np.concatenate(
+            (tmp[::-1], 0.1 * np.ones_like(tmp[:, 0].reshape(-1, 1))), axis=1)])
 
         self.box = Box(2, 2, 0.02)
 
-        #region -> (collision -> plane dictionary)
+        # region -> (collision -> plane dictionary)
         self.region_to_collision_pair_to_plane_dictionary = None
 
-
-        self.cube_tri = np.array([[0,2,1],[0,3,2],
-                     [4,6,5],[4,7,6],
-                     [4,3,7],[3,0,7],
-                     [0,6,7],[0,1,6],
-                     [1,5,6],[1,2,5],
-                     [2,4,5],[2,3,4]])
+        self.cube_tri = np.array([[0, 2, 1], [0, 3, 2],
+                                  [4, 6, 5], [4, 7, 6],
+                                  [4, 3, 7], [3, 0, 7],
+                                  [0, 6, 7], [0, 1, 6],
+                                  [1, 5, 6], [1, 2, 5],
+                                  [2, 4, 5], [2, 3, 4]])
         self.cube_tri_drake = [SurfaceTriangle(*t) for t in self.cube_tri]
 
         self._certified_region_solution_list = []
         self._collision_pairs_of_interest = []
         self._region_to_planes_of_interest_dict = {}
 
+
         self.color_dict = None
 
-        self.do_viz_2 = plant.num_positions() <= 3
+        self.do_viz_2d = plant.num_positions() <= 3
 
     @property
     def collision_pairs_of_interest(self):
@@ -176,19 +175,23 @@ class IrisPlantVisualizer:
     def _refresh_planes_of_interest(self):
         # keeps a data structure mapping a region to a plane of interest so that we don't
         # need to search for the planes of interest every time.
-        self._region_to_planes_of_interest_dict = {k: [] for k in self.certified_region_solution_list}
+        self._region_to_planes_of_interest_dict = {
+            k: [] for k in self.certified_region_solution_list}
         for certified_region_solution in self.certified_region_solution_list:
-            for i, plane in enumerate(certified_region_solution.separating_planes):
-                A = plane.positive_side_geometry.id() if plane.positive_side_geometry is not None else None
-                B = plane.negative_side_geometry.id() if plane.negative_side_geometry is not None else None
+            for i, plane in enumerate(
+                    certified_region_solution.separating_planes):
+                A = plane.positive_side_geometry.id(
+                ) if plane.positive_side_geometry is not None else None
+                B = plane.negative_side_geometry.id(
+                ) if plane.negative_side_geometry is not None else None
                 for gid_pairs in self._collision_pairs_of_interest:
                     if (A, B) == gid_pairs or (B, A) == gid_pairs:
-                        self._region_to_planes_of_interest_dict[certified_region_solution].append(plane)
-
+                        self._region_to_planes_of_interest_dict[certified_region_solution].append(
+                            plane)
 
     def jupyter_cell(self,):
         display(self.vis.jupyter_cell())
-        if self.do_viz_2:
+        if self.do_viz_2d:
             display(self.vis2.jupyter_cell())
 
     def eval_cons(self, q, c, tol):
@@ -203,19 +206,25 @@ class IrisPlantVisualizer:
         q = self.forward_kin.ComputeQValue(np.array(s), self.q_star)
         return self.col_func_handle(q)
 
-    def visualize_collision_constraint(self, N = 50, factor = 2, iso_surface = 0.5, wireframe = True):
+    def visualize_collision_constraint(
+            self,
+            N=50,
+            factor=2,
+            iso_surface=0.5,
+            wireframe=True):
         """
         :param N: N is density of marchingcubes grid. Runtime scales cubically in N
         :return:
         """
 
-        vertices, triangles = mcubes.marching_cubes_func(tuple(factor*self.s_lower_limits),
-                                                         tuple(factor*self.s_upper_limits),
-                                                         N, N, N, self.col_func_handle_rational, iso_surface)
+        vertices, triangles = mcubes.marching_cubes_func(
+            tuple(
+                factor * self.s_lower_limits), tuple(
+                factor * self.s_upper_limits), N, N, N, self.col_func_handle_rational, iso_surface)
         tri_drake = [SurfaceTriangle(*t) for t in triangles]
         self.meshcat2.SetObject("/collision_constraint",
-                                      TriangleSurfaceMesh(tri_drake, vertices),
-                                      Rgba(1, 0, 0, 1), wireframe=wireframe)
+                                TriangleSurfaceMesh(tri_drake, vertices),
+                                Rgba(1, 0, 0, 1), wireframe=wireframe)
 
     def plot_surface(self, meshcat,
                      path,
@@ -225,7 +234,8 @@ class IrisPlantVisualizer:
                      rgba=Rgba(.87, .6, .6, 1.0),
                      wireframe=False,
                      wireframe_line_width=1.0):
-        # taken from https://github.com/RussTedrake/manipulation/blob/346038d7fb3b18d439a88be6ed731c6bf19b43de/manipulation/meshcat_cpp_utils.py#L415
+        # taken from
+        # https://github.com/RussTedrake/manipulation/blob/346038d7fb3b18d439a88be6ed731c6bf19b43de/manipulation/meshcat_cpp_utils.py#L415
         (rows, cols) = Z.shape
         assert (np.array_equal(X.shape, Y.shape))
         assert (np.array_equal(X.shape, Z.shape))
@@ -250,8 +260,18 @@ class IrisPlantVisualizer:
                                 wireframe_line_width)
 
     def visualize_collision_constraint2d(self, factor=2, num_points=20):
-        s0 = np.linspace(factor * self.s_lower_limits[0], factor * self.s_upper_limits[0], num_points)
-        s1 = np.linspace(factor * self.s_lower_limits[0], factor * self.s_upper_limits[0], num_points)
+        s0 = np.linspace(
+            factor *
+            self.s_lower_limits[0],
+            factor *
+            self.s_upper_limits[0],
+            num_points)
+        s1 = np.linspace(
+            factor *
+            self.s_lower_limits[0],
+            factor *
+            self.s_upper_limits[0],
+            num_points)
         X, Y = np.meshgrid(s0, s1)
         Z = np.zeros_like(X)
         for i in range(num_points):
@@ -259,47 +279,57 @@ class IrisPlantVisualizer:
                 Z[i, j] = self.eval_cons_rational(X[i, j], Y[i, j])
                 if Z[i, j] == 0:
                     Z[i, j] = np.nan
-        Z = Z-1
-        self.plot_surface(self.meshcat2, "/collision_constraint", X, Y, Z, Rgba(1,0,0,1))
+        Z = Z - 1
+        self.plot_surface(
+            self.meshcat2,
+            "/collision_constraint",
+            X,
+            Y,
+            Z,
+            Rgba(
+                1,
+                0,
+                0,
+                1))
         return Z
 
-    def plot_regions(self, regions, ellipses = None,
-                     region_suffix = '', colors = None,
-                     wireframe = True,
-                     opacity = 0.7,
-                     fill = True,
-                     line_width = 10,
-                     darken_factor = .2,
-                     el_opacity = 0.3):
+    def plot_regions(self, regions, ellipses=None,
+                     region_suffix='', colors=None,
+                     wireframe=True,
+                     opacity=0.7,
+                     fill=True,
+                     line_width=10,
+                     darken_factor=.2,
+                     el_opacity=0.3):
         if colors is None:
             colors = viz_utils.n_colors_random(len(regions), rgbs_ret=True)
 
         for i, region in enumerate(regions):
-            c = Rgba(*[col/255 for col in colors[i]],opacity)
+            c = Rgba(*[col / 255 for col in colors[i]], opacity)
             prefix = f"/iris/regions{region_suffix}/{i}"
             name = prefix + "/hpoly"
             if region.ambient_dimension() == 3:
                 self.plot_hpoly3d(self.meshcat2, name, region,
-                                  c, wireframe = wireframe, resolution = 30)
+                                  c, wireframe=wireframe, resolution=30)
             elif region.ambient_dimension() == 2:
                 self.plot_hpoly2d(self.meshcat2, name,
-                                  region, *[col/255 for col in colors[i]],
+                                  region, *[col / 255 for col in colors[i]],
                                   a=opacity,
-                             line_width=line_width,
-                             fill=fill)
+                                  line_width=line_width,
+                                  fill=fill)
 
             if ellipses is not None:
                 name = prefix + "/ellipse"
-                c = Rgba(*[col/255*(1-darken_factor) for col in colors[i]],el_opacity)
+                c = Rgba(*[col / 255 * (1 - darken_factor)
+                         for col in colors[i]], el_opacity)
                 self.plot_ellipse(self.meshcat2, name,
                                   ellipses[i], c)
-
 
     def plot_seedpoints(self, seed_points):
         for i in range(seed_points.shape[0]):
             self.meshcat2.SetObject(f"/iris/seedpoints/seedpoint{i}",
-                                   Sphere(0.05),
-                                   Rgba(0.06, 0.0, 0, 1))
+                                    Sphere(0.05),
+                                    Rgba(0.06, 0.0, 0, 1))
             s = np.zeros(3)
             s[:len(seed_points[i])] = seed_points[i]
             self.meshcat2.SetTransform(f"/iris/seedpoints/seedpoint{i}",
@@ -327,15 +357,23 @@ class IrisPlantVisualizer:
         tri_drake = [SurfaceTriangle(*t) for t in triangles]
         return vertices, tri_drake
 
-    def plot_hpoly3d(self, meshcat, name, hpoly, color, wireframe = True, resolution = 30):
+    def plot_hpoly3d(
+            self,
+            meshcat,
+            name,
+            hpoly,
+            color,
+            wireframe=True,
+            resolution=30):
         verts, triangles = self.get_plot_poly_mesh(hpoly,
                                                    resolution=resolution)
         meshcat.SetObject(name, TriangleSurfaceMesh(triangles, verts),
-                                color, wireframe=wireframe)
+                          color, wireframe=wireframe)
 
-    def plot_hpoly2d(self, meshcat, name, hpoly, r = 0., g = 0., b = 1., a = 0.,
-                     line_width = 8,
-                     fill = False):
+    def plot_hpoly2d(self, meshcat, name, hpoly,
+                     r=0., g=0., b=1., a=0.,
+                     line_width=8,
+                     fill=False):
         # plot boundary
         vpoly = VPolytope(hpoly)
         verts = vpoly.vertices()
@@ -349,12 +387,12 @@ class IrisPlantVisualizer:
             width = 0.5
             C = block_diag(hpoly.A(), np.array([-1, 1])[:, np.newaxis])
             d = np.append(hpoly.b(), width * np.ones(2))
-            hpoly_3d = HPolyhedron(C,d)
-            self.plot_hpoly3d(meshcat, name+"/fill",
+            hpoly_3d = HPolyhedron(C, d)
+            self.plot_hpoly3d(meshcat, name + "/fill",
                               hpoly_3d, Rgba(r, g, b, a),
                               wireframe=False)
 
-    def plot_ellipse(self,  meshcat, name, ellipse, color):
+    def plot_ellipse(self, meshcat, name, ellipse, color):
         if ellipse.A().shape[0] == 2:
             ellipse = Hyperellipsoid(block_diag(ellipse.A(), 1),
                                      np.append(ellipse.center(), 0))
@@ -363,26 +401,23 @@ class IrisPlantVisualizer:
         meshcat.SetObject(name, shape, color)
         meshcat.SetTransform(name, pose)
 
-
-    def showres(self,q, idx_list = None):
+    def showres(self, q, idx_list=None):
         self.plant.SetPositions(self.plant_context, q)
         col = self.col_func_handle(q)
         s = self.forward_kin.ComputeSValue(np.array(q), self.q_star)
         s = viz_utils.stretch_array_to_3d(s)
         color = Rgba(1, 0.72, 0, 1) if col else Rgba(0.24, 1, 0, 1)
 
-
         self.diagram.Publish(self.diagram_context)
         self.visualize_planes(idx_list)
-        #don't change this order
-        if self.do_viz_2:
+        # don't change this order
+        if self.do_viz_2d:
             self.meshcat2.SetObject(f"/s",
                                     Sphere(0.05),
                                     color)
             self.meshcat2.SetTransform(f"/s",
                                        RigidTransform(RotationMatrix(),
                                                       s))
-
 
     def showres_s(self, s):
         q = self.forward_kin.ComputeQValue(s, self.q_star)
@@ -404,7 +439,7 @@ class IrisPlantVisualizer:
         verts_tf = (R @ plane_verts.T).T + offset
         return verts_tf, RigidTransform(RotationMatrix(R), offset)
 
-    def animate_s(self, traj, steps, runtime, idx_list = None, sleep_time = 0.1):
+    def animate_s(self, traj, steps, runtime, idx_list=None, sleep_time=0.1):
         # loop
         idx = 0
         going_fwd = True
@@ -413,7 +448,8 @@ class IrisPlantVisualizer:
         for _ in range(runtime):
             # print(idx)
             t0 = time.time()
-            q = self.forward_kin.ComputeQValue(traj.value(time_points[idx]), self.q_star)
+            q = self.forward_kin.ComputeQValue(
+                traj.value(time_points[idx]), self.q_star)
             self.showres(q, idx_list)
             if going_fwd:
                 if idx + 1 < steps:
@@ -428,7 +464,7 @@ class IrisPlantVisualizer:
                     going_fwd = True
                     idx += 1
             t1 = time.time()
-            pause = sleep_time- (t1-t0)
+            pause = sleep_time - (t1 - t0)
             if pause > 0:
                 time.sleep(pause)
 
@@ -438,37 +474,57 @@ class IrisPlantVisualizer:
                 return True
         return False
 
-    def visualize_planes(self, idx_list = None):
-        idx_list = [i for i in range(len(self.certified_region_solution_list))] if idx_list is None else idx_list
+    def visualize_planes(self, idx_list=None):
+        idx_list = [i for i in range(
+            len(self.certified_region_solution_list))] if idx_list is None else idx_list
         q = self.plant.GetPositions(self.plant_context)
         s = self.forward_kin.ComputeSValue(np.array(q), self.q_star)
         if self.color_dict is None:
-            colors = viz_utils.n_colors(len(self.certified_region_solution_list), rgbs_ret=True)
-            color_dict = {i: tuple(val / 255 for val in c) for i, c in enumerate(colors)}
+            colors = viz_utils.n_colors(
+                len(self.certified_region_solution_list), rgbs_ret=True)
+            color_dict = {i: tuple(val / 255 for val in c)
+                          for i, c in enumerate(colors)}
         else:
             color_dict = self.color_dict
 
         color_ctr = 0
-        for region_number, sol in enumerate(self.certified_region_solution_list):
+        for region_number, sol in enumerate(
+                self.certified_region_solution_list):
             if region_number in idx_list:
                 # point is in region so see plot interesting planes
                 if np.all(sol.C @ s <= sol.d):
-                    for i, plane in enumerate(self._region_to_planes_of_interest_dict[sol]):
-                        idA = plane.positive_side_geometry.id() if plane.positive_side_geometry is not None else None
-                        idB = plane.negative_side_geometry.id() if plane.negative_side_geometry is not None else None
+                    for i, plane in enumerate(
+                            self._region_to_planes_of_interest_dict[sol]):
+                        idA = plane.positive_side_geometry.id(
+                        ) if plane.positive_side_geometry is not None else None
+                        idB = plane.negative_side_geometry.id(
+                        ) if plane.negative_side_geometry is not None else None
                         if self._is_collision_pair_of_interest(idA, idB):
-                            self._plot_plane(plane, color_dict[region_number], color_dict[region_number],
-                                        color_dict[region_number], s,
-                                        region_number)
+                            self._plot_plane(
+                                plane,
+                                color_dict[region_number],
+                                color_dict[region_number],
+                                color_dict[region_number],
+                                s,
+                                region_number)
                             color_ctr += 1
                 else:
-                    # exited region so remove the visualization associated to this solution
+                    # exited region so remove the visualization associated to
+                    # this solution
                     self.meshcat1.Delete(f"/planes/region{region_number}")
             else:
-                # exited region so remove the visualization associated to this solution
+                # exited region so remove the visualization associated to this
+                # solution
                 self.meshcat1.Delete(f"/planes/region{region_number}")
 
-    def _plot_plane(self, plane, bodyA_color, bodyB_color, plane_color, s, region_number):
+    def _plot_plane(
+            self,
+            plane,
+            bodyA_color,
+            bodyB_color,
+            plane_color,
+            s,
+            region_number):
         # get the vertices of the separated bodies
         vert_A = GetVertices(plane.positive_side_geometry.geometry())
         dims_A = np.max(np.abs(vert_A[:, :-1] - vert_A[:, 1:]), axis=1)
@@ -483,7 +539,8 @@ class IrisPlantVisualizer:
         b = plane.b
         a = plane.a
         b_eval = b.Evaluate(dict(zip(b.GetVariables(), s)))
-        a_eval = np.array([a_idx.Evaluate(dict(zip(a_idx.GetVariables(), s))) for a_idx in a])
+        a_eval = np.array(
+            [a_idx.Evaluate(dict(zip(a_idx.GetVariables(), s))) for a_idx in a])
 
         # transform from expressed frame of plane to world frame
         X_EW = self.plant.GetBodyFromFrameId(
@@ -493,14 +550,16 @@ class IrisPlantVisualizer:
 
         # transform vertices of body A expressed in body A into world frame
         X_WA = self.plant.GetBodyFromFrameId(
-            self.plant.GetBodyFrameIdIfExists(plane.positive_side_geometry.body_index())) \
-            .body_frame().CalcPoseInWorld(self.plant_context)
+            self.plant.GetBodyFrameIdIfExists(
+                plane.positive_side_geometry.body_index())) .body_frame().CalcPoseInWorld(
+            self.plant_context)
         vert_A = X_WA @ vert_A
 
         # transform vertices of body A expressed in body B into world frame
         X_WB = self.plant.GetBodyFromFrameId(
-            self.plant.GetBodyFrameIdIfExists(plane.negative_side_geometry.body_index())) \
-            .body_frame().CalcPoseInWorld(self.plant_context)
+            self.plant.GetBodyFrameIdIfExists(
+                plane.negative_side_geometry.body_index())) .body_frame().CalcPoseInWorld(
+            self.plant_context)
         vert_B = X_WB @ vert_B
 
         verts_tf_E, trans = self.transform(a_eval, b_eval, X_EW @ vert_A[:, 0],
@@ -534,12 +593,14 @@ class IrisPlantVisualizer:
     def draw_traj_s_space(self, traj, maxit):
         # evals end twice fix later
         for it in range(maxit):
-            pt = np.append(traj.value(it * traj.end_time() / maxit),0)
-            pt_nxt = np.append(traj.value((it + 1) * traj.end_time() / maxit),0)
+            pt = np.append(traj.value(it * traj.end_time() / maxit), 0)
+            pt_nxt = np.append(
+                traj.value(
+                    (it + 1) * traj.end_time() / maxit), 0)
 
             path = f"/traj/points{it}"
-            self.meshcat2.SetLine(path, np.hstack([pt[:,np.newaxis], pt_nxt[:, np.newaxis]]),
-                                 line_width = 2, rgba = Rgba(0.0, 0.0, 1, 1))
+            self.meshcat2.SetLine(path, np.hstack([pt[:, np.newaxis], pt_nxt[:, np.newaxis]]),
+                                  line_width=2, rgba=Rgba(0.0, 0.0, 1, 1))
 
     def MakeFromHPolyhedronSceneGraph(self, query, geom, expressed_in=None):
         shape = query.inspector().GetShape(geom)
