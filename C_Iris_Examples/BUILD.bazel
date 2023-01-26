@@ -30,17 +30,9 @@ filegroup(
 ##########################################################
 
 drake_py_library(
-    name = "visualizations_utils",
+    name = "visualization_utils",
     srcs = [
-        "visualizations_utils.py",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-drake_py_library(
-    name = "prm",
-    srcs = [
-        "prm.py",
+        "visualization_utils.py",
     ],
     visibility = ["//visibility:public"],
 )
@@ -49,17 +41,6 @@ drake_py_library(
     name = "iris_plant_visualizer",
     srcs = [
         "iris_plant_visualizer.py",
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//bindings/pydrake",
-    ],
-)
-
-drake_py_library(
-    name = "iris_plant_visualizer2",
-    srcs = [
-        "iris_plant_visualizer2.py",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -79,8 +60,7 @@ drake_jupyter_py_binary(
     ],
     deps = [
         "//C_Iris_Examples:iris_plant_visualizer",
-        "//C_Iris_Examples:visualizations_utils",
+        "//C_Iris_Examples:visualization_utils",
         "//bindings/pydrake",
     ],
 )
-
