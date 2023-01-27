@@ -30,17 +30,9 @@ filegroup(
 ##########################################################
 
 drake_py_library(
-    name = "visualizations_utils",
+    name = "visualization_utils",
     srcs = [
-        "visualizations_utils.py",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-drake_py_library(
-    name = "visualization_utils_v2",
-    srcs = [
-        "visualization_utils_v2.py",
+        "visualization_utils.py",
     ],
     visibility = ["//visibility:public"],
 )
@@ -49,17 +41,6 @@ drake_py_library(
     name = "iris_plant_visualizer",
     srcs = [
         "iris_plant_visualizer.py",
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//bindings/pydrake",
-    ],
-)
-
-drake_py_library(
-    name = "iris_plant_visualizer_v2",
-    srcs = [
-        "iris_plant_visualizer_v2.py",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -79,20 +60,7 @@ drake_jupyter_py_binary(
     ],
     deps = [
         "//C_Iris_Examples:iris_plant_visualizer",
-        "//C_Iris_Examples:visualizations_utils",
-        "//bindings/pydrake",
-    ],
-)
-
-drake_jupyter_py_binary(
-    name = "pinball_iiwas_2d_visualize_plane",
-    add_test_rule = 0,
-    data = [
-        "//C_Iris_Examples:models",
-    ],
-    deps = [
-        "//C_Iris_Examples:iris_plant_visualizer_v2",
-        "//C_Iris_Examples:visualization_utils_v2",
+        "//C_Iris_Examples:visualization_utils",
         "//bindings/pydrake",
     ],
 )
