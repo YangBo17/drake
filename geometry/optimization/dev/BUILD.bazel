@@ -2,6 +2,7 @@
 
 load(
     "@drake//tools/skylark:drake_cc.bzl",
+    "drake_cc_binary",
     "drake_cc_googletest",
     "drake_cc_library",
     "drake_cc_package_library",
@@ -16,16 +17,28 @@ drake_cc_package_library(
     name = "dev",
     visibility = ["//visibility:public"],
     deps = [
-        ":collision_geometry",
+        ":c_iris_collision_geometry",
+        ":c_iris_separating_plane",
         ":cspace_free_polytope",
-        ":separating_plane",
     ],
 )
 
+filegroup(
+    name = "models",
+    srcs = glob(
+        [
+            "models/**",
+        ],
+        exclude = [
+            "**/*.sha512",
+        ],
+    ),
+)
+
 drake_cc_library(
-    name = "collision_geometry",
-    srcs = ["collision_geometry.cc"],
-    hdrs = ["collision_geometry.h"],
+    name = "c_iris_collision_geometry",
+    srcs = ["c_iris_collision_geometry.cc"],
+    hdrs = ["c_iris_collision_geometry.h"],
     deps = [
         "//geometry:geometry_ids",
         "//geometry:shape_specification",
@@ -36,11 +49,11 @@ drake_cc_library(
 )
 
 drake_cc_library(
-    name = "separating_plane",
-    srcs = ["separating_plane.cc"],
-    hdrs = ["separating_plane.h"],
+    name = "c_iris_separating_plane",
+    srcs = ["c_iris_separating_plane.cc"],
+    hdrs = ["c_iris_separating_plane.h"],
     deps = [
-        ":collision_geometry",
+        ":c_iris_collision_geometry",
         "//common/symbolic:polynomial",
     ],
 )
@@ -50,8 +63,8 @@ drake_cc_library(
     srcs = ["cspace_free_polytope.cc"],
     hdrs = ["cspace_free_polytope.h"],
     deps = [
-        ":collision_geometry",
-        ":separating_plane",
+        ":c_iris_collision_geometry",
+        ":c_iris_separating_plane",
         "//common/symbolic:monomial_util",
         "//solvers:choose_best_solver",
         "//solvers:mathematical_program",
@@ -81,18 +94,18 @@ drake_cc_library(
 )
 
 drake_cc_googletest(
-    name = "collision_geometry_test",
+    name = "c_iris_collision_geometry_test",
     deps = [
+        ":c_iris_collision_geometry",
         ":c_iris_test_utilities",
-        ":collision_geometry",
         "//common/test_utilities:symbolic_test_util",
     ],
 )
 
 drake_cc_googletest(
-    name = "separating_plane_test",
+    name = "c_iris_separating_plane_test",
     deps = [
-        ":separating_plane",
+        ":c_iris_separating_plane",
         "//common/test_utilities:symbolic_test_util",
     ],
 )
@@ -121,6 +134,24 @@ drake_cc_googletest(
         "//common/test_utilities:symbolic_test_util",
         "//solvers:mosek_solver",
         "//solvers:sos_basis_generator",
+    ],
+)
+
+drake_cc_binary(
+    name = "ur3e_demo",
+    srcs = ["ur3e_demo.cc"],
+    data = [
+        ":models",
+        "//manipulation/models/ur3e:models",
+        "//manipulation/models/wsg_50_description:models",
+    ],
+    deps = [
+        ":cspace_free_polytope",
+        "//common:find_resource",
+        "//geometry:meshcat_visualizer",
+        "//multibody/inverse_kinematics",
+        "//multibody/parsing:parser",
+        "//multibody/plant",
     ],
 )
 
