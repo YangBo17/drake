@@ -270,6 +270,7 @@ class SpatialInertia {
   /// @throws std::exception if r is zero or negative.
   static SpatialInertia<T> SolidSphereWithDensity(const T& density, const T& r);
 
+<<<<<<< HEAD
   /// Creates a spatial inertia for a uniform density thin hollow sphere B about
   /// its geometric center Bo (which is coincident with B's center of mass Bcm).
   /// @param[in] area_density mass per unit area (kg/m²).
@@ -284,6 +285,8 @@ class SpatialInertia {
   static SpatialInertia<T> HollowSphereWithDensity(
       const T& area_density, const T& r);
 
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   /// Creates a spatial inertia for a uniform density solid tetrahedron B about
   /// a point A, from which position vectors to B's 4 vertices B0, B1, B2, B3
   /// are measured (position vectors are all expressed in a common frame E).
@@ -328,8 +331,11 @@ class SpatialInertia {
       const T& density, const Vector3<T>& p1, const Vector3<T>& p2,
       const Vector3<T>& p3);
 
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   /// Default SpatialInertia constructor initializes mass, center of mass and
   /// rotational inertia to invalid NaN's for a quick detection of
   /// uninitialized values.

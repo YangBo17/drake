@@ -284,11 +284,15 @@ drake_cc_library(
         ":utilities",
         "//geometry/render:render_engine",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "//math:gradient",
 =======
         # Add an unused dependency to help smooth out the deprecation.
         ":frame_kinematics",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        "//math:gradient",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
 )
 

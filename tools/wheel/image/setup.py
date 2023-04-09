@@ -40,11 +40,18 @@ def _actually_find_packages():
     result = find_packages()
 <<<<<<< HEAD
     result.extend([
+<<<<<<< HEAD
         'pydrake.examples',
         'pydrake.geometry',
         'pydrake.manipulation',
         'pydrake.solvers',
         'pydrake.visualization',
+=======
+        "pydrake.examples",
+        "pydrake.geometry",
+        "pydrake.solvers",
+        "pydrake.visualization",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ])
     print(f'Using packages={result}')
     return result
@@ -97,12 +104,15 @@ See https://drake.mit.edu/pip.html for installation instructions and caveats.
 <<<<<<< HEAD
       license='Various',
       platforms=['linux_x86_64', 'macosx_x86_64', 'macosx_arm64'],
+<<<<<<< HEAD
 =======
       distclass=BinaryDistribution,
       # TODO Check this: do we need to add third-party licenses?
       license='BSD 3-Clause License',
       platforms=['linux_x86_64', 'macosx_x86_64'],
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       packages=_actually_find_packages(),
       # Add in any packaged data.
       include_package_data=True,

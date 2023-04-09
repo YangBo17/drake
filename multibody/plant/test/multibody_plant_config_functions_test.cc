@@ -55,9 +55,13 @@ GTEST_TEST(MultibodyPlantConfigFunctionsTest, YamlTest) {
   EXPECT_EQ(result.plant.get_discrete_contact_solver(),
             DiscreteContactSolver::kSap);
 <<<<<<< HEAD
+<<<<<<< HEAD
   EXPECT_EQ(result.plant.get_adjacent_bodies_collision_filters(), false);
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+  EXPECT_EQ(result.plant.get_adjacent_bodies_collision_filters(), false);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   // There is no getter for penetration_allowance nor stiction_tolerance, so we
   // can't test them.
 }

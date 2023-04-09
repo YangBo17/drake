@@ -6,6 +6,10 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 #include <fmt/format.h>
+<<<<<<< HEAD
+=======
+#include <fmt/ostream.h>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 <<<<<<< HEAD
 =======
@@ -568,6 +572,7 @@ PYBIND11_MODULE(symbolic, m) {
 =======
       doc.SubstituteStereographicProjection.doc_3args);
 
+<<<<<<< HEAD
   m.def(
       "SubstituteStereographicProjection",
       [](const Expression& e, const std::unordered_map<symbolic::Variable,
@@ -578,6 +583,8 @@ PYBIND11_MODULE(symbolic, m) {
       doc.SubstituteStereographicProjection.doc_2args);
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   {
     constexpr auto& cls_doc = doc.FormulaKind;
     py::enum_<FormulaKind>(m, "FormulaKind", doc.FormulaKind.doc)

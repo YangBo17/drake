@@ -15,10 +15,13 @@ import matplotlib.pyplot as plt
 import webbrowser
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 from pydrake.common import FindResourceOrThrow
 from pydrake.geometry import DrakeVisualizer
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 from pydrake.multibody.parsing import Parser
 from pydrake.multibody.plant import AddMultibodyPlantSceneGraph
 from pydrake.systems.drawing import plot_graphviz, plot_system_graphviz
@@ -31,6 +34,7 @@ for env_name in ['BUILD_WORKING_DIRECTORY', 'TEST_TMPDIR']:
     if env_name in os.environ:
         os.chdir(os.environ[env_name])
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 builder = DiagramBuilder()
 cart_pole, scene_graph = AddMultibodyPlantSceneGraph(
@@ -51,6 +55,13 @@ cart_pole, scene_graph = AddMultibodyPlantSceneGraph(
     builder=builder, time_step=0.0)
 Parser(plant=cart_pole).AddModelFromFile(file_name)
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+builder = DiagramBuilder()
+cart_pole, scene_graph = AddMultibodyPlantSceneGraph(
+    builder=builder, time_step=0.0)
+Parser(plant=cart_pole).AddModelsFromUrl(
+    url="package://drake/examples/multibody/cart_pole/cart_pole.sdf")
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 plt.figure(figsize=(11, 8.5), dpi=300)
 plot_graphviz(cart_pole.GetTopologyGraphvizString())

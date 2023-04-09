@@ -31,10 +31,17 @@ internal::streamed_ref<T> fmt_streamed(const T& ref) { return {ref}; }
 
 // Compatibility shim for fmt::ostream_formatter.
 #if FMT_VERSION >= 90000
+<<<<<<< HEAD
 using fmt::ostream_formatter;
 #else  // FMT_VERSION
 /** When using fmt >= 9, this is an alias for fmt::ostream_formatter.
 When using fmt < 9, this uses a polyfill instead. */
+=======
+/** When using fmt >= 9, this is an alias for fmt::ostream_formatter.
+When using fmt < 9, this uses a polyfill instead. */
+using fmt::ostream_formatter;
+#else  // FMT_VERSION
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 struct ostream_formatter : fmt::formatter<std::string_view> {
   template <typename T, typename FormatContext>
   auto format(const T& value,
@@ -51,7 +58,10 @@ struct ostream_formatter : fmt::formatter<std::string_view> {
 }  // namespace drake
 
 // Formatter specialization for drake::fmt_streamed.
+<<<<<<< HEAD
 #ifndef DRAKE_DOXYGEN_CXX
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #if FMT_VERSION < 90000
 namespace fmt {
 template <typename T>
@@ -65,4 +75,7 @@ struct formatter<drake::internal::streamed_ref<T>> : drake::ostream_formatter {
 };
 }  // namespace fmt
 #endif  // FMT_VERSION
+<<<<<<< HEAD
 #endif  // DRAKE_DOXYGEN_CXX
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

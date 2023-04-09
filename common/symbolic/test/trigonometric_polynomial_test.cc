@@ -1,10 +1,13 @@
 #include "drake/common/symbolic/trigonometric_polynomial.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 #include <iostream>
 #include <sstream>
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include <vector>
 
 #include <fmt/format.h>

@@ -1,5 +1,7 @@
 # 2023-06-01 Remove this entire file upon deprecation completion.
 
+# 2023-06-01 Remove this entire file upon deprecation completion.
+
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",

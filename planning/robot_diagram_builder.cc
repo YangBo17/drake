@@ -25,6 +25,7 @@ RobotDiagramBuilder<T>::~RobotDiagramBuilder() = default;
 
 template <typename T>
 <<<<<<< HEAD
+<<<<<<< HEAD
 std::unique_ptr<RobotDiagram<T>> RobotDiagramBuilder<T>::Build() {
   ThrowIfAlreadyBuilt();
   if (!plant().is_finalized()) {
@@ -35,6 +36,12 @@ std::unique_ptr<RobotDiagram<T>> RobotDiagramBuilder<T>::BuildDiagram() {
   if (!IsPlantFinalized()) {
     FinalizePlant();
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+std::unique_ptr<RobotDiagram<T>> RobotDiagramBuilder<T>::Build() {
+  ThrowIfAlreadyBuilt();
+  if (!plant().is_finalized()) {
+    plant().Finalize();
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   }
   return std::unique_ptr<RobotDiagram<T>>(
       new RobotDiagram<T>(std::move(builder_)));
@@ -49,10 +56,14 @@ bool RobotDiagramBuilder<T>::IsDiagramBuilt() const {
     throw std::logic_error(
         "RobotDiagramBuilder: Do not call mutable_builder().Build() to create"
 <<<<<<< HEAD
+<<<<<<< HEAD
         " a Diagram; instead, call Build() to create a RobotDiagram.");
 =======
         " a Diagram; instead, call BuildDiagram() to create a RobotDiagram.");
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        " a Diagram; instead, call Build() to create a RobotDiagram.");
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   }
   return false;
 }

@@ -174,5 +174,12 @@ struct hash<drake::solvers::Binding<C>> : public drake::DefaultHash {};
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <typename C>
+<<<<<<< HEAD
 struct formatter<drake::solvers::Binding<C>> : drake::ostream_formatter {};
 }  // namespace fmt
+=======
+struct formatter<drake::solvers::Binding<C>>
+    : drake::ostream_formatter {};
+}  // namespace fmt
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

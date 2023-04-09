@@ -19,17 +19,25 @@ def main():
     # The commit (version) here should be identical to the commit listed in
     # drake/tools/workspace/rules_python/repository.bzl.
 <<<<<<< HEAD
+<<<<<<< HEAD
     rules_python_commit = "0.19.0"
+=======
+    rules_python_commit = "0.17.3"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     rules_python_urls = [
         f"https://github.com/bazelbuild/rules_python/archive/{rules_python_commit}.tar.gz",  # noqa
         f"https://drake-mirror.csail.mit.edu/github/bazelbuild/rules_python/{rules_python_commit}.tar.gz",  # noqa
     ]
+<<<<<<< HEAD
     rules_python_sha256 = "ffc7b877c95413c82bfd5482c017edcf759a6250d8b24e82f41f3c8b8d9e287e"  # noqa
 =======
     rules_python_commit = "0.10.0"
     rules_python_url = f"https://github.com/bazelbuild/rules_python/archive/{rules_python_commit}.tar.gz"  # noqa
     rules_python_sha256 = "56dc7569e5dd149e576941bdb67a57e19cd2a7a63cc352b62ac047732008d7e1"  # noqa
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    rules_python_sha256 = "8c15896f6686beb5c631a4459a3aa8392daccaab805ea899c9d14215074b60ef"  # noqa
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
     with open(join(scratch_dir, "WORKSPACE"), "w") as f:
         f.write(f"""

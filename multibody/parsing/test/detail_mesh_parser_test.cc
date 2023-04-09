@@ -34,8 +34,13 @@ class MeshParserTest : public test::DiagnosticPolicyTestBase {
       const std::optional<std::string>& parent_model_name = {}) {
     const DataSource data_source{DataSource::kFilename, &file_name};
     internal::CollisionFilterGroupResolver resolver{&plant_};
+<<<<<<< HEAD
     ParsingWorkspace w{options_, package_map_, diagnostic_policy_, &plant_,
                        &resolver, TestingSelect};
+=======
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver,
+                       TestingSelect};
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     // The wrapper simply delegates to AddModelFromMesh(), so we're testing
     // the underlying implementation *and* confirming that the wrapper delegates
     // appropriately.
@@ -50,8 +55,13 @@ class MeshParserTest : public test::DiagnosticPolicyTestBase {
       const std::optional<std::string>& parent_model_name = {}) {
     const DataSource data_source{DataSource::kFilename, &file_name};
     internal::CollisionFilterGroupResolver resolver{&plant_};
+<<<<<<< HEAD
     ParsingWorkspace w{options_, package_map_, diagnostic_policy_, &plant_,
                        &resolver, TestingSelect};
+=======
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver,
+                       TestingSelect};
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     // The wrapper is responsible for building the vector from whatever a call
     // to AddModelFromMesh() does; this confirms invocation and successful
     // transformation of return type.
@@ -64,7 +74,10 @@ class MeshParserTest : public test::DiagnosticPolicyTestBase {
   }
 
  protected:
+<<<<<<< HEAD
   ParsingOptions options_;
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   PackageMap package_map_;
   MultibodyPlant<double> plant_{0.0};
   SceneGraph<double> scene_graph_;
@@ -198,8 +211,13 @@ TEST_F(MeshParserTest, ErrorModes) {
     const std::string data("Just some text");
     const DataSource data_source{DataSource::kContents, &data};
     internal::CollisionFilterGroupResolver resolver{&plant_};
+<<<<<<< HEAD
     ParsingWorkspace w{options_, package_map_, diagnostic_policy_, &plant_,
                        &resolver, TestingSelect};
+=======
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver,
+                       TestingSelect};
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     DRAKE_EXPECT_THROWS_MESSAGE(
         AddModelFromMesh(data_source, "", std::nullopt, w),
         ".*must be .+ file.*");

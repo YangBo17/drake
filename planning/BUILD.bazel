@@ -281,6 +281,9 @@ drake_cc_googletest(
 )
 
 add_lint_tests(enable_clang_format_lint = True)
+<<<<<<< HEAD
 =======
 add_lint_tests()
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

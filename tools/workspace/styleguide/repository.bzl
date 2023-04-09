@@ -14,10 +14,13 @@ def styleguide_repository(
             ":patches/sre_deprecation.patch",
             ":patches/test_paths.patch",
         ],
+<<<<<<< HEAD
 =======
         commit = "15afd9aa83a9f25964add3d45f57aed7c2484142",
         sha256 = "b0451c92c453ca7844a26516eb2fb27beebd86e2afb31c4a2b5e2487d2fd1d6c",  # noqa
         build_file = ":package.BUILD.bazel",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         mirrors = mirrors,
     )

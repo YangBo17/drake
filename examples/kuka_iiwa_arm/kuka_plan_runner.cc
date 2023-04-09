@@ -17,7 +17,10 @@
 #include "lcm/lcm-cpp.hpp"
 
 #include "drake/common/drake_assert.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_eigen.h"
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/common/trajectories/piecewise_polynomial.h"
 #include "drake/lcmt_iiwa_command.hpp"
 #include "drake/lcmt_iiwa_status.hpp"

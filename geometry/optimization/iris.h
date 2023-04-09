@@ -304,27 +304,50 @@ HPolyhedron IrisInConfigurationSpace(
     const systems::Context<double>& context,
     const IrisOptions& options = IrisOptions());
 
+<<<<<<< HEAD
 /** A variation of the Iris (Iterative Region Inflation by Semidefinite
 programming) algorithm which finds collision-free regions in the *rational
 parametrization of the configuration space* of @p plant. @see Iris for details
 on the original algorithm. This is a reimplementation of
 IrisInConfigurationSpace for the rational reparametrization
+=======
+/** A variation of the IrisInConfigurationSpace (Iterative Region Inflation by
+Semidefinite programming) algorithm which finds collision-free regions in the
+*rational parametrization of the configuration space* of @p plant.  @see
+IrisInConfigurationSpace for details on the original algorithm. Similar to
+IrisInConfigurationSpace, this code uses non-linear optimization (rather than
+convex optimization) to generate regions in rational configuration space which
+are *largely* collision-free, but may contain some collisions. If rigorous
+certificates of non-collision are desired, these regions can be certified as
+collision free using the C-IRIS algorithm implemented in cspace_free_polytope.h
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 @param plant describes the kinematics of configuration space.  It must be
 connected to a SceneGraph in a systems::Diagram.
 @param context is a context of the @p plant. The context must have the positions
 of the plant set to the initial IRIS seed configuration.
+<<<<<<< HEAD
 @param options provides additional configuration options.  In particular,
 `options.certify_region_during_generation` vs
 `options.certify_region_after_generation' can have an impact on computation time
 @param starting_hpolyhedron is an optional argument to constrain the initial
 iris search. This defaults to the joint limits of the plants, but if there is a
 reason to constrain it further this option is provided.
+=======
+@param q_star the point in the configuration space around which the rational
+parametrization is take. @see RationalForwardKinematics for more details.
+@param options provides additional configuration options.  In particular,
+increasing `options.num_collision_infeasible_samples` increases the chances that
+the IRIS regions are collision free but can also significantly increase the
+run-time of the algorithm. The same goes for
+`options.num_additional_constraints_infeasible_samples`.
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 @ingroup geometry_optimization
 */
 HPolyhedron IrisInRationalConfigurationSpace(
     const multibody::MultibodyPlant<double>& plant,
     const systems::Context<double>& context,
+<<<<<<< HEAD
     const IrisOptionsRationalSpace& options = IrisOptionsRationalSpace(),
     const std::optional<HPolyhedron>& starting_hpolyhedron = std::nullopt);
 
@@ -344,6 +367,10 @@ void _DoIris_(const multibody::MultibodyPlant<double>& plant,
               const Eigen::Ref<const Eigen::VectorXd>& sample,
               const std::shared_ptr<SamePointConstraint>& same_point_constraint,
               HPolyhedron* P_ptr, Hyperellipsoid* E_ptr);
+=======
+    const Eigen::Ref<const Eigen::VectorXd>& q_star,
+    const IrisOptions& options = IrisOptions());
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 }  // namespace optimization
 }  // namespace geometry

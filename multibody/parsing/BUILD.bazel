@@ -132,7 +132,10 @@ drake_cc_library(
     internal = True,
     visibility = ["//visibility:private"],
     deps = [
+<<<<<<< HEAD
         ":detail_make_model_name",
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         ":detail_parsing_workspace",
         "//geometry/proximity:obj_to_surface_mesh",
         "//multibody/plant",
@@ -143,6 +146,7 @@ drake_cc_library(
 )
 
 drake_cc_library(
+<<<<<<< HEAD
     name = "detail_sdf_diagnostic",
     srcs = ["detail_sdf_diagnostic.cc"],
     hdrs = ["detail_sdf_diagnostic.h"],
@@ -168,6 +172,8 @@ drake_cc_googletest(
 )
 
 drake_cc_library(
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     name = "detail_sdf_diagnostic",
     srcs = ["detail_sdf_diagnostic.cc"],
     hdrs = ["detail_sdf_diagnostic.h"],
@@ -495,6 +501,10 @@ drake_cc_googletest(
     ],
     deps = [
         ":process_model_directives",
+<<<<<<< HEAD
+=======
+        ":scoped_names",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//common/test_utilities",
     ],
 )
@@ -663,6 +673,7 @@ drake_cc_googletest(
         ":package_map",
         "//common:find_resource",
         "//common:scope_exit",
+<<<<<<< HEAD
         "//common/test_utilities:expect_throws_message",
     ],
 )
@@ -677,6 +688,8 @@ drake_cc_googletest(
         "//common:find_cache",
         "//common:find_resource",
         "//common:scope_exit",
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//common/test_utilities:expect_throws_message",
     ],
 )

@@ -48,6 +48,9 @@ drake_py_binary(
     visibility = [
         # These should all be of the form "@foo_internal//:__pkg__".
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "@fcl_internal//:__pkg__",
         "@gz_math_internal//:__pkg__",
         "@gz_utils_internal//:__pkg__",
@@ -117,8 +120,11 @@ _DRAKE_EXTERNAL_PACKAGE_INSTALLS = ["@%s//:install" % p for p in [
 <<<<<<< HEAD
     "stduuid_internal",
     "suitesparse_internal",
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     "tinyobjloader",
     "tinyxml2_internal",
     "usockets",

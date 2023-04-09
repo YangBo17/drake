@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load("@drake//tools/install:install.bzl", "install", "install_files")
 load(
     "@drake//tools/skylark:pybind.bzl",

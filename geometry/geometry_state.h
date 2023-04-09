@@ -643,6 +643,7 @@ class GeometryState {
   // Scalar-converting copy constructor.
   template <typename U>
 <<<<<<< HEAD
+<<<<<<< HEAD
   explicit GeometryState(const GeometryState<U>& source);
 =======
   explicit GeometryState(const GeometryState<U>& source)
@@ -700,6 +701,9 @@ class GeometryState {
     }
   }
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+  explicit GeometryState(const GeometryState<U>& source);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   // Allow SceneGraph unique access to the state members to perform queries.
   friend class SceneGraph<T>;

@@ -883,14 +883,20 @@ PYBIND11_MODULE(inverse_kinematics, m) {
     // (or convert those methods to use ConvexSets).
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   // TODO(SeanCurtis-TRI): Refactor this into its own stand-alone .cc file and
   // re-introduce the inverse_kinematics_py.cc that just assembles the full
   // module.
   internal::DefineIkDifferential(m);
 
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   // NOLINTNEXTLINE(readability/fn_size)
 }
 

@@ -691,11 +691,17 @@ drake_cc_library(
     srcs = ["solution_result.cc"],
     hdrs = ["solution_result.h"],
 <<<<<<< HEAD
+<<<<<<< HEAD
     deps = [
         "//common:essential",
     ],
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    deps = [
+        "//common:essential",
+    ],
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 )
 
 drake_cc_library(
@@ -780,6 +786,7 @@ drake_cc_library(
 =======
 )
 
+<<<<<<< HEAD
 drake_cc_variant_library(
     name = "dreal_solver",
     opt_out_condition = "//tools:no_dreal",
@@ -839,6 +846,8 @@ drake_cc_variant_library(
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 # External Solvers.
 
 # If --config gurobi is used, this target builds object code that satisfies
@@ -1012,10 +1021,14 @@ drake_cc_variant_library(
     deps_enabled = [
         "//math:eigen_sparse_triplet",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "@osqp_internal//:osqp",
 =======
         "@osqp",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        "@osqp_internal//:osqp",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
 )
 
@@ -1039,10 +1052,14 @@ drake_cc_variant_library(
         "//common:scope_exit",
         "//math:eigen_sparse_triplet",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "@scs_internal//:scsdir",
 =======
         "@scs//:scsdir",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        "@scs_internal//:scsdir",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
 )
 
@@ -1351,6 +1368,7 @@ drake_cc_googletest(
 
 drake_cc_googletest(
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     name = "ibex_solver_test",
     deps = [
@@ -1372,6 +1390,8 @@ drake_cc_optional_googletest(
 
 drake_cc_googletest(
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     name = "integer_optimization_util_test",
     deps = [
         ":integer_optimization_util",

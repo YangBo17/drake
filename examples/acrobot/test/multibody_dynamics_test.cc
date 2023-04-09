@@ -18,12 +18,17 @@ GTEST_TEST(MultibodyDynamicsTest, AllTests) {
     const double kTimeStep = 0.0;
     multibody::MultibodyPlant<double> mbp(kTimeStep);
 <<<<<<< HEAD
+<<<<<<< HEAD
     multibody::Parser(&mbp).AddModelsFromUrl(
         fmt::format("package://drake/examples/acrobot/Acrobot.{}", ext));
 =======
     multibody::Parser(&mbp).AddModelFromFile(FindResourceOrThrow(
         fmt::format("drake/examples/acrobot/Acrobot.{}", ext)));
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    multibody::Parser(&mbp).AddModelsFromUrl(
+        fmt::format("package://drake/examples/acrobot/Acrobot.{}", ext));
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     mbp.Finalize();
 
     AcrobotPlant<double> p;

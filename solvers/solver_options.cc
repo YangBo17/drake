@@ -5,6 +5,10 @@
 #include <utility>
 
 #include <fmt/format.h>
+<<<<<<< HEAD
+=======
+#include <fmt/ostream.h>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 #include "drake/common/never_destroyed.h"
 

@@ -22,11 +22,15 @@ brew 'msgpack-cxx'
 brew 'openblas'
 brew 'pkg-config'
 <<<<<<< HEAD
+<<<<<<< HEAD
 brew 'python@3.11'
 =======
 brew 'python@3.9'
 brew 'scipy'
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+brew 'python@3.11'
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 brew 'spdlog'
 brew 'tinyxml'
 brew 'robotlocomotion/director/vtk@9.1.0'

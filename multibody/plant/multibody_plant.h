@@ -3573,7 +3573,8 @@ class MultibodyPlant : public internal::MultibodyTreeSystem<T> {
   /// </pre>
   /// Note: Each partial derivative of p_AoBi is taken in frame A.
   /// @see CalcJacobianPositionVector() for details on Jq_p_AoBi.
-  void CalcJacobianTranslationalVelocity(
+  void
+  CalcJacobianTranslationalVelocity(
       const systems::Context<T>& context, JacobianWrtVariable with_respect_to,
       const Frame<T>& frame_B, const Eigen::Ref<const Matrix3X<T>>& p_BoBi_B,
       const Frame<T>& frame_A, const Frame<T>& frame_E,
@@ -4738,6 +4739,7 @@ class MultibodyPlant : public internal::MultibodyTreeSystem<T> {
       const VectorX<T>& stiffness, const VectorX<T>& damping,
       const VectorX<T>& mu, const VectorX<T>& v0, const VectorX<T>& fn0) const;
 
+<<<<<<< HEAD
   // This method performs the computation of the impulses to advance the state
   // stored in `context0` in time.
   // Contact forces and velocities are computed and stored in `results`. See
@@ -4756,6 +4758,8 @@ class MultibodyPlant : public internal::MultibodyTreeSystem<T> {
   }
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   // Computes the array of indices of velocities that are not locked in the
   // current configuration. The resulting index values in @p
   // unlocked_velocity_indices will be in ascending order, in the range [0,

@@ -298,6 +298,7 @@ class Node final {
 }  // namespace yaml
 }  // namespace drake
 
+<<<<<<< HEAD
 #ifndef DRAKE_DOXYGEN_CXX
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
@@ -305,3 +306,11 @@ template <>
 struct formatter<drake::yaml::internal::Node> : drake::ostream_formatter {};
 }  // namespace fmt
 #endif
+=======
+// TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
+namespace fmt {
+template <>
+struct formatter<drake::yaml::internal::Node>
+    : drake::ostream_formatter {};
+}  // namespace fmt
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

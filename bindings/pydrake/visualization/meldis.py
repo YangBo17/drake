@@ -29,6 +29,9 @@ import argparse
 import webbrowser
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 from pydrake.common import configure_logging as _configure_logging
 from pydrake.common.deprecation import _warn_deprecated
 from pydrake.visualization._meldis import Meldis as _Meldis
@@ -74,6 +77,7 @@ from pydrake.multibody.meshcat import (
 _logger = logging.getLogger("drake")
 
 
+<<<<<<< HEAD
 class _Slider:
     """A slider with range [small-positive-value to 1.0]."""
 
@@ -451,6 +455,8 @@ class Meldis:
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 def _main():
     _configure_logging()
     parser = argparse.ArgumentParser()

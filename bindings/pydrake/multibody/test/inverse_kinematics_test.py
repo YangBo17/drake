@@ -16,6 +16,7 @@ from pydrake.multibody.plant import (
     MultibodyPlant, AddMultibodyPlantSceneGraph)
 from pydrake.multibody.tree import BodyIndex
 <<<<<<< HEAD
+<<<<<<< HEAD
 import pydrake.solvers as mp
 =======
 from pydrake.solvers.gurobi import GurobiSolver
@@ -23,6 +24,9 @@ import pydrake.solvers.mathematicalprogram as mp
 import pydrake.solvers.mixed_integer_optimization_util as mip_util
 import pydrake.solvers.mixed_integer_rotation_constraint as mip_rot
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+import pydrake.solvers as mp
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 from pydrake.systems.framework import DiagramBuilder
 
 # TODO(eric.cousineau): Replace manual coordinate indexing with more semantic
@@ -732,6 +736,7 @@ class TestGlobalInverseKinematics(unittest.TestCase):
         self.assertEqual(options.num_intervals_per_half_axis, 2)
         self.assertEqual(
 <<<<<<< HEAD
+<<<<<<< HEAD
             options.approach, mp.MixedIntegerRotationConstraintGenerator.
             Approach.kBilinearMcCormick)
         self.assertEqual(options.interval_binning,
@@ -742,6 +747,12 @@ class TestGlobalInverseKinematics(unittest.TestCase):
         self.assertEqual(options.interval_binning,
                          mip_util.IntervalBinning.kLogarithmic)
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+            options.approach, mp.MixedIntegerRotationConstraintGenerator.
+            Approach.kBilinearMcCormick)
+        self.assertEqual(options.interval_binning,
+                         mp.IntervalBinning.kLogarithmic)
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         self.assertFalse(options.linear_constraint_only)
 
     def test_api(self):
@@ -790,10 +801,14 @@ class TestGlobalInverseKinematics(unittest.TestCase):
             body_position_cost=[1] * plant.num_bodies(),
             body_orientation_cost=[1] * plant.num_bodies())
 <<<<<<< HEAD
+<<<<<<< HEAD
         gurobi_solver = mp.GurobiSolver()
 =======
         gurobi_solver = GurobiSolver()
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        gurobi_solver = mp.GurobiSolver()
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         if gurobi_solver.available():
             global_ik.SetInitialGuess(q=plant.GetPositions(context))
             result = gurobi_solver.Solve(global_ik.prog())

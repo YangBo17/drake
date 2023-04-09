@@ -101,6 +101,7 @@ class MultibodyPlantTester {
     return plant.FindBodyByGeometryId(id);
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
   static void CalcNormalAndTangentContactJacobians(
@@ -124,6 +125,8 @@ class MultibodyPlantTester {
         context, discrete_pairs, Jn, Jt, R_WC_set);
   }
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 };
 
 namespace {
@@ -4151,8 +4154,11 @@ GTEST_TEST(MultibodyPlantTest, GetMutableSceneGraphPreFinalize) {
                               ".*!is_finalized.*");
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace
 }  // namespace multibody
 }  // namespace drake

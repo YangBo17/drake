@@ -119,6 +119,7 @@ drake_pybind_library(
 
 drake_pybind_library(
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     name = "geometry_py",
     cc_deps = [
@@ -156,6 +157,8 @@ drake_pybind_library(
 
 drake_pybind_library(
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     name = "lcm_py",
     cc_deps = [
         "//bindings/pydrake:documentation_pybind",
@@ -316,9 +319,13 @@ drake_py_library(
 PYBIND_SUBPACKAGES_FOR_COVERAGE = [
     "//bindings/pydrake/common",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "//bindings/pydrake/geometry",
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    "//bindings/pydrake/geometry",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     "//bindings/pydrake/manipulation",
     "//bindings/pydrake/multibody",
     "//bindings/pydrake/planning",
@@ -514,6 +521,7 @@ drake_py_unittest(
 
 drake_py_unittest(
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     name = "frame_id_test",
     deps = [
@@ -605,6 +613,8 @@ drake_py_unittest(
 
 drake_py_unittest(
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     name = "lcm_test",
     deps = [
         ":lcm_py",
@@ -749,6 +759,14 @@ PYI_FILES = [
     "pydrake/geometry/__init__.pyi",
     "pydrake/lcm.pyi",
     "pydrake/manipulation/__init__.pyi",
+<<<<<<< HEAD
+=======
+    "pydrake/manipulation/all.pyi",
+    "pydrake/manipulation/kuka_iiwa.pyi",
+    "pydrake/manipulation/planner.pyi",  # 2023-06-01 Delete this.
+    "pydrake/manipulation/schunk_wsg.pyi",
+    "pydrake/manipulation/util.pyi",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     "pydrake/math.pyi",
     "pydrake/multibody/__init__.pyi",
     "pydrake/multibody/all.pyi",
@@ -839,17 +857,17 @@ drake_py_unittest(
 <<<<<<< HEAD
 install(
     name = "install",
-    install_tests = [
-        ":test/all_install_test.py",
-        ":test/common_install_test.py",
-    ],
-    targets = PY_LIBRARIES + [":all_py"],
-    py_dest = PACKAGE_INFO.py_dest,
     data = [
         ":pydrake_pyi",
         ":pydrake_typed",
     ],
     data_dest = "@PYTHON_SITE_PACKAGES@",
+    install_tests = [
+        ":test/all_install_test.py",
+        ":test/common_install_test.py",
+    ],
+    py_dest = PACKAGE_INFO.py_dest,
+    targets = PY_LIBRARIES + [":all_py"],
     visibility = ["//visibility:public"],
     deps = get_drake_py_installs(PY_LIBRARIES_WITH_INSTALL),
 )

@@ -21,6 +21,26 @@ package(default_visibility = [
 # bindings.
 PACKAGE_INFO = get_pybind_package_info("//bindings")
 
+<<<<<<< HEAD
+=======
+drake_py_library(
+    name = "module_py",
+    srcs = ["__init__.py"],
+    imports = PACKAGE_INFO.py_imports,
+    deps = [
+        "//bindings/pydrake:module_py",
+    ],
+)
+
+# 2023-06-01 Remove this target upon completion of deprecation.
+drake_py_library(
+    name = "planner_py",
+    srcs = ["planner.py"],
+    imports = PACKAGE_INFO.py_imports,
+    deps = ["//bindings/pydrake/multibody:inverse_kinematics_py"],
+)
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 drake_pybind_library(
     name = "manipulation",
     cc_deps = [
@@ -57,6 +77,7 @@ drake_pybind_library(
 <<<<<<< HEAD
 =======
 drake_pybind_library(
+<<<<<<< HEAD
     name = "planner_py",
     cc_deps = [
         "//bindings/pydrake:documentation_pybind",
@@ -70,6 +91,8 @@ drake_pybind_library(
 )
 
 drake_pybind_library(
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     name = "schunk_wsg_py",
     cc_deps = [
         "//bindings/pydrake:documentation_pybind",
@@ -84,12 +107,12 @@ drake_pybind_library(
 
 PY_LIBRARIES_WITH_INSTALL = [
     ":kuka_iiwa_py",
-    ":planner_py",
     ":schunk_wsg_py",
 ]
 
 PY_LIBRARIES = [
     ":module_py",
+    ":planner_py",
 ]
 
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
@@ -109,7 +132,11 @@ drake_py_unittest(
 drake_py_unittest(
     name = "planner_deprecated_test",
     deps = [
+<<<<<<< HEAD
         ":manipulation",
+=======
+        ":planner_py",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//bindings/pydrake/common/test_utilities:deprecation_py",
     ],
 )

@@ -64,5 +64,9 @@ struct hash<drake::geometry::GeometryId> {
 namespace fmt {
 template <>
 struct formatter<drake::geometry::GeometryId>
+<<<<<<< HEAD
     : public fmt::formatter<drake::Identifier<drake::geometry::GeometryTag>> {};
+=======
+    : public formatter<drake::Identifier<drake::geometry::GeometryTag>> {};
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace fmt

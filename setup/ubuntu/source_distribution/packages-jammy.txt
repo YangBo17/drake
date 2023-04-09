@@ -32,6 +32,9 @@ libnlopt-cxx-dev
 libopengl-dev
 libpng-dev
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 libtiff-dev
 libtinyxml-dev
 libtool

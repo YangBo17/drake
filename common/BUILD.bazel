@@ -104,6 +104,8 @@ drake_cc_library(
         "drake_deprecated.h",
         "drake_throw.h",
         "eigen_types.h",
+        "fmt.h",
+        "fmt_ostream.h",
         "never_destroyed.h",
         "text_logging.h",
     ],
@@ -1046,6 +1048,7 @@ drake_cc_googletest(
 )
 
 drake_cc_googletest(
+<<<<<<< HEAD
     name = "fmt_eigen_test",
     deps = [
         ":essential",
@@ -1053,6 +1056,8 @@ drake_cc_googletest(
 )
 
 drake_cc_googletest(
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     name = "fmt_ostream_test",
     deps = [
         ":essential",

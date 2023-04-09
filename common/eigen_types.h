@@ -14,6 +14,7 @@
 #include <Eigen/Dense>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 static_assert(EIGEN_VERSION_AT_LEAST(3, 3, 5),
               "Drake requires Eigen >= v3.3.5.");
 =======
@@ -21,6 +22,10 @@ static_assert(EIGEN_VERSION_AT_LEAST(3, 3, 5),
 static_assert(EIGEN_VERSION_AT_LEAST(3, 3, 4),
               "Drake requires Eigen >= v3.3.4.");
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+static_assert(EIGEN_VERSION_AT_LEAST(3, 3, 5),
+              "Drake requires Eigen >= v3.3.5.");
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 #include "drake/common/constants.h"
 #include "drake/common/drake_assert.h"

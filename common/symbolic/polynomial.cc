@@ -16,9 +16,13 @@
 
 #include "drake/common/symbolic/decompose.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "drake/common/text_logging.h"
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+#include "drake/common/text_logging.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 using std::accumulate;
 using std::make_pair;
@@ -833,6 +837,7 @@ Polynomial& Polynomial::AddProduct(const Expression& coeff, const Monomial& m) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Polynomial Polynomial::SubstituteAndExpand(
     const std::unordered_map<Variable, Polynomial>& indeterminate_substitution,
     SubstituteAndExpandCacheData* substitutions_cached_data)
@@ -843,6 +848,16 @@ Polynomial Polynomial::SubstituteAndExpand(
                                            : substitutions_cached_data;
   std::map<Monomial, Polynomial, internal::CompareMonomial>* substitutions =
       cached_data_ptr->get_data();
+=======
+Polynomial Polynomial::SubstituteAndExpand(
+    const std::unordered_map<Variable, Polynomial>& indeterminate_substitution,
+    std::optional<std::map<Monomial, Polynomial, internal::CompareMonomial>*>
+        substitutions_optional)
+    const {
+  std::map<Monomial, Polynomial, internal::CompareMonomial> substitutions_obj;
+  std::map<Monomial, Polynomial, internal::CompareMonomial>* substitutions =
+      substitutions_optional.value_or(&substitutions_obj);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   for (const auto& var : indeterminates_) {
     DRAKE_DEMAND(indeterminate_substitution.find(var) !=
@@ -852,6 +867,7 @@ Polynomial Polynomial::SubstituteAndExpand(
     if (substitutions->find(cur_monomial) != substitutions->cend()) {
       if (!substitutions->at(cur_monomial).EqualTo(cur_sub)) {
         drake::log()->warn(fmt::format(
+<<<<<<< HEAD
             "SubstituteAndExpand(): the passed substitutions_cached_data "
             "contains a different expansion for {} than is contained in "
             "indeterminate_substitutions. Substitutions_cached_data contains "
@@ -859,6 +875,14 @@ Polynomial Polynomial::SubstituteAndExpand(
             "likely that substitutions_cached_data is storing expansions which "
             "are inconsistent and so you should not trust the output of this "
             "method.",
+=======
+            "SubstituteAndExpand(): the passed substitutions map contains a "
+            "different expansion for {} than is contained in "
+            "indeterminate_substitutions. Substitutions contains {}, but "
+            "indeterminate_substitutions contains {}. It is very likely that "
+            "substitutions is storing expansions which are inconsistent and so "
+            "you should not trust the output of this method.",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
             cur_monomial, substitutions->at(cur_monomial), cur_sub));
       }
     } else {
@@ -1005,8 +1029,11 @@ Polynomial Polynomial::SubstituteAndExpand(
   return Polynomial{new_polynomial_coeff_map};
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 Polynomial Polynomial::Expand() const {
   Polynomial::MapType expanded_poly_map;
   for (const auto& [monomial, coeff] : monomial_to_coefficient_map_) {

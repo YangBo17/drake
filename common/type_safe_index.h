@@ -6,6 +6,10 @@
 #include <typeinfo>
 
 #include "drake/common/drake_assert.h"
+<<<<<<< HEAD
+=======
+#include "drake/common/drake_throw.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/common/fmt_ostream.h"
 #include "drake/common/hash.h"
 

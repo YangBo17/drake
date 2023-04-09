@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load("@drake//tools/install:install.bzl", "install")
 load(
     "@drake//tools/skylark:drake_py.bzl",
@@ -29,6 +34,10 @@ drake_pybind_library(
         "//bindings/pydrake/common:identifier_pybind",
         "//bindings/pydrake/common:monostate_pybind",
         "//bindings/pydrake/common:serialize_pybind",
+<<<<<<< HEAD
+=======
+        "//bindings/pydrake/common:sorted_pair_pybind",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//bindings/pydrake/common:type_pack",
         "//bindings/pydrake/common:type_safe_index_pybind",
         "//bindings/pydrake/common:value_pybind",
@@ -40,6 +49,10 @@ drake_pybind_library(
         "geometry_py_common.cc",
         "geometry_py_hydro.cc",
         "geometry_py_optimization.cc",
+<<<<<<< HEAD
+=======
+        "geometry_py_optimization_dev.cc",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "geometry_py_render.cc",
         "geometry_py_scene_graph.cc",
         "geometry_py_visualizers.cc",
@@ -60,8 +73,13 @@ drake_pybind_library(
 
 install(
     name = "install",
+<<<<<<< HEAD
     targets = [":geometry"],
     py_dest = PACKAGE_INFO.py_dest,
+=======
+    py_dest = PACKAGE_INFO.py_dest,
+    targets = [":geometry"],
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     deps = get_drake_py_installs([":geometry"]),
 )
 
@@ -108,6 +126,24 @@ drake_py_unittest(
     ],
 )
 
+<<<<<<< HEAD
+=======
+#drake_py_unittest(
+#    name = "geometry_optimization_dev_test",
+#    timeout = "long",
+#    deps = [
+#        ":geometry_py",
+#        ":math_py",
+#        "//bindings/pydrake/common/test_utilities:deprecation_py",
+#        "//bindings/pydrake/common/test_utilities:pickle_compare_py",
+#        "//bindings/pydrake/multibody:parsing_py",
+#        "//bindings/pydrake/multibody:plant_py",
+#        "//bindings/pydrake/multibody:rational_py",
+#        "//bindings/pydrake/solvers",
+#    ],
+#)
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 drake_py_unittest(
     name = "render_test",
     deps = [

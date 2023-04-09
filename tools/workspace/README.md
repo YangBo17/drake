@@ -59,7 +59,11 @@ For each external in the report, add a commit that upgrades it, as follows:
 Run the script to perform one upgrade (for some external "foo"):
 
 ```
+<<<<<<< HEAD
   bazel run //tools/workspace:new_release -- --lint --commit foo
+=======
+  bazel-bin/tools/workspace/new_release --lint --commit foo
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 ```
 
 If the automated update doesn't succeed, then you'll need to make the edits

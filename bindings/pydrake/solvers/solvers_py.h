@@ -25,6 +25,7 @@ void DefineSolversClp(py::module m);
 void DefineSolversCsdp(py::module m);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* Defines the GUROBI bindings. See solvers_py_gurobi.cc. */
 void DefineSolversGurobi(py::module m);
 
@@ -39,6 +40,11 @@ void DefineSolversGurobi(py::module m);
 void DefineSolversIbex(py::module m);
 
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+/* Defines the GUROBI bindings. See solvers_py_gurobi.cc. */
+void DefineSolversGurobi(py::module m);
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 /* Defines the IPOPT bindings. See solvers_py_ipopt.cc. */
 void DefineSolversIpopt(py::module m);
 
@@ -70,10 +76,14 @@ void DefineSolversScs(py::module m);
 void DefineSolversSdpaFreeFormat(py::module m);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* Defines the SNOPT bindings. See solvers_snopt.cc. */
 =======
 /* Defines the SNOPT bindings. See solvers_py_sdpa_free_format.cc. */
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+/* Defines the SNOPT bindings. See solvers_snopt.cc. */
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 void DefineSolversSnopt(py::module m);
 
 }  // namespace internal

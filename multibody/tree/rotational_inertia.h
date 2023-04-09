@@ -20,9 +20,13 @@
 #include "drake/common/eigen_types.h"
 #include "drake/common/extract_double.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "drake/common/fmt_ostream.h"
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+#include "drake/common/fmt_ostream.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/math/rotation_matrix.h"
 
 namespace drake {

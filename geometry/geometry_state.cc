@@ -229,6 +229,7 @@ GeometryState<T>::GeometryState(const GeometryState<U>& source)
     }
   }
 }
+<<<<<<< HEAD
 template <typename T>
 std::vector<GeometryId> GeometryState<T>::GetAllGeometryIds() const {
   std::vector<GeometryId> ids;
@@ -239,6 +240,8 @@ std::vector<GeometryId> GeometryState<T>::GetAllGeometryIds() const {
   std::sort(ids.begin(), ids.end());
   return ids;
 }
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 template <typename T>
 unordered_set<GeometryId> GeometryState<T>::GetGeometryIds(

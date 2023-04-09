@@ -15,11 +15,18 @@ officially supports:
 
 | Operating System ⁽¹⁾               | Architecture | Python ⁽²⁾ | Bazel | CMake | C/C++ Compiler ⁽³⁾           | Java                          |
 |------------------------------------|--------------|------------|-------|-------|------------------------------|-------------------------------|
+<<<<<<< HEAD
 | Ubuntu 20.04 LTS (Focal Fossa)     | x86_64       | 3.8        | 6.1   | 3.16  | GCC 9 (default) or Clang 12  | OpenJDK 11                    |
 | Ubuntu 22.04 LTS (Jammy Jellyfish) | x86_64       | 3.10       | 6.1   | 3.22  | GCC 11 (default) or Clang 12 | OpenJDK 11                    |
 | macOS Monterey (12)                | x86_64       | 3.11       | 6.1   | 3.24  | Apple LLVM 14 (Xcode 14)     | AdoptOpenJDK 16 (HotSpot JVM) |
 | macOS Monterey (12)                | arm64        | 3.11       | 6.1   | 3.24  | Apple LLVM 14 (Xcode 14)     | AdoptOpenJDK 16 (HotSpot JVM) |
 =======
+=======
+| Ubuntu 20.04 LTS (Focal Fossa)     | x86_64       | 3.8        | 6.0   | 3.16  | GCC 9 (default) or Clang 12  | OpenJDK 11                    |
+| Ubuntu 22.04 LTS (Jammy Jellyfish) | x86_64       | 3.10       | 6.0   | 3.22  | GCC 11 (default) or Clang 12 | OpenJDK 11                    |
+| macOS Monterey (12)                | x86_64       | 3.11       | 6.0   | 3.24  | Apple LLVM 14 (Xcode 14)     | AdoptOpenJDK 16 (HotSpot JVM) |
+| macOS Monterey (12)                | arm64        | 3.11       | 6.0   | 3.24  | Apple LLVM 14 (Xcode 14)     | AdoptOpenJDK 16 (HotSpot JVM) |
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 | Operating System ⁽⁴⁾               | Architecture | Python   | Bazel | CMake | C/C++ Compiler ⁽⁵⁾             | Java                          |
 |------------------------------------|--------------|----------|-------|-------|--------------------------------|-------------------------------|

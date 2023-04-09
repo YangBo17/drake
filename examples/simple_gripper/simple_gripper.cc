@@ -1,7 +1,11 @@
 #include <memory>
 #include <string>
 
+<<<<<<< HEAD
 #include <fmt/format.h>
+=======
+#include <fmt/ostream.h>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include <gflags/gflags.h>
 
 #include "drake/common/drake_assert.h"
@@ -172,12 +176,15 @@ int do_main() {
       &builder, FLAGS_mbp_discrete_update_period);
 
   Parser parser(&plant);
+<<<<<<< HEAD
   std::string full_name =
       FindResourceOrThrow("drake/examples/simple_gripper/simple_gripper.sdf");
   parser.AddModelFromFile(full_name);
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   Parser parser(&plant);
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   parser.AddModelsFromUrl(
       "package://drake/examples/simple_gripper/simple_gripper.sdf");
   parser.AddModelsFromUrl(

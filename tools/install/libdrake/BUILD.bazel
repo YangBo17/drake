@@ -138,6 +138,7 @@ cc_library(
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 # Depend on the shared libraries used by dReal iff dReal is enabled.
 cc_library(
@@ -151,6 +152,8 @@ cc_library(
 )
 
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 # Depend on IPOPT's shared library iff IPOPT is enabled.
 cc_library(
     name = "ipopt_deps",

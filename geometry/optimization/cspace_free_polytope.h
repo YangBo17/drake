@@ -11,8 +11,13 @@
 
 #include <fmt/format.h>
 
+<<<<<<< HEAD:geometry/optimization/cspace_free_polytope.h
 #include "drake/geometry/optimization/c_iris_collision_geometry.h"
 #include "drake/geometry/optimization/c_iris_separating_plane.h"
+=======
+#include "drake/geometry/optimization/dev/c_iris_collision_geometry.h"
+#include "drake/geometry/optimization/dev/c_iris_separating_plane.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f:geometry/optimization/dev/cspace_free_polytope.h
 #include "drake/geometry/optimization/hpolyhedron.h"
 #include "drake/multibody/rational/rational_forward_kinematics.h"
 #include "drake/solvers/mathematical_program.h"
@@ -458,7 +463,11 @@ class CspaceFreePolytope {
 
   /**
    Constructs the MathematicalProgram which searches for a separation
+<<<<<<< HEAD:geometry/optimization/cspace_free_polytope.h
    certificate for a pair of geometries for a C-space polytope. Search for the
+=======
+   certificate for a pair of geometries for a C-space polytope.Search for the
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f:geometry/optimization/dev/cspace_free_polytope.h
    separation certificate for a pair of geometries for a C-space polytope
    {s | C*s<=d, s_lower<=s<=s_upper}.
    */
@@ -479,6 +488,7 @@ class CspaceFreePolytope {
       const SeparationCertificateProgram& certificate_program,
       const FindSeparationCertificateGivenPolytopeOptions& options) const;
 
+<<<<<<< HEAD:geometry/optimization/cspace_free_polytope.h
  protected:
   [[nodiscard]] const symbolic::Variables& get_s_set() const { return s_set_; }
 
@@ -487,6 +497,8 @@ class CspaceFreePolytope {
     return plane_geometries_;
   }
 
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f:geometry/optimization/dev/cspace_free_polytope.h
  private:
   // Forward declaration the tester class. This tester class will expose the
   // private members of CspaceFreePolytope for unit test.

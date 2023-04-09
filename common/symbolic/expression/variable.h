@@ -373,7 +373,12 @@ CheckStructuralEquality(const DerivedA& m1, const DerivedB& m2) {
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <>
+<<<<<<< HEAD
 struct formatter<drake::symbolic::Variable> : drake::ostream_formatter {};
 template <>
 struct formatter<drake::symbolic::Variable::Type> : drake::ostream_formatter {};
+=======
+struct formatter<drake::symbolic::Variable>
+    : drake::ostream_formatter {};
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace fmt

@@ -942,6 +942,7 @@ TEST_F(MujocoParserTest, Motor) {
   EXPECT_EQ(motor3.effort_limit(), std::numeric_limits<double>::infinity());
 }
 
+<<<<<<< HEAD
 class ContactTest : public MujocoParserTest,
                     public testing::WithParamInterface<std::tuple<bool, bool>> {
 };
@@ -950,6 +951,18 @@ TEST_P(ContactTest, Contact) {
   auto [include_contact, adjacent_bodies_collision_filters] = GetParam();
 
   static constexpr char xml_base[] = R"""(
+=======
+GTEST_TEST(MujocoParser, Contact) {
+  // Run through once without the contact elements, then again with the contact
+  // elements.
+  for (bool include_contact : {false, true}) {
+    for (bool adjacent_bodies_collision_filters : {false, true}) {
+      MultibodyPlant<double> plant(0.0);
+      SceneGraph<double> scene_graph;
+      plant.RegisterAsSourceForSceneGraph(&scene_graph);
+
+      std::string xml = fmt::format(R"""(
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   <mujoco model="test">
     <default>
       <geom type="sphere" size="1"/>
@@ -969,12 +982,18 @@ TEST_P(ContactTest, Contact) {
     </worldbody>
     {}
   </mujoco>
+<<<<<<< HEAD
   )""";
   static constexpr char contact_node[] = R"""(
+=======
+  )""",
+                                    include_contact ? R"""(
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     <contact>
       <pair name="pair1" geom1="base_geom" geom2="body1_geom"/>
       <exclude name="exclude1" body1="body1" body2="body2" />
     </contact>
+<<<<<<< HEAD
   )""";
 
   std::string xml = fmt::format(xml_base, include_contact ? contact_node : "");
@@ -1018,6 +1037,50 @@ INSTANTIATE_TEST_SUITE_P(
     ContactTests, ContactTest,
     testing::Combine(testing::Bool(), testing::Bool()));
 
+=======
+  )"""
+                                                    : "");
+
+      plant.set_adjacent_bodies_collision_filters(
+          adjacent_bodies_collision_filters);
+      AddModelFromMujocoXml({DataSource::kContents, &xml}, "test", {}, &plant);
+      plant.Finalize();
+
+      const SceneGraphInspector<double>& inspector =
+          scene_graph.model_inspector();
+      GeometryId base_geom = inspector.GetGeometries(
+          plant.GetBodyFrameIdOrThrow(plant.GetBodyByName("base").index()),
+          geometry::Role::kProximity)[0];
+      GeometryId body1_geom = inspector.GetGeometries(
+          plant.GetBodyFrameIdOrThrow(plant.GetBodyByName("body1").index()),
+          geometry::Role::kProximity)[0];
+      GeometryId body2_geom = inspector.GetGeometries(
+          plant.GetBodyFrameIdOrThrow(plant.GetBodyByName("body2").index()),
+          geometry::Role::kProximity)[0];
+      if (include_contact) {
+        if (adjacent_bodies_collision_filters) {
+          // In this case, the parser will have emitted a warning, and the
+          // collision filter gets overwritten during Finalize().
+          EXPECT_TRUE(inspector.CollisionFiltered(base_geom, body1_geom));
+        } else {
+          // No warning is emitted; the parsed filter is consistent with the
+          // defaults.
+          EXPECT_FALSE(inspector.CollisionFiltered(base_geom, body1_geom));
+        }
+        EXPECT_TRUE(inspector.CollisionFiltered(body1_geom, body2_geom));
+      } else {
+        if (adjacent_bodies_collision_filters) {
+          EXPECT_TRUE(inspector.CollisionFiltered(base_geom, body1_geom));
+        } else {
+          EXPECT_FALSE(inspector.CollisionFiltered(base_geom, body1_geom));
+        }
+        EXPECT_FALSE(inspector.CollisionFiltered(body1_geom, body2_geom));
+      }
+    }
+  }
+}
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace
 }  // namespace internal
 }  // namespace multibody

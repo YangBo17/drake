@@ -6,8 +6,13 @@
 #include "drake/common/test_utilities/symbolic_test_util.h"
 #include "drake/geometry/collision_filter_declaration.h"
 #include "drake/geometry/geometry_ids.h"
+<<<<<<< HEAD:geometry/optimization/test/cspace_free_polytope_with_mosek_test.cc
 #include "drake/geometry/optimization/cspace_free_polytope.h"  // NOLINT
 #include "drake/geometry/optimization/test/c_iris_test_utilities.h"
+=======
+#include "drake/geometry/optimization/dev/cspace_free_polytope.h"  // NOLINT
+#include "drake/geometry/optimization/dev/test/c_iris_test_utilities.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f:geometry/optimization/dev/test/cspace_free_polytope_with_mosek_test.cc
 #include "drake/multibody/rational/rational_forward_kinematics.h"
 #include "drake/multibody/rational/rational_forward_kinematics_internal.h"
 #include "drake/solvers/common_solver_option.h"
@@ -794,7 +799,11 @@ TEST_F(CIrisRobotPolytopicGeometryTest, InitializePolytopeSearchProgram) {
                               2E-2);
   }
 
+<<<<<<< HEAD:geometry/optimization/test/cspace_free_polytope_with_mosek_test.cc
   // Now test the public InitializePolytopeSearchProgram function.
+=======
+  // Now test the public InitializePolytopeSearchProgram function
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f:geometry/optimization/dev/test/cspace_free_polytope_with_mosek_test.cc
   // First find the separation certificate with a fixed C-space polytope using
   // the public FindSeparationCertificateGivenPolytope function.
   std::unordered_map<SortedPair<geometry::GeometryId>,

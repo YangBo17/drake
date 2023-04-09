@@ -71,6 +71,41 @@ drake_cc_library(
 )
 
 drake_cc_library(
+    name = "constraint_relaxing_ik",
+    srcs = ["constraint_relaxing_ik.cc"],
+    hdrs = ["constraint_relaxing_ik.h"],
+    deps = [
+        ":inverse_kinematics_core",
+        "//common/trajectories:piecewise_polynomial",
+        "//multibody/parsing",
+        "//multibody/plant",
+        "//solvers:solve",
+    ],
+)
+
+drake_cc_library(
+    name = "differential_inverse_kinematics",
+    srcs = ["differential_inverse_kinematics.cc"],
+    hdrs = ["differential_inverse_kinematics.h"],
+    deps = [
+        "//multibody/plant",
+        "//solvers:clp_solver",
+        "//solvers:mathematical_program",
+        "//solvers:osqp_solver",
+    ],
+)
+
+drake_cc_library(
+    name = "differential_inverse_kinematics_integrator",
+    srcs = ["differential_inverse_kinematics_integrator.cc"],
+    hdrs = ["differential_inverse_kinematics_integrator.h"],
+    deps = [
+        ":differential_inverse_kinematics",
+        "//systems/framework:leaf_system",
+    ],
+)
+
+drake_cc_library(
     name = "kinematic_evaluators",
     srcs = [
         "angle_between_vectors_constraint.cc",

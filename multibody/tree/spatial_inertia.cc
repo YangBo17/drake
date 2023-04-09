@@ -223,6 +223,7 @@ SpatialInertia<T> SpatialInertia<T>::SolidSphereWithDensity(
 }
 
 template <typename T>
+<<<<<<< HEAD
 SpatialInertia<T> SpatialInertia<T>::HollowSphereWithDensity(
     const T& area_density, const T& r) {
   // Ensure r is positive.
@@ -239,6 +240,8 @@ SpatialInertia<T> SpatialInertia<T>::HollowSphereWithDensity(
 }
 
 template <typename T>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 SpatialInertia<T> SpatialInertia<T>::SolidTetrahedronAboutPointWithDensity(
     const T& density, const Vector3<T>& p0, const Vector3<T>& p1,
     const Vector3<T>& p2, const Vector3<T>& p3) {
@@ -276,8 +279,11 @@ SpatialInertia<T> SpatialInertia<T>::SolidTetrahedronAboutVertexWithDensity(
 }
 
 template <typename T>
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 void SpatialInertia<T>::ThrowNotPhysicallyValid() const {
   std::string error_message = fmt::format(
           "Spatial inertia fails SpatialInertia::IsPhysicallyValid().");

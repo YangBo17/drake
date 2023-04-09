@@ -22,6 +22,9 @@ using systems::System;
 std::unique_ptr<RobotDiagramBuilder<double>> MakeSampleDut() {
   auto builder = std::make_unique<RobotDiagramBuilder<double>>();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   builder->parser().AddModels(
       FindResourceOrThrow("drake/manipulation/models/iiwa_description/urdf/"
                           "iiwa14_spheres_dense_collision.urdf"));
@@ -41,6 +44,7 @@ GTEST_TEST(RobotDiagramBuilderTest, TimeStep) {
 
 GTEST_TEST(RobotDiagramBuilderTest, Getters) {
   std::unique_ptr<RobotDiagramBuilder<double>> dut = MakeSampleDut();
+<<<<<<< HEAD
 <<<<<<< HEAD
   const RobotDiagramBuilder<double>* const_dut = dut.get();
 
@@ -63,6 +67,18 @@ GTEST_TEST(RobotDiagramBuilderTest, Getters) {
   SceneGraph<double>& mutable_scene_graph = dut->mutable_scene_graph();
   const SceneGraph<double>& scene_graph = dut->scene_graph();
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+  const RobotDiagramBuilder<double>* const_dut = dut.get();
+
+  DiagramBuilder<double>& mutable_builder = dut->builder();
+  const DiagramBuilder<double>& builder = const_dut->builder();
+  Parser& mutable_parser = dut->parser();
+  const Parser& parser = const_dut->parser();
+  MultibodyPlant<double>& mutable_plant = dut->plant();
+  const MultibodyPlant<double>& plant = const_dut->plant();
+  SceneGraph<double>& mutable_scene_graph = dut->scene_graph();
+  const SceneGraph<double>& scene_graph = const_dut->scene_graph();
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   // The getters for mutable vs readonly are consistent.
   EXPECT_EQ(&mutable_builder, &builder);
@@ -79,6 +95,9 @@ GTEST_TEST(RobotDiagramBuilderTest, Getters) {
 GTEST_TEST(RobotDiagramBuilderTest, Lifecycle) {
   std::unique_ptr<RobotDiagramBuilder<double>> dut = MakeSampleDut();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   EXPECT_FALSE(dut->plant().is_finalized());
   EXPECT_FALSE(dut->IsDiagramBuilt());
@@ -204,8 +223,11 @@ GTEST_TEST(RobotDiagramTest, Clone) {
 
 GTEST_TEST(RobotDiagramBuilderTest, DeprecatedLifecycle) {
   std::unique_ptr<RobotDiagramBuilder<double>> dut = MakeSampleDut();
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   EXPECT_FALSE(dut->IsPlantFinalized());
   EXPECT_FALSE(dut->IsDiagramBuilt());
 
@@ -223,10 +245,14 @@ GTEST_TEST(RobotDiagramBuilderTest, DeprecatedLifecycle) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GTEST_TEST(RobotDiagramBuilderTest, DeprecatedLifecycleFailFast) {
 =======
 GTEST_TEST(RobotDiagramBuilderTest, LifecycleFailFast) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+GTEST_TEST(RobotDiagramBuilderTest, DeprecatedLifecycleFailFast) {
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   std::unique_ptr<RobotDiagramBuilder<double>> dut = MakeSampleDut();
   auto robot_diagram = dut->BuildDiagram();
   robot_diagram.reset();
@@ -247,10 +273,14 @@ GTEST_TEST(RobotDiagramBuilderTest, LifecycleFailFast) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GTEST_TEST(RobotDiagramTest, DeprecatedSmokeTest) {
 =======
 GTEST_TEST(RobotDiagramTest, SmokeTest) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+GTEST_TEST(RobotDiagramTest, DeprecatedSmokeTest) {
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   std::unique_ptr<RobotDiagramBuilder<double>> dut = MakeSampleDut();
   std::unique_ptr<RobotDiagram<double>> robot_diagram = dut->BuildDiagram();
   ASSERT_NE(robot_diagram, nullptr);
@@ -258,10 +288,14 @@ GTEST_TEST(RobotDiagramTest, SmokeTest) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GTEST_TEST(RobotDiagramTest, DeprecatedToAutoDiff) {
 =======
 GTEST_TEST(RobotDiagramTest, ToAutoDiff) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+GTEST_TEST(RobotDiagramTest, DeprecatedToAutoDiff) {
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   std::unique_ptr<RobotDiagram<double>> robot_diagram_double =
       MakeSampleDut()->BuildDiagram();
   std::unique_ptr<RobotDiagram<AutoDiffXd>> robot_diagram_autodiff =
@@ -271,10 +305,14 @@ GTEST_TEST(RobotDiagramTest, ToAutoDiff) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GTEST_TEST(RobotDiagramTest, DeprecatedToSymbolic) {
 =======
 GTEST_TEST(RobotDiagramTest, ToSymbolic) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+GTEST_TEST(RobotDiagramTest, DeprecatedToSymbolic) {
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   std::unique_ptr<RobotDiagram<double>> robot_diagram_double =
       MakeSampleDut()->BuildDiagram();
   std::unique_ptr<RobotDiagram<Expression>> robot_diagram_symbolic =
@@ -284,10 +322,14 @@ GTEST_TEST(RobotDiagramTest, ToSymbolic) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GTEST_TEST(RobotDiagramBuilderTest, DeprecatedAutoDiffFromBirthToDeath) {
 =======
 GTEST_TEST(RobotDiagramBuilderTest, AutoDiffFromBirthToDeath) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+GTEST_TEST(RobotDiagramBuilderTest, DeprecatedAutoDiffFromBirthToDeath) {
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   auto builder_autodiff = std::make_unique<RobotDiagramBuilder<AutoDiffXd>>();
   builder_autodiff->mutable_plant().AddModelInstance("mike");
   std::unique_ptr<RobotDiagram<AutoDiffXd>> robot_diagram_autodiff =
@@ -298,10 +340,14 @@ GTEST_TEST(RobotDiagramBuilderTest, AutoDiffFromBirthToDeath) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GTEST_TEST(RobotDiagramTest, DeprecatedSystemGetters) {
 =======
 GTEST_TEST(RobotDiagramTest, SystemGetters) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+GTEST_TEST(RobotDiagramTest, DeprecatedSystemGetters) {
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   std::unique_ptr<RobotDiagram<double>> dut = MakeSampleDut()->BuildDiagram();
 
   const MultibodyPlant<double>& plant = dut->plant();
@@ -317,6 +363,7 @@ GTEST_TEST(RobotDiagramTest, SystemGetters) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GTEST_TEST(RobotDiagramTest, DeprecatedContextGetters) {
   std::unique_ptr<RobotDiagram<double>> dut = MakeSampleDut()->BuildDiagram();
 
@@ -330,6 +377,13 @@ GTEST_TEST(RobotDiagramTest, ContextGetters) {
   const Context<double>& plant_context =
       dut->plant_context(*root_context);
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+GTEST_TEST(RobotDiagramTest, DeprecatedContextGetters) {
+  std::unique_ptr<RobotDiagram<double>> dut = MakeSampleDut()->BuildDiagram();
+
+  std::unique_ptr<Context<double>> root_context = dut->CreateDefaultContext();
+  const Context<double>& plant_context = dut->plant_context(*root_context);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   const Context<double>& scene_graph_context =
       dut->scene_graph_context(*root_context);
   Context<double>& mutable_plant_context =
@@ -347,6 +401,9 @@ GTEST_TEST(RobotDiagramTest, ContextGetters) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 GTEST_TEST(RobotDiagramTest, DeprecatedClone) {
   std::unique_ptr<RobotDiagram<double>> dut = MakeSampleDut()->BuildDiagram();
   std::unique_ptr<RobotDiagram<double>> copy = System<double>::Clone(*dut);
@@ -360,6 +417,7 @@ GTEST_TEST(RobotDiagramTest, DeprecatedClone) {
 
 #pragma GCC diagnostic pop
 
+<<<<<<< HEAD
 }  // namespace
 }  // namespace planning
 }  // namespace drake
@@ -369,3 +427,8 @@ GTEST_TEST(RobotDiagramTest, DeprecatedClone) {
 }  // namespace drake
 
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+}  // namespace
+}  // namespace planning
+}  // namespace drake
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

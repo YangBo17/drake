@@ -181,6 +181,7 @@ drake_pybind_library(
 drake_py_library(
     name = "trajectory_optimization_py",
 <<<<<<< HEAD
+<<<<<<< HEAD
     srcs = ["trajectory_optimization.py"],
     imports = PACKAGE_INFO.py_imports,
     deps = ["//bindings/pydrake/planning"],
@@ -199,6 +200,11 @@ drake_py_library(
         "//bindings/pydrake:trajectories_py",
     ],
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    srcs = ["trajectory_optimization.py"],
+    imports = PACKAGE_INFO.py_imports,
+    deps = ["//bindings/pydrake/planning"],
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 )
 
 # TODO(eric.cousineau): Put this under test once `pydot` is in
@@ -348,9 +354,13 @@ PY_LIBRARIES = [
     ":planar_scenegraph_visualizer_py",
     ":pyplot_visualizer_py",
 <<<<<<< HEAD
+<<<<<<< HEAD
     ":trajectory_optimization_py",
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    ":trajectory_optimization_py",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 ]
 
 # Symbol roll-up (for user ease).
@@ -596,6 +606,7 @@ drake_py_unittest(
 
 drake_py_unittest(
 <<<<<<< HEAD
+<<<<<<< HEAD
     name = "trajectory_optimization_dep_test",
     deps = [
         ":trajectory_optimization_py",
@@ -606,6 +617,12 @@ drake_py_unittest(
         ":trajectory_optimization_py",
         "//bindings/pydrake/examples",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    name = "trajectory_optimization_dep_test",
+    deps = [
+        ":trajectory_optimization_py",
+        "//bindings/pydrake/common/test_utilities:deprecation_py",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
 )
 

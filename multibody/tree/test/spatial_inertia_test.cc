@@ -395,6 +395,7 @@ GTEST_TEST(SpatialInertia, SolidSphereWithDensity) {
       "[^]* A solid sphere's radius = .* is negative or zero.");
 }
 
+<<<<<<< HEAD
 // Tests the static method for the spatial inertia of a thin hollow sphere.
 GTEST_TEST(SpatialInertia, HollowSphereWithDensity) {
   const double area_density = 80;  // density per unit area is 80 kg/m².
@@ -418,6 +419,8 @@ GTEST_TEST(SpatialInertia, HollowSphereWithDensity) {
       "[^]* A hollow sphere's radius = .* is negative or zero.");
 }
 
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 // Test spatial inertia of a solid tetrahedron B about its vertex B0.
 GTEST_TEST(SpatialInertia, SolidTetrahedronAboutVertex) {
   const double density = 0.12345;
@@ -487,8 +490,11 @@ GTEST_TEST(SpatialInertia, SolidTetrahedronAboutPoint) {
                               M_BA.CopyToFullMatrix6(), kTolerance));
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 // Test the construction from the mass, center of mass, and unit inertia of a
 // body. Also tests:
 //   - Getters.

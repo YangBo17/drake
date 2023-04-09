@@ -33,8 +33,17 @@ struct LoadYamlOptions {
 }  // namespace yaml
 }  // namespace drake
 
+<<<<<<< HEAD
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <>
 struct formatter<drake::yaml::LoadYamlOptions> : drake::ostream_formatter {};
+=======
+
+// TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
+namespace fmt {
+template <>
+struct formatter<drake::yaml::LoadYamlOptions>
+    : drake::ostream_formatter {};
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace fmt

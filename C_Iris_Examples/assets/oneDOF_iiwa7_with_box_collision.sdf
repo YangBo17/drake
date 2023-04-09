@@ -34,7 +34,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <link name="iiwa_oneDOF_link_1">
@@ -71,7 +74,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <joint name="iiwa_joint_1" type="fixed">
@@ -127,7 +133,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <joint name="iiwa_joint_2" type="revolute">
@@ -183,7 +192,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <joint name="iiwa_joint_3" type="fixed">
@@ -239,7 +251,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <joint name="iiwa_joint_4" type="fixed">
@@ -295,7 +310,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <joint name="iiwa_joint_5" type="fixed">
@@ -351,7 +369,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <joint name="iiwa_joint_6" type="fixed">
@@ -407,7 +428,10 @@
         </geometry>
       </collision>
       <gravity>1</gravity>
+<<<<<<< HEAD
       <velocity_decay/>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <self_collide>0</self_collide>
     </link>
     <joint name="iiwa_joint_7" type="fixed">

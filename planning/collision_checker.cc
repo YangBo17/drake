@@ -420,8 +420,12 @@ void CollisionChecker::SetCollisionFilterMatrix(
   // Now test for consistency.
   ValidateFilteredCollisionMatrix(filter_matrix, __func__);
   filtered_collisions_ = filter_matrix;
+<<<<<<< HEAD
   log()->debug("Set collision filter matrix to:\n{}",
                fmt_eigen(filtered_collisions_));
+=======
+  log()->debug("Set collision filter matrix to:\n{}", filtered_collisions_);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   UpdateMaxCollisionPadding();
 }
 
@@ -801,7 +805,11 @@ CollisionChecker::CollisionChecker(CollisionCheckerParams params,
   // Generate the filtered collision matrix.
   nominal_filtered_collisions_ = GenerateFilteredCollisionMatrix();
   filtered_collisions_ = nominal_filtered_collisions_;
+<<<<<<< HEAD
   log()->debug("Collision filter matrix:\n{}", fmt_eigen(filtered_collisions_));
+=======
+  log()->debug("Collision filter matrix:\n{}", filtered_collisions_);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }
 
 CollisionChecker::CollisionChecker(const CollisionChecker&) = default;

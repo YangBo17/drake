@@ -180,6 +180,9 @@ TEST_F(QuaternionFloatingMobilizerTest, CheckExceptionMessage) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 TEST_F(QuaternionFloatingMobilizerTest, MapUsesN) {
   // Set an arbitrary "non-zero" state.
   const Quaterniond Q_WB(
@@ -229,8 +232,11 @@ TEST_F(QuaternionFloatingMobilizerTest, MapUsesNplus) {
                               MatrixCompareType::relative));
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace
 }  // namespace internal
 }  // namespace multibody

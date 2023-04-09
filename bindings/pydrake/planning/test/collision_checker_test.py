@@ -7,7 +7,10 @@ import unittest
 import numpy as np
 
 from pydrake.common.test_utilities import numpy_compare
+<<<<<<< HEAD
 from pydrake.common.test_utilities.deprecation import catch_drake_warnings
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 from pydrake.geometry import Sphere
 from pydrake.math import RigidTransform
 from pydrake.multibody.plant import MultibodyPlant
@@ -240,6 +243,7 @@ class TestCollisionChecker(unittest.TestCase):
         num_bodies = 3
 
         self.assertIs(dut.get_body(body_index=body.index()), body)
+<<<<<<< HEAD
         self.assertEqual(len(dut.robot_model_instances()), 1)
         self.assertTrue(dut.IsPartOfRobot(body=body))
         self.assertTrue(dut.IsPartOfRobot(body_index=body.index()))
@@ -247,6 +251,13 @@ class TestCollisionChecker(unittest.TestCase):
             self.assertEqual(dut.GetScopedName(frame=frame), "box::box")
         with catch_drake_warnings(expected_count=1):
             self.assertEqual(dut.GetScopedName(body=body), "box::box")
+=======
+        self.assertEqual(dut.GetScopedName(frame=frame), "box::box")
+        self.assertEqual(dut.GetScopedName(body=body), "box::box")
+        self.assertEqual(len(dut.robot_model_instances()), 1)
+        self.assertTrue(dut.IsPartOfRobot(body=body))
+        self.assertTrue(dut.IsPartOfRobot(body_index=body.index()))
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
         self.assertGreater(len(dut.GetZeroConfiguration()), 0)
         self.assertGreater(dut.num_allocated_contexts(), 0)

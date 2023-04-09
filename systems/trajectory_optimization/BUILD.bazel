@@ -1,6 +1,9 @@
 # TODO(SeanCurtis-TRI): 2023-05-01 this entire directory tree gets removed
 # upon completion of deprecation period.
 
+# TODO(SeanCurtis-TRI): 2023-05-01 this entire directory tree gets removed
+# upon completion of deprecation period.
+
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",
@@ -56,11 +59,15 @@ drake_cc_library(
     deps = [
         "//common:essential",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "//planning/trajectory_optimization:sequential_expression_manager",
 =======
         "//common:unused",
         "//common/symbolic:expression",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        "//planning/trajectory_optimization:sequential_expression_manager",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
 )
 
@@ -105,6 +112,9 @@ drake_cc_library(
     deps = [
         ":multiple_shooting",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//common:essential",
         "//planning/trajectory_optimization:direct_transcription",
     ],
@@ -121,6 +131,7 @@ drake_cc_library(
     deps = [
         "//common:essential",
         "//planning/trajectory_optimization:kinematic_trajectory_optimization",
+<<<<<<< HEAD
 =======
         "//common/symbolic:polynomial",
         "//common/trajectories:piecewise_polynomial",
@@ -131,6 +142,8 @@ drake_cc_library(
         "//systems/framework",
         "//systems/primitives:linear_system",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
 )
 
@@ -153,6 +166,9 @@ drake_cc_library(
 # TODO(SeanCurtis-TRI): 2023-05-01 remove along with deprecation.
 drake_cc_googletest(
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     name = "deprecation_test",
     copts = [
         "-Wno-cpp",
@@ -160,6 +176,7 @@ drake_cc_googletest(
     ],
     data = [
         "//manipulation/models/iiwa_description:models",
+<<<<<<< HEAD
 =======
     name = "multiple_shooting_test",
     deps = [
@@ -168,6 +185,8 @@ drake_cc_googletest(
         "//solvers:osqp_solver",
         "//solvers:solve",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
     deps = [
         ":trajectory_optimization",
@@ -175,6 +194,7 @@ drake_cc_googletest(
         "//systems/primitives:linear_system",
     ],
 )
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -215,3 +235,5 @@ drake_cc_googletest(
 
 add_lint_tests()
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

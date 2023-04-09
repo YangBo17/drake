@@ -16,9 +16,13 @@
 #include "drake/common/default_scalars.h"
 #include "drake/common/drake_assert.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "drake/common/fmt_ostream.h"
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+#include "drake/common/fmt_ostream.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/common/symbolic/expression.h"
 
 namespace drake {

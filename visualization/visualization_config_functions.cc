@@ -63,11 +63,14 @@ void ApplyVisualizationConfigImpl(const VisualizationConfig& config,
     for (const MeshcatVisualizerParams& params : all_meshcat_params) {
       MeshcatVisualizer<double>::AddToBuilder(builder, scene_graph, meshcat,
                                               params);
+<<<<<<< HEAD
     }
     if (config.publish_contacts) {
       ContactVisualizer<double>::AddToBuilder(
           builder, plant, meshcat,
           internal::ConvertVisualizationConfigToMeshcatContactParams(config));
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     }
   }
 }

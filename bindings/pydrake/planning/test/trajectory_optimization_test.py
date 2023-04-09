@@ -21,11 +21,14 @@ from pydrake.systems.framework import InputPortSelection
 from pydrake.systems.primitives import LinearSystem
 from pydrake.trajectories import PiecewisePolynomial, BsplineTrajectory
 from pydrake.symbolic import Variable
+<<<<<<< HEAD
 =======
 from pydrake.math import eq
 from pydrake.trajectories import PiecewisePolynomial
 from pydrake.solvers import mathematicalprogram as mp
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/systems/test/trajectory_optimization_test.py
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 from pydrake.systems.framework import InputPortSelection
 from pydrake.systems.primitives import LinearSystem
 
@@ -181,6 +184,15 @@ class TestTrajectoryOptimization(unittest.TestCase):
         input_traj = dirtran.ReconstructInputTrajectory(result)
         state_traj = dirtran.ReconstructStateTrajectory(result)
 <<<<<<< HEAD:bindings/pydrake/planning/test/trajectory_optimization_test.py
+
+        # Confirm that the constructor for continuous systems works (and
+        # confirm binding of nested TimeStep).
+        plant = LinearSystem(
+            A=[0.0], B=[1.0], C=[1.0], D=[0.0], time_period=0.0)
+        context = plant.CreateDefaultContext()
+        dirtran = DirectTranscription(
+            plant, context, num_time_samples=21,
+            fixed_timestep=DirectTranscription.TimeStep(0.1))
 
         # Confirm that the constructor for continuous systems works (and
         # confirm binding of nested TimeStep).

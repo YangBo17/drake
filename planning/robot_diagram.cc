@@ -27,10 +27,14 @@ constexpr size_t kSceneGraphIndex = 1;
 // @tparam ChildSystem the subsystem class to extract, e.g., MultibodyPlant.
 // @tparam DiagramOrDiagramBuilder duck type for either a diagram or a builder.
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 template <typename T, template <typename> class ChildSystem,
           template <typename> class DiagramOrDiagramBuilder>
 ChildSystem<T>& DowncastSubsystem(DiagramOrDiagramBuilder<T>* diagram,
                                   size_t index) {
+<<<<<<< HEAD
 =======
 template <
   typename T,
@@ -39,6 +43,8 @@ template <
 ChildSystem<T>& DowncastSubsystem(
     DiagramOrDiagramBuilder<T>* diagram, size_t index) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   DRAKE_DEMAND(diagram != nullptr);
   const std::vector<const System<T>*>& items = diagram->GetSystems();
   const auto* child = dynamic_cast<const ChildSystem<T>*>(items.at(index));
@@ -51,16 +57,22 @@ RobotDiagram<T>::RobotDiagram(
     std::unique_ptr<DiagramBuilder<T>> diagram_builder)
     : Diagram<T>(SystemTypeTag<RobotDiagram>{}),
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       plant_(DowncastSubsystem<T, MultibodyPlant>(diagram_builder.get(),
                                                   kPlantIndex)),
       scene_graph_(DowncastSubsystem<T, SceneGraph>(diagram_builder.get(),
                                                     kSceneGraphIndex)) {
+<<<<<<< HEAD
 =======
       plant_(DowncastSubsystem<T, MultibodyPlant>(
           diagram_builder.get(), kPlantIndex)),
       scene_graph_(DowncastSubsystem<T, SceneGraph>(
           diagram_builder.get(), kSceneGraphIndex)) {
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   diagram_builder->BuildInto(this);
   // TODO(jeremy.nimmer) For convenience, we should probably re-export most (or
   // all) of the the subsytems' input and output ports here.
@@ -73,10 +85,14 @@ template <typename T>
 template <typename U>
 RobotDiagram<T>::RobotDiagram(const RobotDiagram<U>& other)
 <<<<<<< HEAD
+<<<<<<< HEAD
     : Diagram<T>(SystemTypeTag<RobotDiagram>{}, other),
 =======
     : Diagram<T>(other),
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    : Diagram<T>(SystemTypeTag<RobotDiagram>{}, other),
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       plant_(DowncastSubsystem<T, MultibodyPlant>(this, kPlantIndex)),
       scene_graph_(DowncastSubsystem<T, SceneGraph>(this, kSceneGraphIndex)) {}
 

@@ -1,8 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 from pydrake.solvers import mathematicalprogram as mp
 
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 import copy
 from functools import partial
 import unittest
@@ -35,20 +38,27 @@ import pydrake.solvers as mp
 from pydrake.common.test_utilities.deprecation import catch_drake_warnings
 from pydrake.forwarddiff import jacobian
 from pydrake.math import ge
-from pydrake.solvers.gurobi import GurobiSolver
-from pydrake.solvers.snopt import SnoptSolver
-from pydrake.solvers.scs import ScsSolver
-from pydrake.solvers.osqp import OsqpSolver
-from pydrake.solvers.mathematicalprogram import (
+from pydrake.solvers import (
+    GurobiSolver,
     LinearConstraint,
     MathematicalProgramResult,
+    OsqpSolver,
     PyFunctionConstraint,
+    ScsSolver,
+    SnoptSolver,
+    SolverId,
+    SolverInterface,
     SolverOptions,
     SolverType,
+<<<<<<< HEAD
     SolverId,
     SolverInterface
     )
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+)
+import pydrake.solvers as mp
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 import pydrake.solvers._testing as mp_testing
 import pydrake.symbolic as sym
 

@@ -2,7 +2,10 @@
 =======
 # -*- python -*-
 
+<<<<<<< HEAD
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load("@drake//tools/workspace:deprecation.bzl", "add_deprecation")
 load("@drake//tools/workspace:mirrors.bzl", "DEFAULT_MIRRORS")
 load("@drake//tools/workspace:os.bzl", "os_repository")
@@ -14,9 +17,12 @@ load("@drake//tools/workspace/cc:repository.bzl", "cc_repository")
 load("@drake//tools/workspace/ccd:repository.bzl", "ccd_repository")
 <<<<<<< HEAD
 load("@drake//tools/workspace/ccd_internal:repository.bzl", "ccd_internal_repository")  # noqa
+<<<<<<< HEAD
 =======
 load("@drake//tools/workspace/cds:repository.bzl", "cds_repository")
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load("@drake//tools/workspace/clang_cindex_python3_internal:repository.bzl", "clang_cindex_python3_internal_repository")  # noqa
 load("@drake//tools/workspace/clp:repository.bzl", "clp_repository")
 load("@drake//tools/workspace/com_jidesoft_jide_oss:repository.bzl", "com_jidesoft_jide_oss_repository")  # noqa
@@ -51,11 +57,14 @@ load("@drake//tools/workspace/gurobi:repository.bzl", "gurobi_repository")
 load("@drake//tools/workspace/gym_py:repository.bzl", "gym_py_repository")
 load("@drake//tools/workspace/gz_math_internal:repository.bzl", "gz_math_internal_repository")  # noqa
 load("@drake//tools/workspace/gz_utils_internal:repository.bzl", "gz_utils_internal_repository")  # noqa
+<<<<<<< HEAD
 =======
 load("@drake//tools/workspace/gz_math_internal:repository.bzl", "gz_math_internal_repository")  # noqa
 load("@drake//tools/workspace/gz_utils_internal:repository.bzl", "gz_utils_internal_repository")  # noqa
 load("@drake//tools/workspace/ibex:repository.bzl", "ibex_repository")
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load("@drake//tools/workspace/intel_realsense_ros_internal:repository.bzl", "intel_realsense_ros_internal_repository")  # noqa
 load("@drake//tools/workspace/ipopt:repository.bzl", "ipopt_repository")
 load("@drake//tools/workspace/lapack:repository.bzl", "lapack_repository")
@@ -104,15 +113,22 @@ load("@drake//tools/workspace/pybind11:repository.bzl", "pybind11_repository")
 load("@drake//tools/workspace/pycodestyle:repository.bzl", "pycodestyle_repository")  # noqa
 load("@drake//tools/workspace/python:repository.bzl", "python_repository")
 <<<<<<< HEAD
+<<<<<<< HEAD
 load("@drake//tools/workspace/qdldl_internal:repository.bzl", "qdldl_internal_repository")  # noqa
 =======
 load("@drake//tools/workspace/qdldl:repository.bzl", "qdldl_repository")
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+load("@drake//tools/workspace/qdldl_internal:repository.bzl", "qdldl_internal_repository")  # noqa
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load("@drake//tools/workspace/qhull_internal:repository.bzl", "qhull_internal_repository")  # noqa
 load("@drake//tools/workspace/ros_xacro_internal:repository.bzl", "ros_xacro_internal_repository")  # noqa
 load("@drake//tools/workspace/rules_pkg:repository.bzl", "rules_pkg_repository")  # noqa
 load("@drake//tools/workspace/rules_python:repository.bzl", "rules_python_repository")  # noqa
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load("@drake//tools/workspace/scs_internal:repository.bzl", "scs_internal_repository")  # noqa
 load("@drake//tools/workspace/sdformat_internal:repository.bzl", "sdformat_internal_repository")  # noqa
 load("@drake//tools/workspace/snopt:repository.bzl", "snopt_repository")
@@ -175,6 +191,7 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
 <<<<<<< HEAD
     if "ccd_internal" not in excludes:
         ccd_internal_repository(name = "ccd_internal", mirrors = mirrors)
+<<<<<<< HEAD
 =======
     if "cds" not in excludes:
         cds_repository(name = "cds", mirrors = mirrors)
@@ -185,6 +202,8 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
             py_aliases = {"clang": "@clang_cindex_python3_internal//:clang"},
         )
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     if "clang_cindex_python3_internal" not in excludes:
         clang_cindex_python3_internal_repository(name = "clang_cindex_python3_internal", mirrors = mirrors)  # noqa
     if "clp" not in excludes:
@@ -267,6 +286,7 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
 <<<<<<< HEAD
     if "gym_py" not in excludes:
         gym_py_repository(name = "gym_py", mirrors = mirrors)
+<<<<<<< HEAD
 =======
     if "ibex" not in excludes:
         ibex_repository(name = "ibex", mirrors = mirrors)
@@ -288,6 +308,8 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
             date = "2022-10-01",
         )
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     if "intel_realsense_ros_internal" not in excludes:
         intel_realsense_ros_internal_repository(name = "intel_realsense_ros_internal", mirrors = mirrors)  # noqa
     if "ipopt" not in excludes:
@@ -394,6 +416,9 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
         python_repository(name = "python")
     if "qdldl" not in excludes:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         add_deprecation(
             name = "qdldl",
             date = "2023-05-01",
@@ -428,6 +453,9 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
         rules_python_repository(name = "rules_python", mirrors = mirrors)
     if "scs" not in excludes:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         add_deprecation(
             name = "scs",
             date = "2023-05-01",
@@ -435,6 +463,7 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
         )
     if "scs_internal" not in excludes:
         scs_internal_repository(name = "scs_internal", mirrors = mirrors)
+<<<<<<< HEAD
 =======
         scs_repository(name = "scs", mirrors = mirrors)
     if "sdformat" not in excludes:
@@ -444,6 +473,8 @@ def add_default_repositories(excludes = [], mirrors = DEFAULT_MIRRORS):
             cc_aliases = {"sdformat": "@sdformat_internal//:sdformat"},
         )
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     if "sdformat_internal" not in excludes:
         sdformat_internal_repository(name = "sdformat_internal", mirrors = mirrors)  # noqa
     if "snopt" not in excludes:

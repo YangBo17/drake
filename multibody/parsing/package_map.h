@@ -7,10 +7,14 @@
 
 #include "drake/common/drake_copyable.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "drake/common/fmt_ostream.h"
 #include "drake/common/name_value.h"
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+#include "drake/common/fmt_ostream.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 namespace drake {
 namespace multibody {
@@ -202,16 +206,21 @@ class PackageMap final {
   /// separating them using the ':' symbol. For example, the environment
   /// variable can contain [path 1]:[path 2]:[path 3] to search three different
   /// paths.
+  ///
   /// If a package already known by the PackageMap is found again with a
+<<<<<<< HEAD
   /// conflicting path, a warning is logged and the original path is kept. This
   /// accomodates the expected behavior using ROS_PACKAGE_PATH, where a package
   /// path corresponds to the "highest" overlay in which that package is found.
+=======
+  /// conflicting path, a warning is logged and the original path is kept.
+  ///
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   /// If a path does not exist or is unreadable, a warning is logged.
-  /// This function should not be used when populating manifests from the
-  /// ROS_PACKAGE_PATH environment variable. To do so, the
-  /// PopulateFromRosPackagePath function should be used instead, which follows
-  /// standard ROS package discovery semantics described in the documentation
-  /// for that function.
+  ///
+  /// @warning This function must not be used when populating manifests from
+  /// the ROS_PACKAGE_PATH environment variable. It will throw an exception
+  /// when that is attempted. Instead, use PopulateFromRosPackagePath().
   void PopulateFromEnvironment(const std::string& environment_variable);
 
   /// Obtains one or more paths from the ROS_PACKAGE_PATH environment variable.
@@ -277,5 +286,10 @@ class PackageMap final {
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <>
+<<<<<<< HEAD
 struct formatter<drake::multibody::PackageMap> : drake::ostream_formatter {};
+=======
+struct formatter<drake::multibody::PackageMap>
+    : drake::ostream_formatter {};
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace fmt

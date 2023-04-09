@@ -56,6 +56,9 @@ void DoMain() {
       multibody::AddMultibodyPlantSceneGraph(&builder, FLAGS_max_time_step);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   std::string hand_url;
   if (FLAGS_use_right_hand) {
     hand_url = "package://drake/manipulation/models/"
@@ -65,6 +68,7 @@ void DoMain() {
       "allegro_hand_description/sdf/allegro_hand_description_left.sdf";
   }
   multibody::Parser(&plant).AddModelsFromUrl(hand_url);
+<<<<<<< HEAD
 =======
   std::string full_name;
   if (FLAGS_use_right_hand)
@@ -76,6 +80,8 @@ void DoMain() {
 
   multibody::Parser(&plant).AddModelFromFile(full_name);
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   // Weld the hand to the world frame
   const auto& joint_hand_root = plant.GetBodyByName("hand_root");

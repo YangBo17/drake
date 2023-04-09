@@ -138,6 +138,10 @@ drake_cc_library(
         "//geometry:scene_graph",
         "//multibody/plant",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        "//multibody/rational:rational_forward_kinematics",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//solvers:choose_best_solver",
 =======
         "//multibody/rational_forward_kinematics",
@@ -364,6 +368,27 @@ drake_cc_googletest(
         "//geometry:meshcat",
         "//geometry/test_utilities:meshcat_environment",
         "//multibody/inverse_kinematics",
+        "//multibody/parsing:parser",
+        "//systems/framework:diagram_builder",
+    ],
+)
+
+drake_cc_googletest(
+    name = "iris_in_rational_configuration_space_test",
+    timeout = "moderate",
+    data = ["//multibody/parsing:test_models"],
+    shard_count = 8,
+    # Most of these tests take an exceptionally long time under
+    # instrumentation, resulting in timeouts, and so are excluded.
+    tags = [
+        "no_asan",
+        "no_memcheck",
+    ],
+    deps = [
+        ":iris",
+        "//common/test_utilities:expect_throws_message",
+        "//geometry:meshcat",
+        "//geometry/test_utilities:meshcat_environment",
         "//multibody/parsing:parser",
         "//systems/framework:diagram_builder",
     ],

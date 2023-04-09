@@ -42,6 +42,11 @@ DRAKE_FORMATTER_AS(). Grep around in Drake's existing code to find examples. */
 
 #include <string>
 
+<<<<<<< HEAD
+=======
+#include <fmt/ostream.h>
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/common/fmt.h"
 
 #ifndef DRAKE_DOXYGEN_CXX

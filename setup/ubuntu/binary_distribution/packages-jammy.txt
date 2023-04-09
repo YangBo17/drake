@@ -4,6 +4,9 @@ coinor-libipopt1v5
 default-jre
 jupyter-notebook
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 libblas-dev
 libbz2-1.0
 =======
@@ -35,9 +38,12 @@ libjpeg-turbo8
 libjsoncpp25
 liblapack3
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 libldl2
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 liblz4-1
 liblzma5
 libmsgpackc2
@@ -65,6 +71,7 @@ libvtk9.1
 libx11-6
 libxml2
 libxt6
+<<<<<<< HEAD
 ocl-icd-libopencl1
 python3
 python3-ipywidgets
@@ -77,6 +84,8 @@ libx11-6
 libxml2
 libxt6
 libyaml-cpp-dev
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 ocl-icd-libopencl1
 python3
 python3-ipywidgets

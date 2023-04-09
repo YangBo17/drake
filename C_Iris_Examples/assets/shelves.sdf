@@ -9,6 +9,12 @@
             <size>0.3 0.016 0.783</size>
           </box>
         </geometry>
+<<<<<<< HEAD
+=======
+        <material>
+          <diffuse> 0.5 0.9 0.5 0.5 </diffuse>
+        </material>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       </visual>
       <visual name="left_wall">
         <pose> 0 -0.292 0 0 0 0</pose>
@@ -17,8 +23,15 @@
             <size>0.3 0.016 0.783</size>
           </box>
         </geometry>
+<<<<<<< HEAD
       </visual>
 <!--
+=======
+        <material>
+          <diffuse> 0.5 0.9 0.5 0.5 </diffuse>
+        </material>
+      </visual>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <collision name="right_wall">
         <pose> 0 0.292 0 0 0 0</pose>
         <geometry>
@@ -35,7 +48,10 @@
           </box>
         </geometry>
       </collision>
+<<<<<<< HEAD
 -->
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     </link>
     <link name="top_and_bottom">
       <visual name="bottom">
@@ -45,6 +61,12 @@
             <size>0.3 0.6 0.016</size>
           </box>
         </geometry>
+<<<<<<< HEAD
+=======
+        <material>
+          <diffuse> 0.5 0.9 0.5 1 </diffuse>
+        </material>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       </visual>
       <visual name="top">
         <pose> 0 0 0.3995 0 0 0</pose>
@@ -53,6 +75,12 @@
             <size>0.3 0.6 0.016</size>
           </box>
         </geometry>
+<<<<<<< HEAD
+=======
+        <material>
+          <diffuse> 0.5 0.9 0.5 1 </diffuse>
+        </material>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       </visual>
       <visual name="shelf_lower">
         <pose> 0 0 -0.13115 0 0 0</pose>
@@ -61,6 +89,12 @@
             <size>0.3 0.6 0.016</size>
           </box>
         </geometry>
+<<<<<<< HEAD
+=======
+        <material>
+          <diffuse> 0.5 0.9 0.5 1 </diffuse>
+        </material>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       </visual>
       <visual name="shelf_upper">
         <pose> 0 0 0.13115 0 0 0</pose>
@@ -69,8 +103,15 @@
             <size>0.3 0.6 0.016</size>
           </box>
         </geometry>
+<<<<<<< HEAD
       </visual>
 <!--
+=======
+        <material>
+          <diffuse> 0.5 0.9 0.5 1 </diffuse>
+        </material>
+      </visual>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <collision name="bottom">
         <pose> 0 0 -0.3995 0 0 0</pose>
         <geometry>
@@ -79,7 +120,10 @@
           </box>
         </geometry>
       </collision>
+<<<<<<< HEAD
 -->
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
       <collision name="top">
         <pose> 0 0 0.3995 0 0 0</pose>
         <geometry>
@@ -111,4 +155,8 @@
       <parent>shelves_body</parent>
     </joint>
   </model>
+<<<<<<< HEAD
 </sdf>
+=======
+</sdf>
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

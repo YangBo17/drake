@@ -289,9 +289,13 @@ drake_cc_binary(
         "//common:is_approx_equal_abstol",
         "//geometry:drake_visualizer",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "//planning/trajectory_optimization:direct_collocation",
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        "//planning/trajectory_optimization:direct_collocation",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//solvers:snopt_solver",
         "//solvers:solve",
         "//systems/analysis:simulator",

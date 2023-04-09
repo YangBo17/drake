@@ -27,12 +27,16 @@ top-level documentation for :py:mod:`pydrake.math`.
   internal::DefineSolversClp(m);
   internal::DefineSolversCsdp(m);
 <<<<<<< HEAD
+<<<<<<< HEAD
   internal::DefineSolversGurobi(m);
 =======
   internal::DefineSolversDreal(m);
   internal::DefineSolversGurobi(m);
   internal::DefineSolversIbex(m);
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+  internal::DefineSolversGurobi(m);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   internal::DefineSolversIpopt(m);
   internal::DefineSolversMosek(m);
   internal::DefineSolversNlopt(m);

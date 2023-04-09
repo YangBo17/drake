@@ -12,7 +12,10 @@
 #include "drake/common/drake_copyable.h"
 #include "drake/common/drake_throw.h"
 #include "drake/common/eigen_types.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_eigen.h"
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/common/fmt_ostream.h"
 #include "drake/common/nice_type_name.h"
 #include "drake/common/unused.h"

@@ -2382,9 +2382,12 @@ class TestStereographicSubstitution(unittest.TestCase):
 
         e = 2 * np.sin(x) + np.sin(y) * np.cos(x)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         r = sym.SubstituteStereographicProjection(e=e, subs={x: tx, y: ty})
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         self.assertTrue(r.numerator().Expand().EqualTo(
             sym.Polynomial(4*tx*(1+ty*ty) + 2*ty * (1-tx*tx)).Expand()))
         self.assertTrue(r.denominator().Expand().EqualTo(

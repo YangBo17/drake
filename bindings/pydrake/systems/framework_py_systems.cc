@@ -554,6 +554,34 @@ Note: The above is for the C++ documentation. For Python, use
         .def("__deepcopy__", [](const System<T>* self, py::dict /* memo */) {
           return self->Clone();
         });
+<<<<<<< HEAD
+=======
+
+// Deprecated; remove 2023-03-01
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    system_cls  // BR
+        .def("CalcDiscreteVariableUpdates",
+            WrapDeprecated(
+                doc.System.CalcDiscreteVariableUpdates.doc_deprecated_2args,
+                overload_cast_explicit<void, const Context<T>&,
+                    DiscreteValues<T>*>(
+                    &System<T>::CalcDiscreteVariableUpdates)),
+            py::arg("context"), py::arg("discrete_state"),
+            doc.System.CalcDiscreteVariableUpdates.doc_deprecated_2args)
+        .def("CalcUnrestrictedUpdate",
+            WrapDeprecated(doc.System.CalcUnrestrictedUpdate.doc_deprecated,
+                overload_cast_explicit<void, const Context<T>&, State<T>*>(
+                    &System<T>::CalcUnrestrictedUpdate)),
+            py::arg("context"), py::arg("state"),
+            doc.System.CalcUnrestrictedUpdate.doc_deprecated)
+        .def("Publish",
+            WrapDeprecated(doc.System.Publish.doc_deprecated,
+                overload_cast_explicit<void, const Context<T>&>(
+                    &System<T>::Publish)),
+            doc.System.Publish.doc_deprecated);
+#pragma GCC diagnostic pop
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
     auto def_to_scalar_type = [&system_cls, doc](auto dummy) {
       using U = decltype(dummy);

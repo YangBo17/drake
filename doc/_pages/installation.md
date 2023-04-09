@@ -15,12 +15,20 @@ The following table shows the configurations and platforms that Drake
 officially supports:
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 | Operating System ⁽¹⁾               | Architecture | Python ⁽²⁾ |
 |------------------------------------|--------------|------------|
 | Ubuntu 20.04 LTS (Focal Fossa)     | x86_64       | 3.8 ⁽³⁾    |
 | Ubuntu 22.04 LTS (Jammy Jellyfish) | x86_64       | 3.10 ⁽³⁾   |
 | macOS Monterey (12)                | x86_64       | 3.11       |
 | macOS Monterey (12)                | arm64        | 3.11       |
+=======
+| Operating System ⁽²⁾               | Architecture     | Python ⁽¹⁾ |
+|------------------------------------|------------------|------------|
+| Ubuntu 20.04 LTS (Focal Fossa)     | x86_64           | 3.8        |
+| Ubuntu 22.04 LTS (Jammy Jellyfish) | x86_64           | 3.10       |
+| macOS Monterey (12)                | x86_64 or arm64  | 3.11       |
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
 "Official support" means that we have Continuous Integration test coverage to
 notice regressions, so if it doesn't work for you then please file a bug report.

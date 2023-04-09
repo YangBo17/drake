@@ -8,16 +8,24 @@
 #include <vector>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 #include "fmt/ostream.h"
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include <drake_vendor/sdf/Root.hh>
 #include <drake_vendor/sdf/parser.hh>
+#include <fmt/ostream.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "drake/common/find_resource.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_eigen.h"
+=======
+#include "drake/common/fmt_ostream.h"
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/common/test_utilities/eigen_matrix_compare.h"
 #include "drake/common/test_utilities/expect_throws_message.h"
 #include "drake/geometry/geometry_instance.h"

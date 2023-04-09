@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",
@@ -136,7 +141,11 @@ drake_cc_googletest(
 
 drake_cc_googletest(
     name = "direct_transcription_test",
+<<<<<<< HEAD
     data = ["//examples/pendulum:models"],
+=======
+    data = ["//examples/pendulum:prod_models"],
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     # This test has two duplicated long cases; run them in parallel.
     shard_count = 4,
     deps = [

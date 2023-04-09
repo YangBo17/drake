@@ -87,6 +87,7 @@ std::vector<ModelInstanceIndex> Parser::AddModelsFromUrl(
     return {};
   }
   return AddModels(file_name);
+<<<<<<< HEAD
 =======
 namespace {
 enum class FileType { kSdf, kUrdf, kMjcf };
@@ -105,6 +106,8 @@ FileType DetermineFileType(const std::string& file_name) {
       "The file type '{}' is not supported for '{}'",
       ext, file_name));
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }
 
 std::vector<ModelInstanceIndex> Parser::AddAllModelsFromFile(

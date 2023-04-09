@@ -36,8 +36,11 @@ GTEST_TEST(FileParserTest, BasicTest) {
       "acrobot.dmd.yaml");
   const std::string obj_name = FindResourceOrThrow(
       "drake/multibody/parsing/test/box_package/meshes/box.obj");
+<<<<<<< HEAD
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   // Load from SDF using plural method.
   // Add a second one with an overridden model_name.

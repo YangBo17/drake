@@ -38,6 +38,7 @@ LIBDRAKE_COMPONENTS = [
     "//examples/van_der_pol:van_der_pol",  # unpackaged
     "//geometry",
     "//geometry/optimization",
+    "//geometry/optimization/dev",
     "//geometry/proximity",
     "//geometry/query_results",
 <<<<<<< HEAD
@@ -52,10 +53,14 @@ LIBDRAKE_COMPONENTS = [
     "//manipulation/kinova_jaco",
     "//manipulation/kuka_iiwa",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "//manipulation/planner",  # 2023-06-01 Remove this with completed deprecation  # noqa
 =======
     "//manipulation/planner",
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    "//manipulation/planner",  # 2023-06-01 Remove this with completed deprecation  # noqa
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     "//manipulation/schunk_wsg",
     "//manipulation/util",
     "//math",
@@ -88,9 +93,13 @@ LIBDRAKE_COMPONENTS = [
     "//perception",
     "//planning",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "//planning/trajectory_optimization",
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+    "//planning/trajectory_optimization",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     "//solvers",
     "//systems/analysis",
     "//systems/controllers",

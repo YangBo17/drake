@@ -151,6 +151,7 @@ GTEST_TEST(VisualizationConfigFunctionsTest, ApplyDefault) {
   const VisualizationConfig config;
   ApplyVisualizationConfig(config, &builder, &lcm_buses, &plant, &scene_graph,
                            meshcat);
+<<<<<<< HEAD
 
   // Check that systems that we expect to have been added were actually added.
   for (const auto& name : {
@@ -170,6 +171,9 @@ GTEST_TEST(VisualizationConfigFunctionsTest, ApplyDefault) {
     }
     EXPECT_GE(count, 1);
   }
+=======
+  Simulator<double> simulator(builder.Build());
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 
   // Simulate for a moment and make sure everything showed up.
   Simulator<double> simulator(builder.Build());

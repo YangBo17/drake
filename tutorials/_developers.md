@@ -20,10 +20,14 @@ your fork and branch, e.g.,
 
 The tutorials on the Drake website are refreshed to latest master as part of
 <<<<<<< HEAD
+<<<<<<< HEAD
 our [stable release process](/release_playbook.html). In general we do not
 =======
 our [stable release process](/release_playbook.html]. In general we do not
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+our [stable release process](/release_playbook.html). In general we do not
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 upgrade them between those monthly releases, but in case of emergency feel
 free to manually edit them online at deepnote.com. Any manual changes will
 be overwritten during the next stable release, so be sure that the fixes

@@ -188,6 +188,7 @@ symbolic::RationalFunction SubstituteStereographicProjectionImpl(
     const VectorX<symbolic::Variable>& t);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 /**
  * Substitutes sine and cosine function with their stereographic projection.
@@ -226,5 +227,7 @@ symbolic::RationalFunction SubstituteStereographicProjectionImpl(
     const std::unordered_map<symbolic::Variable, symbolic::Variable>& subs);
 
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 }  // namespace symbolic
 }  // namespace drake

@@ -140,6 +140,7 @@ class DrakeSubscription final : public DrakeSubscriptionInterface {
   static std::shared_ptr<DrakeSubscription> CreateSingleChannel(
       ::lcm::LCM* native_instance, const std::string& channel,
       HandlerFunction single_channel_handler) {
+<<<<<<< HEAD
     // N.B. The argument to CreateMultichannel is regex, so we need to escape
     // the channel name as part delegating to it.
     return CreateMultichannel(
@@ -148,6 +149,20 @@ class DrakeSubscription final : public DrakeSubscriptionInterface {
             std::string_view, const void* data, int size) {
           handler(data, size);
         });
+=======
+    // The argument to subscribeFunction is regex (not a string literal), so
+    // we'll need to escape the channel name before calling subscribeFunction.
+    char* const channel_regex = g_regex_escape_string(channel.c_str(), -1);
+    ScopeExit guard([channel_regex]() {
+      g_free(channel_regex);
+    });
+
+    return Create(native_instance, channel_regex,
+                  [handler = std::move(single_channel_handler)](
+                      std::string_view, const void* data, int size) {
+                    handler(data, size);
+                  });
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   }
 
   static std::shared_ptr<DrakeSubscription> CreateMultichannel(
@@ -342,25 +357,25 @@ std::shared_ptr<DrakeSubscriptionInterface> DrakeLcm::SubscribeAllChannels(
   impl_->CleanUpOldSubscriptions();
   const std::string& suffix = impl_->channel_suffix_;
   if (!suffix.empty()) {
-    handler =
-        [&suffix, handler](std::string_view channel,
-                           const void* data, int length) {
-          // TODO(ggould-tri) Use string_view::ends_with() once we have C++20.
-          if (channel.length() >= suffix.length() &&
-              channel.substr(channel.length() - suffix.length()) == suffix) {
-            channel.remove_suffix(suffix.length());
-            handler(channel, data, length);
-          } else {
-            drake::log()->debug("DrakeLcm with suffix {} received message on"
-                                " channel {}, which lacks the suffix.",
-                                suffix, channel);
-          }
-        };
+    handler = [&suffix, handler](std::string_view channel, const void* data,
+                                 int length) {
+      // TODO(ggould-tri) Use string_view::ends_with() once we have C++20.
+      if (channel.length() >= suffix.length() &&
+          channel.substr(channel.length() - suffix.length()) == suffix) {
+        channel.remove_suffix(suffix.length());
+        handler(channel, data, length);
+      } else {
+        drake::log()->debug(
+            "DrakeLcm with suffix {} received message on channel {}, which "
+            "lacks the suffix.",
+            suffix, channel);
+      }
+    };
   }
 
   // Add the new subscriber.
-  auto result = DrakeSubscription::CreateMultichannel(
-      &(impl_->lcm_), std::move(handler));
+  auto result =
+      DrakeSubscription::CreateMultichannel(&(impl_->lcm_), std::move(handler));
   if (!impl_->deferred_initialization_) {
     result->AttachIfNeeded();
   }

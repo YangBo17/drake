@@ -113,7 +113,6 @@ declare -a bazel_args=(
     --macos_minimum_os="${MACOSX_DEPLOYMENT_TARGET}"
 =======
     --define NO_DRAKE_VISUALIZER=ON
-    --define NO_DREAL=ON
     --define WITH_MOSEK=ON
     --define WITH_SNOPT=ON
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

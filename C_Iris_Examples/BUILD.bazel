@@ -17,6 +17,7 @@ load(
 
 filegroup(
     name = "models",
+<<<<<<< HEAD
     data = [
         "assets/box_small.urdf",
         "assets/double_pendulum_world.urdf",
@@ -24,6 +25,23 @@ filegroup(
         "assets/shelves.sdf",
         "assets/single_pendulum_world.urdf",
         "assets/twoDOF_iiwa7_with_box_collision.sdf",
+=======
+    srcs = glob(
+        [
+            "models/**",
+        ],
+        exclude = [
+            "**/*.sha512",
+        ],
+    ),
+    data = [
+        "assets/2dof_iiwa_translating_base.sdf",
+        "assets/box_small.urdf",
+        "assets/ground.urdf",
+        "assets/oneDOF_iiwa7_with_box_collision.sdf",
+        "assets/twoDOF_iiwa7_with_box_collision.sdf",
+        "directives/trans2dof_directives.yaml",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
     visibility = ["//visibility:public"],
 )
@@ -33,6 +51,7 @@ filegroup(
 ##########################################################
 
 drake_py_library(
+<<<<<<< HEAD
     name = "visualizations_utils",
     srcs = [
         "visualizations_utils.py",
@@ -44,6 +63,11 @@ drake_py_library(
     name = "prm",
     srcs = [
         "prm.py",
+=======
+    name = "visualization_utils",
+    srcs = [
+        "visualization_utils.py",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     ],
     visibility = ["//visibility:public"],
 )
@@ -64,33 +88,50 @@ drake_py_library(
 ##########################################################
 
 drake_jupyter_py_binary(
+<<<<<<< HEAD
     name = "pinball_iiwas",
+=======
+    name = "2d_example_visualize_planes",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     add_test_rule = 0,
     data = [
         "//C_Iris_Examples:models",
     ],
     deps = [
         "//C_Iris_Examples:iris_plant_visualizer",
+<<<<<<< HEAD
         "//C_Iris_Examples:visualizations_utils",
+=======
+        "//C_Iris_Examples:visualization_utils",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//bindings/pydrake",
     ],
 )
 
 drake_jupyter_py_binary(
+<<<<<<< HEAD
     name = "pinball_iiwas_prm_certify",
+=======
+    name = "2d_example_bilinear_alternation",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     add_test_rule = 0,
     data = [
         "//C_Iris_Examples:models",
     ],
     deps = [
         "//C_Iris_Examples:iris_plant_visualizer",
+<<<<<<< HEAD
         "//C_Iris_Examples:prm",
         "//C_Iris_Examples:visualizations_utils",
+=======
+        "//C_Iris_Examples:visualization_utils",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//bindings/pydrake",
     ],
 )
 
 drake_jupyter_py_binary(
+<<<<<<< HEAD
     name = "7dof_iiwas_prm_certify",
     add_test_rule = 0,
     data = [
@@ -100,11 +141,24 @@ drake_jupyter_py_binary(
         "//C_Iris_Examples:iris_plant_visualizer",
         "//C_Iris_Examples:prm",
         "//C_Iris_Examples:visualizations_utils",
+=======
+    name = "dual_ur",
+    add_test_rule = 0,
+    data = [
+        "//C_Iris_Examples:models",
+        "//manipulation/models/ur3e:models",
+        "//manipulation/models/wsg_50_description:models",
+    ],
+    deps = [
+        "//C_Iris_Examples:iris_plant_visualizer",
+        "//C_Iris_Examples:visualization_utils",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//bindings/pydrake",
     ],
 )
 
 drake_jupyter_py_binary(
+<<<<<<< HEAD
     name = "simple_pendulum_example",
     add_test_rule = 0,
     data = [
@@ -114,20 +168,40 @@ drake_jupyter_py_binary(
         "//C_Iris_Examples:iris_plant_visualizer",
         "//C_Iris_Examples:prm",
         "//C_Iris_Examples:visualizations_utils",
+=======
+    name = "single_ur",
+    add_test_rule = 0,
+    data = [
+        "//C_Iris_Examples:models",
+        "//manipulation/models/ur3e:models",
+        "//manipulation/models/wsg_50_description:models",
+    ],
+    deps = [
+        "//C_Iris_Examples:iris_plant_visualizer",
+        "//C_Iris_Examples:visualization_utils",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//bindings/pydrake",
     ],
 )
 
 drake_jupyter_py_binary(
+<<<<<<< HEAD
     name = "double_pendulum_example",
+=======
+    name = "pendulum_on_rail2d",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     add_test_rule = 0,
     data = [
         "//C_Iris_Examples:models",
     ],
     deps = [
         "//C_Iris_Examples:iris_plant_visualizer",
+<<<<<<< HEAD
         "//C_Iris_Examples:prm",
         "//C_Iris_Examples:visualizations_utils",
+=======
+        "//C_Iris_Examples:visualization_utils",
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         "//bindings/pydrake",
     ],
 )

@@ -151,6 +151,9 @@ class TestMeldis(unittest.TestCase):
         self.assertEqual(meshcat.HasPath(link_path), True)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
     def test_viewer_applet_robot_meshes(self):
         """Checks _ViewerApplet support for meshes.
         """
@@ -406,6 +409,7 @@ class TestMeldis(unittest.TestCase):
 
         # After the handlers are called, we have the expected meshcat path.
         self.assertEqual(dut.meshcat.HasPath(meshcat_path), True)
+<<<<<<< HEAD
 
     def test_point_cloud(self):
         """Checks that _PointCloudApplet doesn't crash when receiving point
@@ -441,3 +445,5 @@ class TestMeldis(unittest.TestCase):
         dut._invoke_subscriptions()
         self.assertEqual(meshcat.HasPath(hydro_path), True)
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f

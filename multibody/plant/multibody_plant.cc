@@ -23,10 +23,13 @@
 #include "drake/multibody/contact_solvers/sparse_linear_operator.h"
 #include "drake/multibody/hydroelastics/hydroelastic_engine.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 #include "drake/multibody/plant/compliant_contact_manager.h"
 #include "drake/multibody/plant/discrete_contact_pair.h"
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 #include "drake/multibody/plant/externally_applied_spatial_force.h"
 #include "drake/multibody/plant/hydroelastic_traction_calculator.h"
 #include "drake/multibody/plant/make_discrete_update_manager.h"
@@ -407,6 +410,7 @@ MultibodyPlant<T>::MultibodyPlant(const MultibodyPlant<U>& other)
 
     adjacent_bodies_collision_filters_ =
         other.adjacent_bodies_collision_filters_;
+<<<<<<< HEAD
 =======
   time_step_ = other.time_step_;
   // Copy of all members related with geometry registration.
@@ -438,6 +442,8 @@ MultibodyPlant<T>::MultibodyPlant(const MultibodyPlant<U>& other)
     RemoveUnsupportedScalars(*cloned_model);
     physical_models_.emplace_back(std::move(cloned_model));
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   }
 
   DeclareSceneGraphPorts();
@@ -2207,6 +2213,7 @@ void MultibodyPlant<symbolic::Expression>::CalcHydroelasticWithFallback(
 // TODO(16106): This code will go into:
 // CompliantContactManager<T>::AppendDiscreteContactPairsForHydroelasticContact.
 template <typename T>
+<<<<<<< HEAD
 void MultibodyPlant<T>::CalcDiscreteContactPairs(
     const systems::Context<T>& context,
     std::vector<internal::DiscreteContactPair<T>>* result) const {
@@ -2561,6 +2568,8 @@ void MultibodyPlant<T>::CalcContactSolverResults(
 
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 template <typename T>
+=======
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
 void MultibodyPlant<T>::CalcJointLockingIndices(
     const systems::Context<T>& context,
     std::vector<int>* unlocked_velocity_indices) const {
@@ -2997,9 +3006,13 @@ void MultibodyPlant<T>::DeclareStateCacheAndPorts() {
             get_generalized_contact_forces_output_port(model_instance_index));
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         DRAKE_DEMAND(discrete_update_manager_ != nullptr);
 =======
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+        DRAKE_DEMAND(discrete_update_manager_ != nullptr);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
         const contact_solvers::internal::ContactSolverResults<T>&
             solver_results =
                 discrete_update_manager_->EvalContactSolverResults(context);

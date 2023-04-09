@@ -240,6 +240,7 @@ int DoMain() {
 
   // Make and add the planar_gripper model.
 <<<<<<< HEAD
+<<<<<<< HEAD
   const std::string gripper_url =
       "package://drake/examples/planar_gripper/planar_gripper.sdf";
   const ModelInstanceIndex gripper_index =
@@ -250,6 +251,12 @@ int DoMain() {
   const ModelInstanceIndex gripper_index =
       Parser(&plant).AddModelFromFile(full_name);
 >>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+=======
+  const std::string gripper_url =
+      "package://drake/examples/planar_gripper/planar_gripper.sdf";
+  const ModelInstanceIndex gripper_index =
+      Parser(&plant).AddModelsFromUrl(gripper_url).at(0);
+>>>>>>> 65b76e12737b188b94fc473aa3d3c4fb4fea5a0f
   WeldGripperFrames<double>(&plant);
 
   // Adds the brick to be manipulated.
