@@ -1,5 +1,8 @@
 #include "pybind11/eigen.h"
+<<<<<<< HEAD
 #include "pybind11/functional.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "pybind11/pybind11.h"
 
 #include "drake/bindings/pydrake/common/value_pybind.h"
@@ -7,7 +10,10 @@
 #include "drake/bindings/pydrake/pydrake_pybind.h"
 #include "drake/bindings/pydrake/solvers/solvers_py.h"
 #include "drake/bindings/pydrake/solvers/solvers_pybind.h"
+<<<<<<< HEAD
 #include "drake/bindings/pydrake/symbolic_types_pybind.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/solvers/gurobi_solver.h"
 
 namespace drake {
@@ -37,6 +43,7 @@ void DefineSolversGurobi(py::module m) {
       .def_readonly("objective_bound", &GurobiSolverDetails::objective_bound,
           doc.GurobiSolverDetails.objective_bound.doc);
   AddValueInstantiation<GurobiSolverDetails>(m);
+<<<<<<< HEAD
 
   py::class_<GurobiSolver::SolveStatusInfo>(
       cls, "SolveStatusInfo", doc.GurobiSolver.SolveStatusInfo.doc)
@@ -62,6 +69,8 @@ void DefineSolversGurobi(py::module m) {
          py::arg("callback"), doc.GurobiSolver.AddMipNodeCallback.doc)
       .def("AddMipSolCallback", &GurobiSolver::AddMipSolCallback,
           py::arg("callback"), doc.GurobiSolver.AddMipSolCallback.doc);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 }  // namespace internal

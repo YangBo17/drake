@@ -82,7 +82,11 @@
       <visual>
         <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
+<<<<<<< HEAD
           <mesh filename="package://drake_models/ur3e/base.obj"/>
+=======
+          <mesh filename="base.obj"/>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         </geometry>
         <material name="LightGrey">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -161,7 +165,11 @@
       <visual>
         <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
+<<<<<<< HEAD
           <mesh filename="package://drake_models/ur3e/shoulder.obj"/>
+=======
+          <mesh filename="shoulder.obj"/>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         </geometry>
         <material name="LightGrey">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -224,7 +232,11 @@
       <visual>
         <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
+<<<<<<< HEAD
           <mesh filename="package://drake_models/ur3e/upperarm.obj"/>
+=======
+          <mesh filename="upperarm.obj"/>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         </geometry>
         <material name="LightGrey">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -341,7 +353,11 @@
       <visual>
         <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
+<<<<<<< HEAD
           <mesh filename="package://drake_models/ur3e/forearm.obj"/>
+=======
+          <mesh filename="forearm.obj"/>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         </geometry>
         <material name="LightGrey">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -476,7 +492,11 @@
       <visual>
         <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
+<<<<<<< HEAD
           <mesh filename="package://drake_models/ur3e/wrist1.obj"/>
+=======
+          <mesh filename="wrist1.obj"/>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         </geometry>
         <material name="LightGrey">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -552,7 +572,11 @@
       <visual>
         <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
+<<<<<<< HEAD
           <mesh filename="package://drake_models/ur3e/wrist2.obj"/>
+=======
+          <mesh filename="wrist2.obj"/>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         </geometry>
         <material name="LightGrey">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -627,7 +651,11 @@
       <visual>
         <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
         <geometry>
+<<<<<<< HEAD
           <mesh filename="package://drake_models/ur3e/wrist3.obj"/>
+=======
+          <mesh filename="wrist3.obj"/>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         </geometry>
         <material name="LightGrey">
           <color rgba="0.7 0.7 0.7 1.0"/>

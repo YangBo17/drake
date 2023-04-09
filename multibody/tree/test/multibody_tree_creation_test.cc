@@ -890,6 +890,7 @@ UnitInertia<double> MakeTestCubeUnitInertia(const double length = 1.0) {
     return G_BBo_B;
 }
 
+<<<<<<< HEAD
 // Helper function to create a cube-shaped rigid body B and add it to a model.
 // @param[in] model MultibodyTree to which body B is added.
 // @param[in] body_name name of the body that is being added to the model.
@@ -911,10 +912,23 @@ const RigidBody<double>& AddCubicalLink(
   const SpatialInertia<double> M_BBo_B(mass, p_BoBcm_B, G_BBo_B,
                                        skip_validity_check);
   return model->AddRigidBody(body_name, M_BBo_B);
+=======
+// Helper function to add a rigid body to a model.
+const RigidBody<double>& AddRigidBody(MultibodyTree<double>* model,
+                                      const std::string& name,
+                                      const double mass,
+                                      const double link_length = 1.0) {
+    DRAKE_DEMAND(model != nullptr);
+    const Vector3<double> p_BoBcm_B(link_length / 2, 0, 0);
+    const UnitInertia<double> G_BBo_B = MakeTestCubeUnitInertia(link_length);
+    const SpatialInertia<double> M_BBo_B(mass, p_BoBcm_B, G_BBo_B);
+    return model->AddRigidBody(name, M_BBo_B);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 // Verify Body::default_rotational_inertia() and related MultibodyTree methods.
 GTEST_TEST(DefaultInertia, VerifyDefaultRotationalInertia) {
+<<<<<<< HEAD
   // Create a model and add three rigid bodies, namely A, B, C.
   MultibodyTree<double> model;
   const double mA = 0, mB = 1, mC = 3;  // Mass of links A, B, C.
@@ -922,6 +936,15 @@ GTEST_TEST(DefaultInertia, VerifyDefaultRotationalInertia) {
   const RigidBody<double>& body_A = AddCubicalLink(&model, "bodyA", mA, length);
   const RigidBody<double>& body_B = AddCubicalLink(&model, "bodyB", mB, length);
   const RigidBody<double>& body_C = AddCubicalLink(&model, "bodyC", mC, length);
+=======
+  // Create a model and add three rigid bodies.
+  MultibodyTree<double> model;
+  const double mA = 0, mB = 1, mC = 3;  // Mass of link A, B, and C.
+  const double length = 3;         // Length of each thin uniform-density link.
+  const RigidBody<double>& body_A = AddRigidBody(&model, "bodyA", mA, length);
+  const RigidBody<double>& body_B = AddRigidBody(&model, "bodyB", mB, length);
+  const RigidBody<double>& body_C = AddRigidBody(&model, "bodyC", mC, length);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Verify the default mass for each of the bodies.
   EXPECT_EQ(body_A.default_mass(), mA);
@@ -961,6 +984,7 @@ GTEST_TEST(DefaultInertia, VerifyDefaultRotationalInertia) {
   EXPECT_EQ(mass_ABC, mA + mB + mC);
 
   // Verify whether all default rotational inertia in these sets are zero.
+<<<<<<< HEAD
   EXPECT_TRUE(model.AreAllDefaultRotationalInertiaZero(bodies_AA));
   EXPECT_FALSE(model.AreAllDefaultRotationalInertiaZero(bodies_AB));
   EXPECT_FALSE(model.AreAllDefaultRotationalInertiaZero(bodies_BC));
@@ -1177,6 +1201,12 @@ GTEST_TEST(TestDistalBody, NoThrowErrorIfZeroInertiaBodyIsNotDistal) {
 
   // No exception should be thrown due to default mass/inertia properties.
   EXPECT_NO_THROW(model.ThrowDefaultMassInertiaError());
+=======
+  EXPECT_TRUE(model.IsAllDefaultRotationalInertiaZeroOrNaN(bodies_AA));
+  EXPECT_FALSE(model.IsAllDefaultRotationalInertiaZeroOrNaN(bodies_AB));
+  EXPECT_FALSE(model.IsAllDefaultRotationalInertiaZeroOrNaN(bodies_BC));
+  EXPECT_FALSE(model.IsAllDefaultRotationalInertiaZeroOrNaN(bodies_ABC));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 }  // namespace

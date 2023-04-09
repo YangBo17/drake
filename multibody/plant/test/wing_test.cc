@@ -167,7 +167,11 @@ GTEST_TEST(WingTest, DerivativesAtZeroVelocity) {
   systems::DiagramBuilder<double> builder;
 
   auto* plant = builder.AddSystem<MultibodyPlant<double>>(0);
+<<<<<<< HEAD
   Parser(plant).AddModels(
+=======
+  Parser(plant).AddModelFromFile(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       FindResourceOrThrow("drake/multibody/models/box.urdf"));
   plant->Finalize();
   plant->set_name("plant");

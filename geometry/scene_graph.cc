@@ -244,6 +244,7 @@ GeometryId SceneGraph<T>::RegisterDeformableGeometry(
 }
 
 template <typename T>
+<<<<<<< HEAD
 void SceneGraph<T>::ChangeShape(
     SourceId source_id, GeometryId geometry_id, const Shape& shape,
     std::optional<math::RigidTransform<double>> X_FG) {
@@ -259,6 +260,8 @@ void SceneGraph<T>::ChangeShape(
 }
 
 template <typename T>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void SceneGraph<T>::RemoveGeometry(SourceId source_id, GeometryId geometry_id) {
   model_.RemoveGeometry(source_id, geometry_id);
 }
@@ -530,10 +533,16 @@ void SceneGraph<T>::CalcConfigurationUpdate(const Context<T>& context,
       }
     }
   }
+<<<<<<< HEAD
 
   state.FinalizeConfigurationUpdate(kinematics_data,
                                     &state.mutable_proximity_engine(),
                                     state.GetMutableRenderEngines());
+=======
+  // TODO(xuchenhan-tri): Similar to the implementation of CalcPoseUpdate, a
+  // FinalizeConfigurationUpdate() is needed to propagate the change to
+  // proximity engine and render engine.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 template <typename T>

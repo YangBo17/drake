@@ -8,6 +8,10 @@
 
 #include "drake/common/drake_assert.h"
 #include "drake/common/drake_copyable.h"
+<<<<<<< HEAD
+=======
+#include "drake/common/drake_deprecated.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/eigen_types.h"
 #include "drake/geometry/geometry_ids.h"
 #include "drake/math/rigid_transform.h"
@@ -131,6 +135,22 @@ class KinematicsVector {
   /** Provides a range object for all of the existing ids in the vector.
    This is intended to be used as:
    @code
+<<<<<<< HEAD
+=======
+   for (Id id : this_vector.frame_ids()) {
+    ...
+    // Obtain the KinematicsValue of an id by `this_vector.value(id)`
+    ...
+   }
+   @endcode
+   */
+  DRAKE_DEPRECATED("2022-10-01", "Use ids() instead.")
+  std::vector<Id> frame_ids() const;
+
+  /** Provides a range object for all of the existing ids in the vector.
+   This is intended to be used as:
+   @code
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    for (Id id : this_vector.ids()) {
     ...
     // Obtain the KinematicsValue of an id by `this_vector.value(id)`

@@ -66,6 +66,7 @@ GTEST_TEST(SpatialInertia, MakeUnitary) {
   EXPECT_EQ(M_unit_products, Vector3<double>::Zero());
 }
 
+<<<<<<< HEAD
 // Tests the static method for the spatial inertia of a single particle.
 GTEST_TEST(SpatialInertia, PointMass) {
   // This example models a rigid body B as having all of its mass concentrated
@@ -486,6 +487,8 @@ GTEST_TEST(SpatialInertia, SolidTetrahedronAboutPoint) {
                               M_BA.CopyToFullMatrix6(), kTolerance));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 // Test the construction from the mass, center of mass, and unit inertia of a
 // body. Also tests:
 //   - Getters.

@@ -301,7 +301,11 @@ class MathematicalProgramResult final {
    *    solution to the (rotated) Lorentz cone constraint doesn't have the
    *    "shadow price" interpretation, but should lie in the dual cone, and
    *    satisfy the KKT condition. For more information, refer to
+<<<<<<< HEAD
    *    https://docs.mosek.com/10.0/capi/prob-def-conic.html#duality-for-conic-optimization
+=======
+   *    https://docs.mosek.com/9.3/capi/prob-def-conic.html#duality-for-conic-optimization
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    *    as an explanation.
    *
    * The interpretation for the dual variable to conic constraint x ∈ K can be

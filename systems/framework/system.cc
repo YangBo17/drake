@@ -751,9 +751,13 @@ const InputPort<T>& System<T>::GetInputPort(
   std::vector<std::string_view> port_names;
   port_names.reserve(num_input_ports());
   for (InputPortIndex i{0}; i < num_input_ports(); i++) {
+<<<<<<< HEAD
     const InputPortBase& port_base = this->GetInputPortBaseOrThrow(
         __func__, i, /* warn_deprecated = */ false);
     port_names.push_back(port_base.get_name());
+=======
+    port_names.push_back(get_input_port_base(i).get_name());
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
   if (port_names.empty()) {
     port_names.push_back("it has no input ports");

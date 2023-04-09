@@ -383,11 +383,14 @@ class GeometryState {
       SourceId source_id, FrameId frame_id,
       std::unique_ptr<GeometryInstance> geometry, double resolution_hint);
 
+<<<<<<< HEAD
   /** Implementation of SceneGraph::ChangeShape().  */
   void ChangeShape(
       SourceId source_id, GeometryId geometry_id, const Shape& shape,
       std::optional<math::RigidTransform<double>> X_FG);
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /** Implementation of SceneGraph::RemoveGeometry().  */
   void RemoveGeometry(SourceId source_id, GeometryId geometry_id);
 
@@ -502,6 +505,7 @@ class GeometryState {
     DRAKE_DEMAND(point_pairs != nullptr);
     return geometry_engine_->ComputeContactSurfacesWithFallback(
         representation, kinematics_data_.X_WGs, surfaces, point_pairs);
+<<<<<<< HEAD
   }
 
   /** Implementation of QueryObject::ComputeDeformableContact().  */
@@ -510,6 +514,8 @@ class GeometryState {
   ComputeDeformableContact(
       internal::DeformableContact<T>* deformable_contact) const {
     return geometry_engine_->ComputeDeformableContact(deformable_contact);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   /** Implementation of QueryObject::FindCollisionCandidates().  */
@@ -551,7 +557,14 @@ class GeometryState {
   /** Implementation of
    QueryObject::ComputeSignedDistancePairClosestPoints().  */
   SignedDistancePair<T> ComputeSignedDistancePairClosestPoints(
+<<<<<<< HEAD
       GeometryId id_A, GeometryId id_B) const;
+=======
+      GeometryId id_A, GeometryId id_B) const {
+    return geometry_engine_->ComputeSignedDistancePairClosestPoints(
+        id_A, id_B, kinematics_data_.X_WGs);
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /** Implementation of QueryObject::ComputeSignedDistanceToPoint().  */
   std::vector<SignedDistanceToPoint<T>> ComputeSignedDistanceToPoint(
@@ -629,7 +642,64 @@ class GeometryState {
 
   // Scalar-converting copy constructor.
   template <typename U>
+<<<<<<< HEAD
   explicit GeometryState(const GeometryState<U>& source);
+=======
+  explicit GeometryState(const GeometryState<U>& source)
+      : self_source_(source.self_source_),
+        source_frame_id_map_(source.source_frame_id_map_),
+        source_deformable_geometry_id_map_(
+            source.source_deformable_geometry_id_map_),
+        source_frame_name_map_(source.source_frame_name_map_),
+        source_root_frame_map_(source.source_root_frame_map_),
+        source_names_(source.source_names_),
+        source_anchored_geometry_map_(source.source_anchored_geometry_map_),
+        frames_(source.frames_),
+        geometries_(source.geometries_),
+        frame_index_to_id_map_(source.frame_index_to_id_map_),
+        geometry_engine_(
+            std::move(source.geometry_engine_->template ToScalarType<T>())),
+        render_engines_(source.render_engines_),
+        geometry_version_(source.geometry_version_) {
+    auto convert_pose_vector = [](const std::vector<math::RigidTransform<U>>& s,
+                                  std::vector<math::RigidTransform<T>>* d) {
+      std::vector<math::RigidTransform<T>>& dest = *d;
+      dest.resize(s.size());
+      for (size_t i = 0; i < s.size(); ++i) {
+        dest[i] = s[i].template cast<T>();
+      }
+    };
+    // TODO(xuchenhan-tri): The scalar conversion of KinematicsData should be
+    // handled by the KinematicsData class.
+    convert_pose_vector(source.kinematics_data_.X_PFs, &kinematics_data_.X_PFs);
+    convert_pose_vector(source.kinematics_data_.X_WFs, &kinematics_data_.X_WFs);
+
+    // Now convert the id -> pose map.
+    {
+      std::unordered_map<GeometryId, math::RigidTransform<T>>& dest =
+          kinematics_data_.X_WGs;
+      const std::unordered_map<GeometryId, math::RigidTransform<U>>& s =
+          source.kinematics_data_.X_WGs;
+      for (const auto& id_pose_pair : s) {
+        const GeometryId id = id_pose_pair.first;
+        const math::RigidTransform<U>& X_WG_source = id_pose_pair.second;
+        dest.insert({id, X_WG_source.template cast<T>()});
+      }
+    }
+
+    // Now convert the id -> configuration map.
+    {
+      std::unordered_map<GeometryId, VectorX<T>>& dest = kinematics_data_.q_WGs;
+      const std::unordered_map<GeometryId, VectorX<U>>& s =
+          source.kinematics_data_.q_WGs;
+      for (const auto& id_configuration_pair : s) {
+        const GeometryId id = id_configuration_pair.first;
+        const VectorX<U>& q_WG_source = id_configuration_pair.second;
+        dest.insert({id, q_WG_source.template cast<T>()});
+      }
+    }
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Allow SceneGraph unique access to the state members to perform queries.
   friend class SceneGraph<T>;
@@ -692,6 +762,7 @@ class GeometryState {
       const internal::KinematicsData<T>& kinematics_data,
       internal::ProximityEngine<T>* proximity_engine,
       std::vector<render::RenderEngine*> render_engines) const;
+<<<<<<< HEAD
 
   // Method that updates the proximity engine and the render engines with the
   // up-to-date _configuration_ data in `kinematics_data`. Currently, nothing is
@@ -700,6 +771,8 @@ class GeometryState {
       const internal::KinematicsData<T>& kinematics_data,
       internal::ProximityEngine<T>* proximity_engine,
       std::vector<render::RenderEngine*> render_engines) const;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Gets the source id for the given frame id. Throws std::exception if the
   // frame belongs to no registered source.
@@ -760,9 +833,15 @@ class GeometryState {
   void ThrowIfNameExistsInRole(FrameId id, Role role,
                                const std::string& name) const;
 
+<<<<<<< HEAD
   // Propagates all roles defined in geometry instance to `this` geometry state.
   void AssignAllDefinedRoles(SourceId source_id,
                              std::unique_ptr<GeometryInstance> geometry);
+=======
+  // Propagate all roles defined in geometry instance to `this` geometry state.
+  void AssignAllRoles(SourceId source_id, GeometryId geometry_id,
+                      std::unique_ptr<GeometryInstance> geometry);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Confirms that the given role assignment is valid and return the geometry
   // if valid. Throws if not.

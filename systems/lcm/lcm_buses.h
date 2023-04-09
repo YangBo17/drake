@@ -31,9 +31,14 @@ class LcmBuses final {
   int size() const;
 
   /** Finds the bus of the given name, or throws if there is no such bus.
+<<<<<<< HEAD
 
   The return value is an alias into memory owned elsewhere (typically by a
   DiagramBuilder or a Diagram) and is never nullptr.
+=======
+  The return value is an alias into memory owned by the DiagramBuilder,
+  and is never nullptr.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   @param description_of_caller is a noun phrase that will be used when creating
   an error message. A typical value would be something like "Camera 5", "Robot

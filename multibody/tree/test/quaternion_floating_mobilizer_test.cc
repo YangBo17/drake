@@ -179,6 +179,7 @@ TEST_F(QuaternionFloatingMobilizerTest, CheckExceptionMessage) {
       " All the elements in a quaternion are zero\\.");
 }
 
+<<<<<<< HEAD
 TEST_F(QuaternionFloatingMobilizerTest, MapUsesN) {
   // Set an arbitrary "non-zero" state.
   const Quaterniond Q_WB(
@@ -228,6 +229,8 @@ TEST_F(QuaternionFloatingMobilizerTest, MapUsesNplus) {
                               MatrixCompareType::relative));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace
 }  // namespace internal
 }  // namespace multibody

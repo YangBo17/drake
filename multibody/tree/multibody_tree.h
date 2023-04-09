@@ -2511,6 +2511,7 @@ class MultibodyTree {
   // @retval Total mass of all bodies in body_indexes or 0 if there is no mass.
   double CalcTotalDefaultMass(const std::set<BodyIndex>& body_indexes) const;
 
+<<<<<<< HEAD
   // In the set of bodies associated with BodyIndex, returns true if any of
   // the bodies have a NaN default rotational inertia.
   // @param[in] body_indexes A set of BodyIndex.
@@ -2527,6 +2528,14 @@ class MultibodyTree {
   // properties will cause subsequent numerical problems.
   void ThrowDefaultMassInertiaError() const;
 
+=======
+  // (Internal use only) Returns true if all the default rotational inertia of
+  // bodies in a set of BodyIndex are zero or NaN.
+  // @param[in] body_indexes A set of BodyIndex.
+  bool IsAllDefaultRotationalInertiaZeroOrNaN(
+      const std::set<BodyIndex>& body_indexes) const;
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
  private:
   // Make MultibodyTree templated on every other scalar type a friend of
   // MultibodyTree<T> so that CloneToScalar<ToAnyOtherScalar>() can access

@@ -273,6 +273,7 @@ GTEST_TEST(TestSOCP, MaximizeGeometricMeanTrivialProblem2) {
 GTEST_TEST(TestSOCP, SmallestEllipsoidCoveringProblem) {
   ScsSolver solver;
   SolveAndCheckSmallestEllipsoidCoveringProblems(solver, {}, kTol);
+<<<<<<< HEAD
 }
 
 GTEST_TEST(TestSOCP, LorentzConeDual) {
@@ -295,6 +296,8 @@ GTEST_TEST(TestSOCP, TestSocpDuplicatedVariable1) {
 GTEST_TEST(TestSOCP, TestSocpDuplicatedVariable2) {
   ScsSolver solver;
   TestSocpDuplicatedVariable2(solver, std::nullopt, 1E-6);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 TEST_P(QuadraticProgramTest, TestQP) {

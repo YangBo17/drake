@@ -46,6 +46,16 @@ class CollisionFilterGroupResolverTest : public test::DiagnosticPolicyTestBase {
 // in the parsed text.  TODO(rpoyner-tri) Migrate actual filter construction
 // tests here from detail_{urdf,sdf}_parser_test.
 
+<<<<<<< HEAD
+=======
+TEST_F(CollisionFilterGroupResolverTest, IllegalPair) {
+  resolver_.AddPair(diagnostic_policy_, "::a", "b::", {});
+  resolver_.Resolve(diagnostic_policy_);
+  EXPECT_THAT(TakeError(), MatchesRegex(".*'::a'.*neither begin nor end.*"));
+  EXPECT_THAT(TakeError(), MatchesRegex(".*'b::'.*neither begin nor end.*"));
+}
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 TEST_F(CollisionFilterGroupResolverTest, BogusPairScoped) {
   ModelInstanceIndex r1 = plant_.AddModelInstance("r1");
   resolver_.AddPair(diagnostic_policy_, "a", "sub::b", r1);
@@ -61,6 +71,22 @@ TEST_F(CollisionFilterGroupResolverTest, BogusPairGlobal) {
   EXPECT_THAT(TakeError(), MatchesRegex(".*group.*'b'.*not found"));
 }
 
+<<<<<<< HEAD
+=======
+TEST_F(CollisionFilterGroupResolverTest, IllegalGroupName) {
+  resolver_.AddGroup(diagnostic_policy_, "::a", {}, {});
+  EXPECT_THAT(TakeError(), MatchesRegex(".*'::a'.*neither begin nor end.*"));
+  resolver_.AddGroup(diagnostic_policy_, "b::", {}, {});
+  EXPECT_THAT(TakeError(), MatchesRegex(".*'b::'.*neither begin nor end.*"));
+}
+
+TEST_F(CollisionFilterGroupResolverTest, IllegalBodies) {
+  resolver_.AddGroup(diagnostic_policy_, "g", {"::a", "b::"}, {});
+  EXPECT_THAT(TakeError(), MatchesRegex(".*'::a'.*neither begin nor end.*"));
+  EXPECT_THAT(TakeError(), MatchesRegex(".*'b::'.*neither begin nor end.*"));
+}
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 TEST_F(CollisionFilterGroupResolverTest, BogusGroupName) {
   resolver_.AddGroup(diagnostic_policy_, "haha::a", {}, {});
   EXPECT_THAT(TakeError(), MatchesRegex(".*'haha::a' cannot be.*scoped.*"));
@@ -96,13 +122,21 @@ TEST_F(CollisionFilterGroupResolverTest, OutOfParseBodyGlobal) {
   AddBody("stuff", {});
   resolver_.AddGroup(diagnostic_policy_, "a", {
       "DefaultModelInstance::stuff",
+<<<<<<< HEAD
       "WorldModelInstance::world",
+=======
+      "WorldModelInstance::WorldBody",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       "stuff",
     },
     {});
   EXPECT_THAT(TakeError(), MatchesRegex(".*'DefaultModelInstance::stuff'"
                                         ".*outside the current parse"));
+<<<<<<< HEAD
   EXPECT_THAT(TakeError(), MatchesRegex(".*'WorldModelInstance::world'"
+=======
+  EXPECT_THAT(TakeError(), MatchesRegex(".*'WorldModelInstance::WorldBody'"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
                                         ".*outside the current parse"));
   // Ensure that unqualified bodies names at global scope aren't looked up in
   // the default model inadvertently.

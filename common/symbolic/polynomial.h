@@ -10,7 +10,11 @@
 #include <Eigen/Core>
 
 #include "drake/common/drake_copyable.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_ostream.h"
+=======
+#include "drake/common/drake_deprecated.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/symbolic/expression.h"
 #define DRAKE_COMMON_SYMBOLIC_POLYNOMIAL_H
 #include "drake/common/symbolic/monomial.h"
@@ -153,7 +157,11 @@ class Polynomial {
 
   /// Returns the mapping from a Monomial to its corresponding coefficient of
   /// this polynomial.
+<<<<<<< HEAD
   /// We maintain the invariance that for any [monomial, coeff] pair in
+=======
+  /// We maintain the invariance that for ancy [monomial, coeff] pair in
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /// monomial_to_coefficient_map(), symbolic:is_zero(coeff) is false.
   [[nodiscard]] const MapType& monomial_to_coefficient_map() const;
 
@@ -260,6 +268,7 @@ class Polynomial {
   /// Adds @p coeff * @p m to this polynomial.
   Polynomial& AddProduct(const Expression& coeff, const Monomial& m);
 
+<<<<<<< HEAD
   /// An encapsulated data type for use with the method SubstituteAndExpand.
   struct SubstituteAndExpandCacheData {
    public:
@@ -312,6 +321,8 @@ class Polynomial {
           indeterminate_substitution,
       SubstituteAndExpandCacheData* substitutions_cached_data = nullptr) const;
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /// Expands each coefficient expression and returns the expanded polynomial.
   /// If any coefficient is equal to 0 after expansion, then remove that term
   /// from the returned polynomial.
@@ -369,6 +380,14 @@ class Polynomial {
 
   /// Returns true if this polynomial and @p p are structurally equal.
   [[nodiscard]] bool EqualTo(const Polynomial& p) const;
+<<<<<<< HEAD
+=======
+
+  DRAKE_DEPRECATED("2022-09-01",
+                   "Use this->Expand().EqualTo(p.Expand()) instead of "
+                   "EqualToAfterExpansion()")
+  bool EqualToAfterExpansion(const Polynomial& p) const;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /// Returns true if this polynomial and @p p are almost equal (the difference
   /// in the corresponding coefficients are all less than @p tolerance), after
@@ -449,7 +468,11 @@ class Polynomial {
 /// Returns `p / v`.
 [[nodiscard]] Polynomial operator/(Polynomial p, double v);
 
+<<<<<<< HEAD
 /// Returns polynomial @p raised to @p n.
+=======
+/// Returns polynomial @p rasied to @p n.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 [[nodiscard]] Polynomial pow(const Polynomial& p, int n);
 
 std::ostream& operator<<(std::ostream& os, const Polynomial& p);

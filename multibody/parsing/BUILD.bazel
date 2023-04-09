@@ -29,7 +29,11 @@ filegroup(
         "test/**/*.sdf",
         "test/**/*.urdf",
         "test/**/*.xml",
+<<<<<<< HEAD
         "test/**/*.zip",
+=======
+        "test/**/*.png",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "test/**/COLCON_IGNORE",
     ]),
     visibility = ["//visibility:public"],
@@ -59,11 +63,15 @@ drake_cc_library(
     name = "package_map",
     srcs = ["package_map.cc"],
     hdrs = ["package_map.h"],
+<<<<<<< HEAD
     data = [
         ":package_downloader.py",
         "//:package.xml",
         "@models_internal//:package.xml",
     ],
+=======
+    data = ["//:package.xml"],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     visibility = ["//visibility:public"],
     interface_deps = [
         "//common:essential",
@@ -104,11 +112,13 @@ drake_cc_library(
     visibility = ["//visibility:private"],
     deps = [
         ":package_map",
+        ":scoped_names",
         "//common:diagnostic_policy",
         "//common:essential",
         "//geometry:proximity_properties",
         "//math:geometric_transform",
         "//multibody/plant",
+<<<<<<< HEAD
         "//multibody/tree:scoped_name",
         "@sdformat_internal//:sdformat",
         "@tinyxml2_internal//:tinyxml2",
@@ -150,6 +160,22 @@ drake_cc_googletest(
     deps = [
         ":detail_sdf_diagnostic",
         ":diagnostic_policy_test_base",
+=======
+        "@sdformat_internal//:sdformat",
+        "@tinyxml2",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+    ],
+)
+
+drake_cc_library(
+    name = "detail_sdf_diagnostic",
+    srcs = ["detail_sdf_diagnostic.cc"],
+    hdrs = ["detail_sdf_diagnostic.h"],
+    internal = True,
+    visibility = ["//visibility:private"],
+    deps = [
+        "//common:diagnostic_policy",
+        "@sdformat_internal//:sdformat",
     ],
 )
 
@@ -270,6 +296,8 @@ drake_cc_library(
     ],
 )
 
+# The composite parse module and parser depend on one another, but the
+# detail_composite_parse header should remain private.
 drake_cc_library(
     name = "detail_select_parser",
     srcs = ["detail_select_parser.cc"],
@@ -308,6 +336,7 @@ drake_cc_library(
         "//multibody/plant",
     ],
     deps = [
+        ":detail_mujoco_parser",
         ":detail_parsing_workspace",
         ":detail_select_parser",
     ],
@@ -347,11 +376,18 @@ drake_cc_library(
         "//multibody/plant",
     ],
     deps = [
+<<<<<<< HEAD
         ":detail_dmd_parser",
         ":detail_misc",
         ":detail_parsing_workspace",
         ":scoped_names",
         "//common:diagnostic_policy",
+=======
+        ":detail_misc",
+        ":scoped_names",
+        "//common:diagnostic_policy",
+        "//common:filesystem",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//common:find_resource",
     ],
 )
@@ -530,6 +566,10 @@ drake_cc_googletest(
     deps = [
         ":detail_sdf_parser",
         ":diagnostic_policy_test_base",
+<<<<<<< HEAD
+=======
+        "//common:filesystem",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//common:find_resource",
         "//common/test_utilities",
     ],
@@ -689,6 +729,7 @@ drake_cc_googletest(
     ],
 )
 
+<<<<<<< HEAD
 install_files(
     name = "install",
     dest = "share/drake/multibody/parsing",
@@ -696,4 +737,6 @@ install_files(
     visibility = ["//visibility:public"],
 )
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 add_lint_tests()

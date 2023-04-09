@@ -11,7 +11,10 @@
 #include "drake/geometry/render/render_engine.h"
 #include "drake/geometry/render/render_label.h"
 #include "drake/geometry/render_gl/factory.h"
+<<<<<<< HEAD:bindings/pydrake/geometry/geometry_py_render.cc
 #include "drake/geometry/render_gltf_client/factory.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/geometry_py_render.cc
 #include "drake/geometry/render_vtk/factory.h"
 
 namespace drake {
@@ -295,6 +298,39 @@ void DoScalarIndependentDefinitions(py::module m) {
             cls_doc.ThrowIfInvalid.doc);
   }
 
+<<<<<<< HEAD:bindings/pydrake/geometry/geometry_py_render.cc
+=======
+  {
+    using Class = geometry::RenderEngineVtkParams;
+    constexpr auto& cls_doc = doc_geometry.RenderEngineVtkParams;
+    py::class_<Class>(m, "RenderEngineVtkParams", cls_doc.doc)
+        .def(ParamInit<Class>())
+        .def_readwrite(
+            "default_label", &Class::default_label, cls_doc.default_label.doc)
+        .def_readwrite("default_diffuse", &Class::default_diffuse,
+            cls_doc.default_diffuse.doc);
+  }
+
+  m.def("MakeRenderEngineVtk", &geometry::MakeRenderEngineVtk,
+      py::arg("params"), doc_geometry.MakeRenderEngineVtk.doc);
+
+  {
+    using Class = RenderEngineGlParams;
+    constexpr auto& cls_doc = doc.RenderEngineGlParams;
+    py::class_<Class>(m, "RenderEngineGlParams", cls_doc.doc)
+        .def(ParamInit<Class>())
+        .def_readwrite(
+            "default_label", &Class::default_label, cls_doc.default_label.doc)
+        .def_readwrite("default_diffuse", &Class::default_diffuse,
+            cls_doc.default_diffuse.doc)
+        .def_readwrite("default_clear_color", &Class::default_clear_color,
+            cls_doc.default_clear_color.doc);
+  }
+
+  m.def("MakeRenderEngineGl", &MakeRenderEngineGl,
+      py::arg("params") = RenderEngineGlParams(), doc.MakeRenderEngineGl.doc);
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/geometry_py_render.cc
   {
     py::class_<RenderLabel> render_label(m, "RenderLabel", doc.RenderLabel.doc);
     render_label

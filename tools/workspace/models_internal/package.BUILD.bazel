@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- bazel -*-
 
 load("@drake//tools/install:install.bzl", "install")
@@ -13,6 +14,12 @@ genrule(
     visibility = ["//visibility:public"],
 )
 
+=======
+# -*- python -*-
+
+package(default_visibility = ["//visibility:private"])
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 exports_files(
     # Keep this list alpha-sorted.
     srcs = glob([
@@ -22,13 +29,17 @@ exports_files(
         "skydio_2/**",
         "tri_homecart/**",
         "ur3e/**",
+<<<<<<< HEAD
         "veggies/**",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "wsg_50_description/**",
         "wsg_50_hydro_bubble/**",
         "ycb/meshes/**",
     ], allow_empty = False),
     visibility = ["//visibility:public"],
 )
+<<<<<<< HEAD
 
 # Install a subset of the models.
 install(
@@ -49,3 +60,5 @@ install(
     data_dest = "share/drake_models",
     visibility = ["//visibility:public"],
 )
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

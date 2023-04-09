@@ -157,6 +157,7 @@ void DoScalarIndependentDefinitions(py::module m) {
   {
     using Class = DrakeVisualizerParams;
     constexpr auto& cls_doc = doc.DrakeVisualizerParams;
+<<<<<<< HEAD:bindings/pydrake/geometry/geometry_py_visualizers.cc
     py::class_<Class> cls(
         m, "DrakeVisualizerParams", py::dynamic_attr(), cls_doc.doc);
     cls  // BR
@@ -164,6 +165,33 @@ void DoScalarIndependentDefinitions(py::module m) {
     DefAttributesUsingSerialize(&cls, cls_doc);
     DefReprUsingSerialize(&cls);
     DefCopyAndDeepCopy(&cls);
+=======
+    py::class_<Class>(
+        m, "DrakeVisualizerParams", py::dynamic_attr(), cls_doc.doc)
+        .def(ParamInit<Class>())
+        .def_readwrite("publish_period", &DrakeVisualizerParams::publish_period,
+            cls_doc.publish_period.doc)
+        .def_readwrite("role", &DrakeVisualizerParams::role, cls_doc.role.doc)
+        .def_readwrite("default_color", &DrakeVisualizerParams::default_color,
+            cls_doc.default_color.doc)
+        .def_readwrite("show_hydroelastic",
+            &DrakeVisualizerParams::show_hydroelastic,
+            cls_doc.show_hydroelastic.doc)
+        .def_readwrite("use_role_channel_suffix",
+            &DrakeVisualizerParams::use_role_channel_suffix,
+            cls_doc.use_role_channel_suffix.doc)
+        .def("__repr__", [](const Class& self) {
+          return py::str(
+              "DrakeVisualizerParams("
+              "publish_period={}, "
+              "role={}, "
+              "default_color={}, "
+              "show_hydroelastic={}, "
+              "use_role_channel_suffix={})")
+              .format(self.publish_period, self.role, self.default_color,
+                  self.show_hydroelastic, self.use_role_channel_suffix);
+        });
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/geometry_py_visualizers.cc
   }
 
   // MeshcatParams
@@ -173,10 +201,28 @@ void DoScalarIndependentDefinitions(py::module m) {
     py::class_<Class, std::shared_ptr<Class>> cls(
         m, "MeshcatParams", py::dynamic_attr(), cls_doc.doc);
     cls  // BR
+<<<<<<< HEAD:bindings/pydrake/geometry/geometry_py_visualizers.cc
         .def(ParamInit<Class>());
     DefAttributesUsingSerialize(&cls, cls_doc);
     DefReprUsingSerialize(&cls);
     DefCopyAndDeepCopy(&cls);
+=======
+        .def(ParamInit<Class>())
+        .def_readwrite("host", &MeshcatParams::host, cls_doc.host.doc)
+        .def_readwrite("port", &MeshcatParams::port, cls_doc.port.doc)
+        .def_readwrite("web_url_pattern", &MeshcatParams::web_url_pattern,
+            cls_doc.web_url_pattern.doc)
+        .def_readwrite("show_stats_plot", &MeshcatParams::show_stats_plot,
+            cls_doc.show_stats_plot.doc)
+        .def("__repr__", [](const Class& self) {
+          return py::str(
+              "MeshcatParams("
+              "port={}, "
+              "web_url_pattern={}, "
+              "show_stats_plot={})")
+              .format(self.port, self.web_url_pattern, self.show_stats_plot);
+        });
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/geometry_py_visualizers.cc
   }
 
   // Meshcat

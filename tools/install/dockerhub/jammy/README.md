@@ -17,5 +17,11 @@ following command:
 docker run -it robotlocomotion/drake:jammy
 ```
 
+<<<<<<< HEAD
 The environment variables `PATH` and `PYTHONPATH` are preset to suitable values
 for using Drake, including, in particular, its Python bindings.
+=======
+The environment variables `LD_LIBRARY`, `PATH`, and `PYTHONPATH` are preset to
+suitable values for using Drake, including, in particular, its Python
+bindings.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

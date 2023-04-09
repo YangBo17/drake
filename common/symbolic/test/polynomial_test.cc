@@ -1081,6 +1081,7 @@ TEST_F(SymbolicPolynomialTest, EvaluateWithAffineCoefficients) {
                                          &A, &decision_variables, &b),
         ".* is non-linear.*");
   }
+<<<<<<< HEAD
 }
 
 TEST_F(SymbolicPolynomialTest, SubstituteAndExpandTest) {
@@ -1159,6 +1160,8 @@ TEST_F(SymbolicPolynomialTest, SubstituteAndExpandTest) {
       {Monomial(a_), pow(cos(z_), 2) + 2 * cos(z_) + 1}};
   const Polynomial sub4_expected{sub4_expected_map};
   EXPECT_TRUE(sub4.EqualTo(sub4_expected));
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 TEST_F(SymbolicPolynomialTest, Hash) {
@@ -1245,6 +1248,10 @@ TEST_F(SymbolicPolynomialTest, EqualToAfterExpansion) {
 
   // p1 * p2 is not equal to p2 * p3 after expansion.
   EXPECT_PRED2(test::PolyNotEqualAfterExpansion, p1 * p2, p2 * p3);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  EXPECT_TRUE((p2 * p3 * p1).EqualToAfterExpansion(p1 * p2 * p3));
+#pragma GCC diagnostic pop
 }
 
 // Checks if internal::CompareMonomial implements the lexicographical order.
@@ -1428,6 +1435,7 @@ TEST_F(SymbolicPolynomialTest, Expand) {
   EXPECT_TRUE(p3.Expand().monomial_to_coefficient_map().empty());
 }
 
+<<<<<<< HEAD
 TEST_F(SymbolicPolynomialTest, CalcPolynomialWLowerTriangularPart) {
   // Q is a matrix of double.
   const Vector2<symbolic::Monomial> monomial_basis1(
@@ -1473,6 +1481,8 @@ TEST_F(SymbolicPolynomialTest, CalcPolynomialWLowerTriangularPart) {
   EXPECT_PRED2(test::PolyEqualAfterExpansion, poly3, poly3_expected);
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace
 
 }  // namespace symbolic

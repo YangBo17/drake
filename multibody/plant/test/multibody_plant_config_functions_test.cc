@@ -54,7 +54,10 @@ GTEST_TEST(MultibodyPlantConfigFunctionsTest, YamlTest) {
             geometry::HydroelasticContactRepresentation::kTriangle);
   EXPECT_EQ(result.plant.get_discrete_contact_solver(),
             DiscreteContactSolver::kSap);
+<<<<<<< HEAD
   EXPECT_EQ(result.plant.get_adjacent_bodies_collision_filters(), false);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // There is no getter for penetration_allowance nor stiction_tolerance, so we
   // can't test them.
 }

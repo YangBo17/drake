@@ -3,12 +3,17 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+<<<<<<< HEAD
 #include "drake/common/test_utilities/expect_throws_message.h"
 #include "drake/lcm/drake_lcm.h"
 #include "drake/lcm/drake_lcm_params.h"
 
 using drake::lcm::DrakeLcm;
 using drake::lcm::DrakeLcmInterface;
+=======
+#include "drake/lcm/drake_lcm_params.h"
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 using drake::lcm::DrakeLcmParams;
 using drake::systems::DiagramBuilder;
 
@@ -49,6 +54,7 @@ GTEST_TEST(LcmConfigFunctionsTest, Basic) {
   // for now. We can revisit later, if we ever have doubts.
 }
 
+<<<<<<< HEAD
 // Check the sunny-day case of looking up a bus_name.
 GTEST_TEST(LcmConfigFunctionsFindOrCreateTest, FindBus) {
   DrakeLcm* const forced_result = nullptr;
@@ -114,6 +120,8 @@ GTEST_TEST(LcmConfigFunctionsFindOrCreateTest, CreateNew) {
       ".*non-default.*special.*");
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace
 }  // namespace lcm
 }  // namespace systems

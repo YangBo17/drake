@@ -1050,7 +1050,11 @@ MathematicalProgramResult GraphOfConvexSets::SolveShortestPath(
       for (const auto& e : outgoing_edges[v->id()]) {
         x_v += result.GetSolution(e->y_);
         sum_phi += result.GetSolution(
+<<<<<<< HEAD
             options.convex_relaxation ? relaxed_phi.at(e->id()) : e->phi_);
+=======
+            convex_relaxation ? relaxed_phi.at(e->id()) : e->phi_);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       }
     }
     // In the convex relaxation, sum_relaxed_phi may not be one even for
@@ -1060,7 +1064,11 @@ MathematicalProgramResult GraphOfConvexSets::SolveShortestPath(
     if (sum_phi < 100.0 * std::numeric_limits<double>::epsilon()) {
       x_v = VectorXd::Constant(v->ambient_dimension(),
                                 std::numeric_limits<double>::quiet_NaN());
+<<<<<<< HEAD
     } else if (options.convex_relaxation) {
+=======
+    } else if (convex_relaxation) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       x_v /= sum_phi;
     }
     for (int i = 0; i < v->ambient_dimension(); ++i) {

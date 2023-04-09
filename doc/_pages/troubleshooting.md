@@ -1,17 +1,28 @@
 ---
 title: Troubleshooting common problems
+<<<<<<< HEAD
 layout: page_with_toc
 ---
 
 {% include toc.md %}
 <article class="markdown-body" markdown="1">
 
+=======
+---
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 This page contains a collection of tips and tricks for resolving common
 problems.
 
 # MultibodyPlant
 
+<<<<<<< HEAD
 ## Unconnected QueryObject port {#mbp-unconnected-query-object-port}
+=======
+## Exception messages
+
+### Unconnected QueryObject port {#mbp-unconnected-query-object-port}
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 The error message will include the message, "The provided context doesn't show a
 connection for the plant's query input port."
@@ -61,6 +72,7 @@ The connection can be reported as missing for several reasons:
       xdot = plant.EvalTimeDerivatives(context=plant_context)
     ```
 
+<<<<<<< HEAD
 # System Framework
 
 ## Context-System mismatch {#framework-context-system-mismatch}
@@ -189,13 +201,18 @@ propagate through to affect the concurrency of most of Drake's build steps; you
 need to configure the dotfile in order to control the build concurrency.
 
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 <!-- Links to the various Drake doxygen pages.
      Order determined by directory structure first and names second.
 -->
 
+<<<<<<< HEAD
 <!-- modules -->
 [m_system_compat]: https://drake.mit.edu/doxygen_cxx/group__system__compatibility.html
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 <!-- drake/geometry -->
 [c_QueryObject]: https://drake.mit.edu/doxygen_cxx/classdrake_1_1geometry_1_1_query_object.html
 [p_QueryObject]: https://drake.mit.edu/pydrake/pydrake.geometry.html#pydrake.geometry.QueryObject_
@@ -214,8 +231,12 @@ need to configure the dotfile in order to control the build concurrency.
 [c_Diagram]: https://drake.mit.edu/doxygen_cxx/classdrake_1_1systems_1_1_diagram.html
 [p_Diagram]: https://drake.mit.edu/pydrake/pydrake.systems.framework.html#pydrake.systems.framework.Diagram
 [c_GetMyContextFromRoot]: https://drake.mit.edu/doxygen_cxx/classdrake_1_1systems_1_1_system.html#ae7fa91d2b2102457ced3361207724e52
+<<<<<<< HEAD
 [p_GetMyContextFromRoot]: https://drake.mit.edu/pydrake/pydrake.systems.framework.html#pydrake.systems.framework.System_.System_[float].GetMyMutableContextFromRoot
 [c_GetMyMutableContextFromRoot]: https://drake.mit.edu/doxygen_cxx/classdrake_1_1systems_1_1_system.html#ae7fa91d2b2102457ced3361207724e52
 [p_GetMyMutableContextFromRoot]: https://drake.mit.edu/pydrake/pydrake.systems.framework.html#pydrake.systems.framework.System_.System_[float].GetMyMutableContextFromRoot
 [c_System]: https://drake.mit.edu/doxygen_cxx/classdrake_1_1systems_1_1_system.html
 [p_System]: https://drake.mit.edu/pydrake/pydrake.systems.framework.html#pydrake.systems.framework.System
+=======
+[p_GetMyContextFromRoot]: https://drake.mit.edu/pydrake/pydrake.systems.framework.html#pydrake.systems.framework.System_.System_[float].GetMyContextFromRoot
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

@@ -7,6 +7,10 @@
 #include "pybind11/stl.h"
 #include <fmt/format.h>
 
+<<<<<<< HEAD
+=======
+#include "drake/bindings/pydrake/common/deprecation_pybind.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/bindings/pydrake/common/eigen_pybind.h"
 #include "drake/bindings/pydrake/documentation_pybind.h"
 #include "drake/bindings/pydrake/math_operators_pybind.h"
@@ -16,7 +20,10 @@
 #include "drake/common/symbolic/decompose.h"
 #include "drake/common/symbolic/latex.h"
 #include "drake/common/symbolic/monomial_util.h"
+<<<<<<< HEAD
 #include "drake/common/symbolic/replace_bilinear_terms.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/symbolic/trigonometric_polynomial.h"
 
 namespace drake {
@@ -556,7 +563,20 @@ PYBIND11_MODULE(symbolic, m) {
         return symbolic::SubstituteStereographicProjection(e, sin_cos, t);
       },
       py::arg("e"), py::arg("sin_cos"), py::arg("t"),
+<<<<<<< HEAD
       doc.SubstituteStereographicProjection.doc);
+=======
+      doc.SubstituteStereographicProjection.doc_3args);
+
+  m.def(
+      "SubstituteStereographicProjection",
+      [](const Expression& e, const std::unordered_map<symbolic::Variable,
+                                  symbolic::Variable>& subs) {
+        return symbolic::SubstituteStereographicProjection(e, subs);
+      },
+      py::arg("e"), py::arg("subs"),
+      doc.SubstituteStereographicProjection.doc_2args);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   {
     constexpr auto& cls_doc = doc.FormulaKind;
@@ -812,10 +832,13 @@ PYBIND11_MODULE(symbolic, m) {
       .def("AddProduct", &Polynomial::AddProduct, py::arg("coeff"),
           py::arg("m"), doc.Polynomial.AddProduct.doc)
       .def("Expand", &Polynomial::Expand, doc.Polynomial.Expand.doc)
+<<<<<<< HEAD
       .def("SubstituteAndExpand", &Polynomial::SubstituteAndExpand,
           py::arg("indeterminate_substitution"),
           py::arg("substitutions_cached_data") = std::nullopt,
           doc.Polynomial.SubstituteAndExpand.doc)
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       .def("RemoveTermsWithSmallCoefficients",
           &Polynomial::RemoveTermsWithSmallCoefficients,
           py::arg("coefficient_tol"),
@@ -915,6 +938,7 @@ PYBIND11_MODULE(symbolic, m) {
           },
           py::arg("vars"), doc.Polynomial.Jacobian.doc);
 
+<<<<<<< HEAD
   py::class_<Polynomial::SubstituteAndExpandCacheData>(m,
       "SubstituteAndExpandCacheData",
       doc.Polynomial.SubstituteAndExpandCacheData.doc)
@@ -953,6 +977,8 @@ PYBIND11_MODULE(symbolic, m) {
           py::arg("monomial_basis"), py::arg("gram_lower"),
           doc.CalcPolynomialWLowerTriangularPart.doc);
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   py::class_<RationalFunction> rat_fun_cls(
       m, "RationalFunction", doc.RationalFunction.doc);
   rat_fun_cls.def(py::init<>(), doc.RationalFunction.ctor.doc_0args)
@@ -1031,6 +1057,17 @@ PYBIND11_MODULE(symbolic, m) {
       .def(py::self == py::self)
       .def(py::self != py::self);
 
+<<<<<<< HEAD
+=======
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  polynomial_cls.def("EqualToAfterExpansion",
+      WrapDeprecated(doc.Polynomial.EqualToAfterExpansion.doc_deprecated,
+          &Polynomial::EqualToAfterExpansion),
+      doc.Polynomial.EqualToAfterExpansion.doc_deprecated);
+#pragma GCC diagnostic pop
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   m.def(
       "Evaluate",
       [](const MatrixX<Polynomial>& M, const Environment::map& env) {

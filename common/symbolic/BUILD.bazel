@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",
@@ -21,7 +26,10 @@ drake_cc_package_library(
         ":polynomial",
         ":polynomial_basis",
         ":rational_function",
+<<<<<<< HEAD
         ":replace_bilinear_terms",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         ":simplification",
         ":trigonometric_polynomial",
     ],
@@ -119,6 +127,7 @@ drake_cc_googletest(
 )
 
 drake_cc_googletest(
+<<<<<<< HEAD
     name = "ostream_test",
     deps = [
         ":generic_polynomial",
@@ -126,6 +135,8 @@ drake_cc_googletest(
 )
 
 drake_cc_googletest(
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "polynomial_basis_element_test",
     deps = [
         ":generic_polynomial",
@@ -161,6 +172,7 @@ drake_cc_library(
     ],
 )
 
+<<<<<<< HEAD
 drake_cc_googletest(
     name = "monomial_util_test",
     deps = [
@@ -168,6 +180,8 @@ drake_cc_googletest(
     ],
 )
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 drake_cc_library(
     name = "polynomial",
     srcs = [
@@ -267,6 +281,7 @@ drake_cc_googletest(
 )
 
 drake_cc_library(
+<<<<<<< HEAD
     name = "replace_bilinear_terms",
     srcs = ["replace_bilinear_terms.cc"],
     hdrs = ["replace_bilinear_terms.h"],
@@ -288,6 +303,8 @@ drake_cc_googletest(
 )
 
 drake_cc_library(
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "simplification",
     srcs = ["simplification.cc"],
     hdrs = ["simplification.h"],

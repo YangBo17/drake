@@ -1,5 +1,9 @@
 #include <iostream>
 
+<<<<<<< HEAD
+=======
+#include "drake/common/find_resource.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/symbolic/expression.h"
 #include "drake/examples/pendulum/pendulum_plant.h"
 #include "drake/multibody/parsing/parser.h"

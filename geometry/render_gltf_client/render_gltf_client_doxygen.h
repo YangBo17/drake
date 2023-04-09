@@ -5,13 +5,19 @@ namespace drake {
 namespace geometry {
 namespace render_gltf_client {
 
-/** @defgroup render_engine_gltf_client_server_api glTF Render Client-Server API
+/** @defgroup render_engine_gltf_client_server_api (Experimental) glTF Render Client-Server API
     @ingroup render_engines
 
+<<<<<<< HEAD
 @warning This feature is currently in "beta testing" and may change without any
 deprecation notice ahead of time.
 
 <h2 id="overview">Overview</h2>
+=======
+@experimental
+Currently, the content of this page is primarily for facilitating code reviews
+and is subject to change during upcoming pull requests.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 Drake offers built-in renderers (RenderEngineVtk, RenderEngineGl), but in some
 cases users may want to use their own custom rendering implementations.  One way
@@ -19,6 +25,10 @@ to accomplish that is to subclass RenderEngine with a custom implementation and
 link that into Drake, but sometimes that leads to linker compatibility problems.
 Thus, we also offer another option: rendering using a remote procedure call
 (RPC). This document specifies the network API for servicing those requests.
+<<<<<<< HEAD
+=======
+<hr>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 The [glTF][glTF] render server API consists of two components: a client, and a
 server. The client generates and transmits glTF scene files to the server, which
@@ -249,9 +259,15 @@ The client accepts the following image types from a server render:
 - When `image_type="depth"`, the server may return:
     - A 32-bit float single channel TIFF image.  The client will interpret this
       rendering as units of meters.
+<<<<<<< HEAD
     - A 16-bit integer single channel TIFF or PNG image.  The client will
       interpret this rendering as units of millimeters.  Pixels at their maximum
       value (2¹⁶-1) will be interpreted as kTooFar (i.e., infinity).
+=======
+    - TODO(zachfang): A single channel unsigned short PNG image.  The client
+      will interpret this rendering as units of millimeters and will convert to
+      meters.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 - When `image_type="label"`, the server may return:
     - An RGB (3 channel) unsigned char PNG image.  The client will interpret
       this rendering as a colored label image and convert to the final label
@@ -259,6 +275,100 @@ The client accepts the following image types from a server render:
     - An RGBA (4 channel) unsigned char PNG image.  The client will interpret
       this rendering as a colored label image and convert to the final label
       image.
+
+<h3 id="notes-on-gltf-camera-specification">Notes on glTF Camera Specification</h3>
+<hr>
+
+For a [glTF scene][glTF] file, note that there are two locations that describe
+the camera:
+
+1. The [`"cameras"` array][glTF_cameras], which specifies the camera projection
+   matrix.  The client will always produce a length one `"cameras"` array, with
+   a single entry ("camera 0").  This camera will always be of
+   `"type": "perspective"`, and its `"aspectRatio"`, `"yfov"`, `"zfar"`, and
+   `"znear"` attributes will accurately represent the drake sensor.  However,
+   note that the [glTF perspective projection definition][glTF_proj] does not
+   include all of the information present in the matrix that would be obtained
+   by `RenderCameraCore::CalcProjectionMatrix`.  While the two matrices will be
+   similar, a given render server must decide based off its choice of render
+   backend how it wishes to model the camera perspective projection
+   transformation -- utilize the glTF definition, or incorporate the remainder
+   of the `<form>` data to construct its own projection matrix.  A sample
+   snippet from a client glTF file:
+
+        {
+          "cameras" :
+          [
+            {
+              "perspective" :
+              {
+                "aspectRatio" : 1.3333333333333333,
+                "yfov" : 0.78539816339744828,
+                "zfar" : 10,
+                "znear" : 0.01
+             },
+             "type" : "perspective"
+            }
+          ],
+        }
+
+2. The [`"nodes"` array][glTF_nodes], which specifies the camera's global
+   transformation matrix.  The `"camera": 0` entry refers to the index into the
+   `"cameras"` array from (1).  Note that this is **not** the "model view
+   transformation" (rather, its inverse) -- it is the camera's global
+   transformation matrix which places the camera in the world just like
+   any other entry in `"nodes"`.  Note that the `"matrix"` is presented in
+   column-major order, as prescribed by the glTF specification.  A sample
+   snippet of the camera node specification in the `"nodes"` array that has
+   no rotation (the identity rotation) and a translation vector
+   `[x=0.1, y=0.2, z=0.3]` would be provided as:
+
+        {
+          "nodes" :
+          [
+            {
+              "camera" : 0,
+              "matrix" :
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.1,
+                0.2,
+                0.3,
+                1.0,
+              ],
+              "name" : "Camera Node"
+            },
+          ],
+        }
+
+[glTF_cameras]:https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-camera
+[glTF_nodes]: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-node
+[glTF_proj]: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#projection-matrices
+
+
+<h3 id="notes-on-communicating-errors">Notes on Communicating Errors</h3>
+<hr>
+
+When errors occur on the server side, the server should explicitly return an
+HTTP response code indicating a failed transaction.
+
+Additionally, the server should clearly communicate _why_ there was an upload or
+render failure as plain text in the file response.  Though this is not strictly
+required, the user of the server will have no hints as to what is going wrong
+with the client-server communication.  When the file response is provided, this
+information will be included in the exception message produced by the client.
+
 
 <h3 id="notes-on-gltf-camera-specification">Notes on glTF Camera Specification</h3>
 <hr>

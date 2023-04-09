@@ -212,7 +212,11 @@ class SurfaceVolumeIntersector {
        don't have to remember to call the base implementation. That, however, is
        awkward because the base class has to work against "arbitrary"
        MeshBuilder types (its template parameter) and it has to provide the data
+<<<<<<< HEAD
        required by the additional work performed by the subclasses' extension.
+=======
+       required by the additional work performed by the subclasses' extention.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
        On the other hand, derived classes (e.g.
        DeformableSurfaceVolumeIntersector) are often no longer templated on the
        MeshBuilder type so they can take shortcuts based on a fixed type that

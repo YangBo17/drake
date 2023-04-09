@@ -177,8 +177,13 @@ static Serializable LoadYamlFile(
     const std::string& filename, const std::optional<std::string>& child_name,
     const std::optional<Serializable>& defaults,
     const std::optional<LoadYamlOptions>& options) {
+<<<<<<< HEAD
   internal::Node node =
       internal::YamlReadArchive::LoadFileAsNode(filename, child_name);
+=======
+  internal::Node node = internal::YamlReadArchive::LoadFileAsNode(
+      filename, child_name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   return internal::LoadNode(std::move(node), defaults, options);
 }
 
@@ -189,8 +194,13 @@ static Serializable LoadYamlString(
     const std::string& data, const std::optional<std::string>& child_name,
     const std::optional<Serializable>& defaults,
     const std::optional<LoadYamlOptions>& options) {
+<<<<<<< HEAD
   internal::Node node =
       internal::YamlReadArchive::LoadStringAsNode(data, child_name);
+=======
+  internal::Node node = internal::YamlReadArchive::LoadStringAsNode(
+      data, child_name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   return internal::LoadNode(std::move(node), defaults, options);
 }
 
@@ -207,9 +217,16 @@ void SaveYamlFile(const std::string& filename, const Serializable& data,
 // (Implementation of a function declared above.  This could be defined
 // inline, but we keep it with the others for consistency.)
 template <typename Serializable>
+<<<<<<< HEAD
 std::string SaveYamlString(const Serializable& data,
                            const std::optional<std::string>& child_name,
                            const std::optional<Serializable>& defaults) {
+=======
+std::string SaveYamlString(
+    const Serializable& data,
+    const std::optional<std::string>& child_name,
+    const std::optional<Serializable>& defaults) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   internal::YamlWriteArchive archive;
   archive.Accept(data);
   if (defaults.has_value()) {

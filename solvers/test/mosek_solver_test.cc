@@ -43,7 +43,11 @@ TEST_F(UnboundedLinearProgramTest0, Test) {
         result.get_solver_details<MosekSolver>();
     EXPECT_EQ(mosek_solver_details.rescode, 0);
     // This problem status is defined in
+<<<<<<< HEAD
     // https://docs.mosek.com/10.0/capi/constants.html#mosek.prosta
+=======
+    // https://docs.mosek.com/9.3/capi/constants.html#mosek.prosta
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const int MSK_SOL_STA_DUAL_INFEAS_CER = 6;
     EXPECT_EQ(mosek_solver_details.solution_status,
               MSK_SOL_STA_DUAL_INFEAS_CER);
@@ -149,6 +153,7 @@ GTEST_TEST(TestSOCP, SmallestEllipsoidCoveringProblem) {
   MosekSolver solver;
   // Mosek 10 returns a solution that is accurate up to 1.3E-5 for this specific
   // problem. Might need to change the tolerance when we upgrade Mosek.
+<<<<<<< HEAD
   SolveAndCheckSmallestEllipsoidCoveringProblems(solver, {}, 1.3E-5);
 }
 
@@ -160,6 +165,9 @@ GTEST_TEST(TestSOCP, TestSocpDuplicatedVariable1) {
 GTEST_TEST(TestSOCP, TestSocpDuplicatedVariable2) {
   MosekSolver solver;
   TestSocpDuplicatedVariable2(solver, std::nullopt, 1E-6);
+=======
+  SolveAndCheckSmallestEllipsoidCoveringProblems(solver, {}, 1.2E-5);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 GTEST_TEST(TestSemidefiniteProgram, TrivialSDP) {
@@ -279,7 +287,11 @@ GTEST_TEST(MosekTest, SolverOptionsTest) {
   mosek_solver.Solve(prog, {}, solver_options, &result);
   EXPECT_FALSE(result.is_success());
   // This response code is defined in
+<<<<<<< HEAD
   // https://docs.mosek.com/10.0/capi/response-codes.html#mosek.rescode
+=======
+  // https://docs.mosek.com/9.3/capi/response-codes.html#mosek.rescode
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const int MSK_RES_ERR_HUGE_C{1375};
   EXPECT_EQ(result.get_solver_details<MosekSolver>().rescode,
             MSK_RES_ERR_HUGE_C);
@@ -620,6 +632,7 @@ GTEST_TEST(MosekTest, InfeasibleSemidefiniteProgramTest) {
     EXPECT_FALSE(std::isnan(result.get_optimal_cost()));
   }
 }
+<<<<<<< HEAD
 
 GTEST_TEST(MosekTest, LPNoBasisSelection) {
   // We solve an LP using interior point method (IPM), but don't do basis
@@ -643,6 +656,8 @@ GTEST_TEST(MosekTest, LPNoBasisSelection) {
     EXPECT_TRUE(CompareMatrices(x_sol, Eigen::Vector2d(0, 1), tol));
   }
 }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace test
 }  // namespace solvers
 }  // namespace drake

@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load("@drake//tools/workspace:github.bzl", "github_archive")
 
 def clang_cindex_python3_internal_repository(

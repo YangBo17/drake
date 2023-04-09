@@ -4,6 +4,10 @@
 
 #include "drake/geometry/scene_graph.h"
 #include "drake/multibody/parsing/parser.h"
+<<<<<<< HEAD
+=======
+#include "drake/multibody/plant/contact_results_to_lcm.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/multibody/plant/multibody_plant_config_functions.h"
 #include "drake/systems/analysis/simulator.h"
 #include "drake/systems/analysis/simulator_gflags.h"
@@ -43,6 +47,16 @@ int do_main() {
 
   // Build a generic multibody plant.
   systems::DiagramBuilder<double> builder;
+<<<<<<< HEAD
+=======
+
+  MultibodyPlantConfig plant_config;
+  plant_config.time_step = FLAGS_mbp_discrete_update_period;
+  plant_config.stiction_tolerance = FLAGS_stiction_tolerance;
+  plant_config.discrete_contact_solver = FLAGS_discrete_solver;
+  auto [plant, scene_graph] =
+      multibody::AddMultibodyPlant(plant_config, &builder);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   MultibodyPlantConfig plant_config;
   plant_config.time_step = FLAGS_mbp_discrete_update_period;

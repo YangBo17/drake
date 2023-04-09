@@ -1,6 +1,9 @@
 #include "drake/geometry/render_gltf_client/internal_render_client.h"
 
+<<<<<<< HEAD
 #include <filesystem>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <map>
 #include <memory>
 #include <string>
@@ -16,6 +19,10 @@
 #include <vtkPNGReader.h>
 #include <vtkTIFFReader.h>
 
+<<<<<<< HEAD
+=======
+#include "drake/common/filesystem.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/temp_directory.h"
 #include "drake/common/text_logging.h"
 #include "drake/geometry/render_gltf_client/internal_http_service_curl.h"
@@ -27,16 +34,26 @@ namespace internal {
 
 namespace {
 
+<<<<<<< HEAD
 namespace fs = std::filesystem;
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 using drake::geometry::render::ClippingRange;
 using drake::geometry::render::DepthRange;
 using drake::geometry::render::RenderCameraCore;
 using drake::systems::sensors::CameraInfo;
+<<<<<<< HEAD
 using drake::systems::sensors::ImageDepth16U;
 using drake::systems::sensors::ImageDepth32F;
 using drake::systems::sensors::ImageLabel16I;
 using drake::systems::sensors::ImageRgba8U;
+=======
+using drake::systems::sensors::ImageDepth32F;
+using drake::systems::sensors::ImageLabel16I;
+using drake::systems::sensors::ImageRgba8U;
+namespace fs = drake::filesystem;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 /* Adds field_name = field_data to the map, assumes data_map does **not**
  already have the key `field_name`. */
@@ -86,6 +103,7 @@ void AddField<RenderImageType>(DataFieldsMap* data_map,
   }
 }
 
+<<<<<<< HEAD
 void ReadPngFile(const std::string& path, vtkImageExport* image_exporter) {
   // Load the PNG file from disk if possible.
   vtkNew<vtkPNGReader> png_reader;
@@ -112,6 +130,8 @@ void ReadTiffFile(const std::string& path, vtkImageExport* image_exporter) {
   tiff_reader->Update();
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 /* Verifies the loaded image has the correct dimensions.  This includes
  verifying that the image is 2D (depth=1).
 
@@ -160,7 +180,11 @@ RenderClient::RenderClient(const RenderEngineGltfClientParams& params)
 
 RenderClient::~RenderClient() {
   const fs::path temp_dir{temp_directory_};
+<<<<<<< HEAD
   if (params_.cleanup) {
+=======
+  if (!params_.no_cleanup) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     try {
       fs::remove_all(temp_dir);
       // no cover: OS dependent exceptions for fs::remove_all not known.
@@ -240,19 +264,34 @@ std::string RenderClient::RenderOnServer(
     const std::string service_error_message =
         response.service_error_message.value_or("None.");
     throw std::runtime_error(fmt::format(
+<<<<<<< HEAD
         R"""(RenderClient: error from POST:
   URL:             {}
   Service Message: {}
   HTTP Code:       {}
   Server Message:  {})""",
+=======
+        R"""(
+        ERROR doing POST:
+          URL:             {}
+          Service Message: {}
+          HTTP Code:       {}
+          Server Message:  {}
+        )""",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         url, service_error_message, response.http_code, server_message));
   }
 
   // If the server did not respond with a file, there is nothing to load.
   if (!response.data_path.has_value()) {
     throw std::runtime_error(fmt::format(
+<<<<<<< HEAD
         "RenderClient: error from POST to {}, HTTP code={}: the server was "
         "supposed to respond with a file but did not.",
+=======
+        "ERROR doing POST to {}, HTTP code={}: the server was supposed to "
+        "respond with a file but did not.",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         url, response.http_code));
   }
   const std::string bin_out_path = response.data_path.value();
@@ -291,7 +330,11 @@ std::string RenderClient::ComputeSha256(const std::string& path) {
   std::ifstream f_in(path, std::ios::binary);
   if (!f_in.good()) {
     throw std::runtime_error(
+<<<<<<< HEAD
         fmt::format("RenderClient: cannot open file '{}'.", path));
+=======
+        fmt::format("ComputeSha256: cannot open file '{}'.", path));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
   std::vector<unsigned char> hash(picosha2::k_digest_size);
   picosha2::hash256(f_in, hash.begin(), hash.end());
@@ -321,11 +364,29 @@ void RenderClient::LoadColorImage(const std::string& path,
                                   ImageRgba8U* color_image_out) {
   DRAKE_DEMAND(color_image_out != nullptr);
 
+<<<<<<< HEAD
   vtkNew<vtkImageExport> image_exporter;
   ReadPngFile(path, image_exporter);
   const int width = color_image_out->width();
   const int height = color_image_out->height();
   VerifyImportedImageDimensions(width, height, image_exporter, path);
+=======
+  // Load the PNG file from disk if possible.
+  vtkNew<vtkPNGReader> png_reader;
+  if (!png_reader->CanReadFile(path.c_str())) {
+    throw std::runtime_error(
+        fmt::format("RenderClient: cannot load '{}' as PNG.", path));
+  }
+  png_reader->SetFileName(path.c_str());
+  vtkNew<vtkImageExport> image_exporter;
+  image_exporter->SetInputConnection(png_reader->GetOutputPort());
+  image_exporter->ImageLowerLeftOff();
+  png_reader->Update();  // Loads the image.
+
+  VerifyImportedImageDimensions(color_image_out->width(),
+                                color_image_out->height(), image_exporter,
+                                path);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // For color images, we support loading either RGB (3 channels) or RGBA (4).
   vtkImageData* image_data = image_exporter->GetInput();
@@ -355,6 +416,11 @@ void RenderClient::LoadColorImage(const std::string& path,
   constexpr int kNumChannels = ImageRgba8U::kNumChannels;
   static_assert(  // The logic below is not valid if this ever changes.
       kNumChannels == 4, "Expected ImageRgba8U::kNumChannels to be 4.");
+<<<<<<< HEAD
+=======
+  const int width = color_image_out->width();
+  const int height = color_image_out->height();
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   if (channels == kNumChannels) {
     // Same number of channels, do a direct transpose copy.
     for (int y = 0; y < height; ++y) {
@@ -386,6 +452,7 @@ void RenderClient::LoadDepthImage(const std::string& path,
                                   ImageDepth32F* depth_image_out) {
   DRAKE_DEMAND(depth_image_out != nullptr);
 
+<<<<<<< HEAD
   // Load different image types based on the file extension.  Note that even if
   // a 16-bit TIFF image was sent, VTK will load it as 32-bit float data.
   vtkNew<vtkImageExport> image_exporter;
@@ -404,11 +471,32 @@ void RenderClient::LoadDepthImage(const std::string& path,
 
   // For depth images, we support loading single channel 16-bit/32-bit float
   // TIFF or 16-bit unsigned integer TIFF/PNG images.
+=======
+  // Load the TIFF file from disk if possible.
+  vtkNew<vtkTIFFReader> tiff_reader;
+  // TODO(svenevs): add support for 16U png files.
+  if (!tiff_reader->CanReadFile(path.c_str())) {
+    throw std::runtime_error(
+        fmt::format("RenderClient: cannot load '{}' as TIFF.", path));
+  }
+  tiff_reader->SetFileName(path.c_str());
+  vtkNew<vtkImageExport> image_exporter;
+  image_exporter->SetInputConnection(tiff_reader->GetOutputPort());
+  // TODO(svenevs): why is ImageLowerLeftOff() not required for this exporter?
+  tiff_reader->Update();
+
+  VerifyImportedImageDimensions(depth_image_out->width(),
+                                depth_image_out->height(), image_exporter,
+                                path);
+
+  // For depth images, we support loading single channel images only.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   vtkImageData* image_data = image_exporter->GetInput();
   DRAKE_DEMAND(image_data != nullptr);
   const int channels = image_data->GetNumberOfScalarComponents();
   if (channels != 1) {
     throw std::runtime_error(fmt::format(
+<<<<<<< HEAD
         "RenderClient: loaded image from '{}' has {} channels, but only 1 is "
         "allowed for depth images.",
         path, channels));
@@ -434,6 +522,63 @@ void RenderClient::LoadDepthImage(const std::string& path,
     /* no cover */
     throw std::runtime_error("RenderClient: unsupported channel type");
   }
+=======
+        "RenderClient: loaded TIFF image from '{}' has {} channels, but only 1 "
+        "is allowed for depth images.",
+        path, channels));
+  }
+
+  /* Make sure we can copy directly using VTK before doing so.  Even if a 16 bit
+   TIFF image was sent, VTK will load it as 32 bit float data. */
+  /* no cover: this case is improbable and therefore not worth explicitly
+   testing. If this assumption proves to be wrong in the future, we can revisit
+   the decision. */
+  DRAKE_THROW_UNLESS(image_data->GetScalarType() == VTK_TYPE_FLOAT32);
+
+  image_exporter->Export(depth_image_out->at(0, 0));
+}
+
+void RenderClient::LoadLabelImage(const std::string& path,
+                                  ImageLabel16I* label_image_out) {
+  DRAKE_DEMAND(label_image_out != nullptr);
+
+  // Load the PNG file from disk if possible.
+  vtkNew<vtkPNGReader> png_reader;
+  if (!png_reader->CanReadFile(path.c_str())) {
+    throw std::runtime_error(
+        fmt::format("RenderClient: cannot load '{}' as PNG.", path));
+  }
+  png_reader->SetFileName(path.c_str());
+  vtkNew<vtkImageExport> image_exporter;
+  image_exporter->SetInputConnection(png_reader->GetOutputPort());
+  image_exporter->ImageLowerLeftOff();
+  png_reader->Update();  // Loads the image.
+
+  VerifyImportedImageDimensions(label_image_out->width(),
+                                label_image_out->height(), image_exporter,
+                                path);
+
+  // For label images, we support loading 16 bit unsigned single channel images.
+  vtkImageData* image_data = image_exporter->GetInput();
+  DRAKE_DEMAND(image_data != nullptr);
+  const int channels = image_data->GetNumberOfScalarComponents();
+  if (channels != 1) {
+    throw std::runtime_error(fmt::format(
+        "RenderClient: loaded PNG image from '{}' has {} channels, but only 1 "
+        "is allowed for label images.",
+        path, channels));
+  }
+
+  /* no cover: this case is improbable and therefore not worth explicitly
+   testing. If this assumption proves to be wrong in the future, we can revisit
+   the decision. */
+  DRAKE_THROW_UNLESS(image_data->GetScalarType() == VTK_TYPE_UINT16);
+
+  /* NOTE: Officially label image is signed integers, but vtkImageExport::Export
+   will reinterpret this as unsigned internally; since the loaded PNG image is
+   required to be unsigned short data, negative values will not occur. */
+  image_exporter->Export(label_image_out->at(0, 0));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 void RenderClient::SetHttpService(std::unique_ptr<HttpService> service) {

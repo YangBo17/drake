@@ -350,10 +350,13 @@ GTEST_TEST(PackageMapTest, TestPopulateFromRosPackagePath) {
 
   // Test an empty environment.
   ::setenv("ROS_PACKAGE_PATH", "", 1);
+<<<<<<< HEAD
   ScopeExit guard([]() {
     ::unsetenv("ROS_PACKAGE_PATH");
   });
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   package_map.PopulateFromRosPackagePath();
   EXPECT_EQ(package_map.size(), 0);
 
@@ -376,10 +379,13 @@ GTEST_TEST(PackageMapTest, TestPopulateFromRosPackagePath) {
         "package_map_test_package_set/package_map_test_package_d/"},
   };
   VerifyMatch(package_map, expected_packages);
+<<<<<<< HEAD
 
   DRAKE_EXPECT_THROWS_MESSAGE(
       package_map.PopulateFromEnvironment("ROS_PACKAGE_PATH"),
       ".*use PopulateFromRosPackagePath.*");
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 // Tests that PackageMap's streaming to-string operator works.

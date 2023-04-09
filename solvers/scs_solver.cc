@@ -1,8 +1,12 @@
 #include "drake/solvers/scs_solver.h"
 
+<<<<<<< HEAD
 #include <optional>
 #include <unordered_map>
 #include <utility>
+=======
+#include <unordered_map>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <vector>
 
 #include <Eigen/Sparse>

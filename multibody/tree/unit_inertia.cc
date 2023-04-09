@@ -20,8 +20,12 @@ UnitInertia<T> UnitInertia<T>::SolidBox(const T& Lx, const T& Ly, const T& Lz) {
 }
 
 template <typename T>
+<<<<<<< HEAD
 UnitInertia<T> UnitInertia<T>::SolidCapsule(const T& r, const T& L,
     const Vector3<T>& unit_vector) {
+=======
+UnitInertia<T> UnitInertia<T>::SolidCapsule(const T& r, const T& L) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   DRAKE_THROW_UNLESS(r >= 0);
   DRAKE_THROW_UNLESS(L >= 0);
 

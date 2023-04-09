@@ -448,6 +448,27 @@ GTEST_TEST(TestSOS, MotzkinPolynomial) {
 
 GTEST_TEST(TestSOS, UnivariateNonnegative1) {
   UnivariateNonnegative1 dut;
+  // TODO(hongkai.dai): remove this for loop after we deprecate the constructor
+  // CsdpSolver(method)
+  for (auto method : GetRemoveFreeVariableMethods()) {
+<<<<<<< HEAD
+    CsdpSolver solver;
+=======
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    CsdpSolver solver(method);
+#pragma GCC diagnostic pop
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+    if (solver.available()) {
+      SolverOptions solver_options;
+      solver_options.SetOption(solver.id(), "drake::RemoveFreeVariableMethod",
+                               static_cast<int>(method));
+      const auto result =
+          solver.Solve(dut.prog(), std::nullopt, solver_options);
+      dut.CheckResult(result, 6E-9);
+    }
+  }
+
   for (auto method : GetRemoveFreeVariableMethods()) {
     CsdpSolver solver;
     if (solver.available()) {

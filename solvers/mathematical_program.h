@@ -2733,8 +2733,14 @@ class MathematicalProgram {
       MatrixLikewise<double, Derived>>
   GetInitialGuess(
       const Eigen::MatrixBase<Derived>& decision_variable_mat) const {
+<<<<<<< HEAD
     MatrixLikewise<double, Derived> decision_variable_values(
         decision_variable_mat.rows(), decision_variable_mat.cols());
+=======
+    MatrixLikewise<double, Derived>
+        decision_variable_values(decision_variable_mat.rows(),
+                                 decision_variable_mat.cols());
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     for (int i = 0; i < decision_variable_mat.rows(); ++i) {
       for (int j = 0; j < decision_variable_mat.cols(); ++j) {
         decision_variable_values(i, j) =

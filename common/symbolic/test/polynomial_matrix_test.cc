@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 
 #include "drake/common/eigen_types.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_eigen.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/symbolic/expression.h"
 #include "drake/common/test_utilities/symbolic_test_util.h"
 

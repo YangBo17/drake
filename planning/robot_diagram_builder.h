@@ -5,7 +5,10 @@
 #include <utility>
 
 #include "drake/common/default_scalars.h"
+<<<<<<< HEAD
 #include "drake/common/drake_deprecated.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/geometry/scene_graph.h"
 #include "drake/multibody/parsing/parser.h"
 #include "drake/multibody/plant/multibody_plant.h"
@@ -22,9 +25,13 @@ This class is a convenient syntactic sugar to help build a robot diagram,
 especially in C++ code where it simplifies object lifetime tracking and
 downcasting of the plant and scene graph references.
 
+<<<<<<< HEAD
 @tparam_default_scalar
 
 @ingroup planning_infrastructure */
+=======
+@tparam_default_scalar */
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 template <typename T>
 class RobotDiagramBuilder {
  public:
@@ -36,9 +43,15 @@ class RobotDiagramBuilder {
   ~RobotDiagramBuilder();
 
   /** Gets the contained DiagramBuilder (mutable).
+<<<<<<< HEAD
   Do not call Build() on the return value; instead, call Build() on this.
   @throws exception when IsDiagramBuilt() already. */
   systems::DiagramBuilder<T>& builder() {
+=======
+  Do not call Build() on the return value; instead, call BuildDiagram() on this.
+  @throws exception when IsDiagramBuilt() already. */
+  systems::DiagramBuilder<T>& mutable_builder() {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ThrowIfAlreadyBuilt();
     return *builder_;
   }
@@ -52,17 +65,28 @@ class RobotDiagramBuilder {
 
   /** Gets the contained Parser (mutable).
   @throws exception when IsDiagramBuilt() already. */
+<<<<<<< HEAD
   template <typename T1 = T,
             typename std::enable_if_t<std::is_same_v<T1, double>>* = nullptr>
   multibody::Parser& parser() {
+=======
+  template <typename T1 = T, typename std::enable_if_t<
+    std::is_same_v<T1, double>>* = nullptr>
+  multibody::Parser& mutable_parser() {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ThrowIfAlreadyBuilt();
     return parser_;
   }
 
   /** Gets the contained Parser (readonly).
   @throws exception when IsDiagramBuilt() already. */
+<<<<<<< HEAD
   template <typename T1 = T,
             typename std::enable_if_t<std::is_same_v<T1, double>>* = nullptr>
+=======
+  template <typename T1 = T, typename std::enable_if_t<
+    std::is_same_v<T1, double>>* = nullptr>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const multibody::Parser& parser() const {
     ThrowIfAlreadyBuilt();
     return parser_;
@@ -70,7 +94,11 @@ class RobotDiagramBuilder {
 
   /** Gets the contained plant (mutable).
   @throws exception when IsDiagramBuilt() already. */
+<<<<<<< HEAD
   multibody::MultibodyPlant<T>& plant() {
+=======
+  multibody::MultibodyPlant<T>& mutable_plant() {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ThrowIfAlreadyBuilt();
     return plant_;
   }
@@ -84,7 +112,11 @@ class RobotDiagramBuilder {
 
   /** Gets the contained scene graph (mutable).
   @throws exception when IsDiagramBuilt() already. */
+<<<<<<< HEAD
   geometry::SceneGraph<T>& scene_graph() {
+=======
+  geometry::SceneGraph<T>& mutable_scene_graph() {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ThrowIfAlreadyBuilt();
     return scene_graph_;
   }
@@ -96,6 +128,23 @@ class RobotDiagramBuilder {
     return scene_graph_;
   }
 
+<<<<<<< HEAD
+=======
+  /** Checks if the contained plant is finalized.
+  @throws exception when IsDiagramBuilt() already. */
+  bool IsPlantFinalized() const {
+    ThrowIfAlreadyBuilt();
+    return plant_.is_finalized();
+  }
+
+  /** Finalizes the contained plant.
+  @throws exception when IsDiagramBuilt() already. */
+  void FinalizePlant() {
+    ThrowIfAlreadyBuilt();
+    plant_.Finalize();
+  }
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /** Checks if the diagram has already been built. */
   bool IsDiagramBuilt() const;
 
@@ -103,6 +152,7 @@ class RobotDiagramBuilder {
   RobotDiagram. The plant will be finalized during this function, unless it's
   already been finalized.
   @throws exception when IsDiagramBuilt() already. */
+<<<<<<< HEAD
   std::unique_ptr<RobotDiagram<T>> Build();
 
   DRAKE_DEPRECATED("2023-06-01", "Use Build() instead of BuildDiagram().")
@@ -138,20 +188,32 @@ class RobotDiagramBuilder {
     ThrowIfAlreadyBuilt();
     plant_.Finalize();
   }
+=======
+  std::unique_ptr<RobotDiagram<T>> BuildDiagram();
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
  private:
   void ThrowIfAlreadyBuilt() const;
 
   // Storage for the diagram and its plant and scene graph.
+<<<<<<< HEAD
   // After Build(), the `builder_` is set to nullptr.
+=======
+  // After BuildDiagram(), the `builder_` is set to nullptr.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   std::unique_ptr<systems::DiagramBuilder<T>> builder_;
   multibody::AddMultibodyPlantSceneGraphResult<T> pair_;
   multibody::MultibodyPlant<T>& plant_;
   geometry::SceneGraph<T>& scene_graph_;
 
   // The Parser object only exists when T == double.
+<<<<<<< HEAD
   using MaybeParser =
       std::conditional_t<std::is_same_v<T, double>, multibody::Parser, void*>;
+=======
+  using MaybeParser = std::conditional_t<
+      std::is_same_v<T, double>, multibody::Parser, void*>;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   MaybeParser parser_;
 };
 

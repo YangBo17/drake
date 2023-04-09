@@ -13,9 +13,12 @@ from datetime import datetime, timezone
 
 from .common import die, gripe, wheel_name
 from .common import resource_root, wheelhouse
+<<<<<<< HEAD
 from .common import find_tests
 
 from .linux_types import Platform, Role, Target, BUILD, TEST
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 # Artifacts that need to be cleaned up. DO NOT MODIFY outside of this file.
 _files_to_remove = []
@@ -172,12 +175,21 @@ def _create_source_tar(path):
     out.close()
 
 
+<<<<<<< HEAD
 def _tagname(target: Target, role: Role, tag_prefix: str):
     """
     Generates a Docker tag name for a target and tag prefix.
     """
     platform = target.platform(role).alias
     return f'{tag_base}:{tag_prefix}-{platform}-py{target.python_tag}'
+=======
+def _tagname(target, tag_prefix):
+    """
+    Generates a Docker tag name for a target and tag prefix.
+    """
+    platform = target.platform_alias
+    return f'{tag_base}:{tag_prefix}-{platform}-py{target.python_version}'
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 
 def _build_stage(target, args, tag_prefix, stage=None):
@@ -186,7 +198,11 @@ def _build_stage(target, args, tag_prefix, stage=None):
     """
 
     # Generate canonical tag from target.
+<<<<<<< HEAD
     tag = _tagname(target, BUILD, tag_prefix)
+=======
+    tag = _tagname(target, tag_prefix)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
     # Generate extra arguments to specify what stage to build.
     if stage is not None:
@@ -270,6 +286,7 @@ def _test_wheel(target, identifier, options):
     """
     Runs the test script for the wheel matching the specified target.
     """
+<<<<<<< HEAD
     glibc = glibc_versions[target.platform(BUILD).alias]
     wheel = wheel_name(python_version=target.python_tag,
                        wheel_version=options.version,
@@ -311,6 +328,28 @@ def _test_wheel(target, identifier, options):
                 test_image, test_script, f'/test/{test}',
                 os.path.join(wheelhouse, wheel))
         print(f'[-] Executing test {test} - PASSED')
+=======
+    glibc = glibc_versions[target.platform_alias]
+    wheel = wheel_name(python_version=target.python_version,
+                       wheel_version=options.version,
+                       wheel_platform=f'manylinux_{glibc}_x86_64')
+
+    if options.tag_stages:
+        container = _tagname(target, 'test')
+    else:
+        container = _tagname(target, f'test-{identifier}')
+    test_dir = os.path.join(resource_root, 'test')
+
+    _docker('build', '-t', container, *_target_args(target), test_dir)
+    if not options.tag_stages:
+        _images_to_remove.append(container)
+
+    test_script = '/test/test-wheel.sh'
+    _docker('run', '--rm', '-t',
+            '-v' f'{test_dir}:/test',
+            '-v' f'{options.output_dir}:{wheelhouse}',
+            container, test_script, os.path.join(wheelhouse, wheel))
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 
 def build(options):

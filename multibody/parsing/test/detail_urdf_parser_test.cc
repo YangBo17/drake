@@ -51,8 +51,12 @@ class UrdfParserTest : public test::DiagnosticPolicyTestBase {
       const std::string& file_name,
       const std::string& model_name) {
     internal::CollisionFilterGroupResolver resolver{&plant_};
+<<<<<<< HEAD
     ParsingWorkspace w{options_, package_map_, diagnostic_policy_,
                        &plant_, &resolver, NoSelect};
+=======
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver};
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     auto result = AddModelFromUrdf(
         {DataSource::kFilename, &file_name}, model_name, {}, w);
     resolver.Resolve(diagnostic_policy_);
@@ -63,20 +67,27 @@ class UrdfParserTest : public test::DiagnosticPolicyTestBase {
       const std::string& file_contents,
       const std::string& model_name) {
     internal::CollisionFilterGroupResolver resolver{&plant_};
+<<<<<<< HEAD
     ParsingWorkspace w{options_, package_map_, diagnostic_policy_,
                        &plant_, &resolver, NoSelect};
+=======
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver};
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     auto result = AddModelFromUrdf(
         {DataSource::kContents, &file_contents}, model_name, {}, w);
     resolver.Resolve(diagnostic_policy_);
     return result;
   }
 
+<<<<<<< HEAD
   // URDF cannot delegate to any other parsers.
   static ParserInterface& NoSelect(
       const drake::internal::DiagnosticPolicy&, const std::string&) {
     DRAKE_UNREACHABLE();
   }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
  protected:
   ParsingOptions options_;
   PackageMap package_map_;

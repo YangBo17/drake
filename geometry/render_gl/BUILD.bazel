@@ -1,10 +1,21 @@
+<<<<<<< HEAD
+load(
+    "@drake//tools/skylark:drake_cc.bzl",
+=======
+# -*- python -*-
+
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "drake_cc_library",
     "drake_cc_package_library",
 )
 load("//tools/lint:lint.bzl", "add_lint_tests")
+<<<<<<< HEAD
+<<<<<<<< HEAD:geometry/render_gl/BUILD.bazel
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load("//tools/skylark:test_tags.bzl", "vtk_test_tags")
 load(
     "//tools/skylark:drake_cc_per_os.bzl",
@@ -12,6 +23,7 @@ load(
     "drake_cc_library_ubuntu_only",
 )
 
+<<<<<<< HEAD
 # This render_gl package is only implemented on Ubuntu.  For macOS, only the
 # factory is available and it will always throw an exception.  For Ubuntu, the
 # factory is the sole public entry point, even though the implementation is
@@ -23,6 +35,19 @@ load(
 #
 # Similarly, only the package-level library //geometry/render_gl is public as a
 # Bazel target; all of the other targets are private.
+=======
+# This gl_renderer package is only implemented on Ubuntu.  For macOS, only the
+# render_engine_gl_factory is available and it will always throw an exception.
+# For Ubuntu, the factory is the sole public entry point, even though the
+# implementation is made up of several other distinct components.
+#
+# Because the components are only conditionally available, and because we do
+# not want Drake's installed headers to depend on GL headers, we only install
+# the header for render_engine_gl_factory and nothing else.
+#
+# Similarly, only the package-level library //geometry/render/gl_renderer is
+# public as a Bazel target; all of the other targets are private.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 package(default_visibility = ["//visibility:private"])
 
@@ -71,6 +96,7 @@ drake_cc_library_ubuntu_only(
         "internal_buffer_dim.h",
         "internal_render_engine_gl.h",
     ],
+<<<<<<< HEAD
     deps = [
         ":internal_opengl_context",
         ":internal_opengl_geometry",
@@ -80,10 +106,36 @@ drake_cc_library_ubuntu_only(
         ":render_engine_gl_params",
         "//geometry/render:render_engine",
         "//systems/sensors:image",
+========
+
+drake_cc_package_library(
+    name = "gl_renderer",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":stubs",
+>>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/gl_renderer/BUILD.bazel
+=======
+    interface_deps = [
+        ":internal_opengl_context",
+        ":internal_opengl_geometry",
+        ":render_engine_gl_params",
+        ":internal_shader_program",
+        ":internal_shape_meshes",
+        ":internal_texture_library",
+        "//geometry/render:render_engine",
+        "//systems/sensors:image",
+    ],
+    deps = [
+        "//common:filesystem",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
 drake_cc_library(
+<<<<<<< HEAD
+<<<<<<<< HEAD:geometry/render_gl/BUILD.bazel
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "factory",
     srcs = select({
         "//tools/cc_toolchain:apple": [],
@@ -118,6 +170,22 @@ drake_cc_library(
         "factory.h",
     ],
     internal = True,
+<<<<<<< HEAD
+========
+    name = "stubs",
+    hdrs = [
+        "render_engine_gl_factory.h",
+        "render_engine_gl_params.h",
+    ],
+>>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/gl_renderer/BUILD.bazel
+    visibility = ["//visibility:private"],
+    deps = [
+        "//geometry/render_gl",
+    ],
+)
+
+<<<<<<<< HEAD:geometry/render_gl/BUILD.bazel
+=======
     visibility = ["//visibility:private"],
     deps = [
         ":render_engine_gl_params",
@@ -125,11 +193,15 @@ drake_cc_library(
     ],
 )
 
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 drake_cc_library(
     name = "render_engine_gl_params",
     hdrs = ["render_engine_gl_params.h"],
     deps = [
+<<<<<<< HEAD
         "//common:name_value",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//geometry:rgba",
         "//geometry/render:render_label",
     ],
@@ -180,6 +252,10 @@ drake_cc_library_ubuntu_only(
         ":internal_opengl_context",
     ],
     deps = [
+<<<<<<< HEAD
+=======
+        "//common:filesystem",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "@vtk//:vtkIOImage",
     ],
 )
@@ -227,7 +303,10 @@ drake_cc_googletest_ubuntu_only(
         "//common/test_utilities:expect_throws_message",
         "//geometry/render:render_label",
         "//systems/sensors:color_palette",
+<<<<<<< HEAD
         "@vtk//:vtkIOImage",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -275,3 +354,9 @@ add_lint_tests(
         "factory.cc",
     ],
 )
+<<<<<<< HEAD
+========
+add_lint_tests()
+>>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/gl_renderer/BUILD.bazel
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

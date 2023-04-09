@@ -24,6 +24,29 @@ from subprocess import check_output, check_call
 
 from drake.tools.install import otool
 
+<<<<<<< HEAD
+=======
+# Stored from command-line.
+color = False
+prefix = None
+strip = True
+strip_tool = None
+install_name_tool = None
+# Mapping used to (a) check for unique shared library names and (b) provide a
+# mapping from library name to paths for RPath fixes (where (a) is essential).
+# Structure: Map[ basename (Str) => full_path ]
+libraries_to_fix_rpath = {}
+# These are binaries (or Python shared libraries) that require RPath fixes (and
+# thus depend on `libraries_to_fix_rpath`), but by definition are not depended
+# upon by other components, and thus need not be unique.
+# Structure: List[ Tuple(basename, full_path) ]
+binaries_to_fix_rpath = []
+# Files that are not libraries, but may still require fixing.
+# Structure: List[Str]
+potential_binaries_to_fix_rpath = []
+# Stores result of `--list` argument.
+list_only = False
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 # Used for matching against libraries and extracting useful components.
 # N.B. On linux, dynamic libraries may have their version number as a suffix
 # (e.g. my_lib.so.x.y.z).
@@ -197,6 +220,7 @@ class Installer:
             # May be an executable.
             self._potential_binaries_to_fix_rpath.append(dst_full)
 
+<<<<<<< HEAD
     def fix_rpaths_and_strip(self):
         # Add binary executables to list of files to be fixed up:
         self._find_binary_executables()
@@ -239,6 +263,81 @@ class Installer:
             # find library paths.
             if dep.basename not in self._libraries_installed:
                 continue
+=======
+def macos_fix_rpaths(basename, dst_full):
+    # Update file (library, executable) ID (remove relative path).
+    check_call(
+        [install_name_tool, "-id", "@rpath/" + basename, dst_full]
+        )
+    # Check if file dependencies are specified with relative paths.
+    for dep in otool.linked_libraries(dst_full):
+        # Look for the absolute path in the dictionary of fixup files to
+        # find library paths.
+        if dep.basename not in libraries_to_fix_rpath:
+            continue
+        lib_dirname = os.path.dirname(dst_full)
+        diff_path = os.path.relpath(libraries_to_fix_rpath[dep.basename],
+                                    lib_dirname)
+        check_call(
+            [install_name_tool,
+             "-change", dep.path,
+             os.path.join('@loader_path', diff_path),
+             dst_full]
+            )
+    # Remove RPATH values that contain @loader_path. These are from the build
+    # tree and are irrelevant in the install tree. RPATH is not necessary as
+    # relative or absolute path to each library is already known.
+    for command in otool.load_commands(dst_full):
+        if command['cmd'] != 'LC_RPATH' or 'path' not in command:
+            continue
+
+        path = command['path']
+        if path.startswith('@loader_path'):
+            check_call(
+                [install_name_tool, "-delete_rpath", path, dst_full])
+
+
+def linux_fix_rpaths(dst_full):
+    # A conservative subset of the ld.so search path. These paths are added
+    # to /etc/ld.so.conf by default or after the prerequisites install script
+    # has been run. Query on a given system using `ldconfig -v`.
+    ld_so_search_paths = [
+        '/lib',
+        '/lib/libblas',
+        '/lib/liblapack',
+        '/lib/x86_64-linux-gnu',
+        '/lib32',
+        '/libx32',
+        '/usr/lib',
+        '/usr/lib/x86_64-linux-gnu',
+        '/usr/lib/x86_64-linux-gnu/libfakeroot',
+        '/usr/lib/x86_64-linux-gnu/mesa-egl',
+        '/usr/lib/x86_64-linux-gnu/mesa',
+        '/usr/lib/x86_64-linux-gnu/pulseaudio',
+        '/usr/lib32',
+        '/usr/libx32',
+        '/usr/local/lib',
+    ]
+    file_output = check_output(["ldd", dst_full]).decode("utf-8")
+    rpath = []
+    for line in file_output.splitlines():
+        ldd_result = line.strip().split(' => ')
+        if len(ldd_result) < 2:
+            continue
+        # Library in install prefix.
+        if ldd_result[1] == 'not found' or ldd_result[1].startswith(prefix):
+            re_result = re.match(dylib_match, ldd_result[0])
+            # Look for the absolute path in the dictionary of libraries using
+            # the library name without its possible version number.
+            soname, version, _ = re_result.groups()
+            if soname not in libraries_to_fix_rpath:
+                # Some third party libraries that are copied rather than
+                # compiled such as mosek are stored as keys in
+                # libraries_to_fix_rpath with the version (e.g., libname.so.1).
+                soname = f'{soname}{version}'
+                if soname not in libraries_to_fix_rpath:
+                    continue
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
             lib_dirname = os.path.dirname(dst_full)
             diff_path = os.path.relpath(
                 self._libraries_installed[dep.basename], lib_dirname)

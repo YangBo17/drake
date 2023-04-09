@@ -17,7 +17,10 @@
 #include <fmt/format.h>
 
 #include "drake/common/eigen_types.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_eigen.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/symbolic/decompose.h"
 #include "drake/common/symbolic/monomial_util.h"
 #include "drake/math/matrix_util.h"
@@ -1303,6 +1306,7 @@ std::vector<Binding<Constraint>> MathematicalProgram::GetAllConstraints()
   extend(linear_matrix_inequality_constraint_);
   extend(positive_semidefinite_constraint_);
   extend(linear_complementarity_constraints_);
+  extend(positive_semidefinite_constraint_);
   extend(exponential_cone_constraints_);
   return conlist;
 }

@@ -9,7 +9,10 @@
 #include "drake/multibody/inverse_kinematics/minimum_distance_constraint.h"
 #include "drake/multibody/inverse_kinematics/orientation_constraint.h"
 #include "drake/multibody/inverse_kinematics/orientation_cost.h"
+<<<<<<< HEAD
 #include "drake/multibody/inverse_kinematics/point_to_line_distance_constraint.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/multibody/inverse_kinematics/point_to_point_distance_constraint.h"
 #include "drake/multibody/inverse_kinematics/polyhedron_constraint.h"
 #include "drake/multibody/inverse_kinematics/position_constraint.h"
@@ -165,6 +168,7 @@ InverseKinematics::AddPointToPointDistanceConstraint(
 }
 
 solvers::Binding<solvers::Constraint>
+<<<<<<< HEAD
 InverseKinematics::AddPointToLineDistanceConstraint(
     const Frame<double>& frame_point,
     const Eigen::Ref<const Eigen::Vector3d>& p_B1P,
@@ -179,6 +183,8 @@ InverseKinematics::AddPointToLineDistanceConstraint(
 }
 
 solvers::Binding<solvers::Constraint>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 InverseKinematics::AddPolyhedronConstraint(
     const Frame<double>& frameF, const Frame<double>& frameG,
     const Eigen::Ref<const Eigen::Matrix3Xd>& p_GP,

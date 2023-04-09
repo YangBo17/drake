@@ -1,6 +1,10 @@
 #pragma once
 
+<<<<<<< HEAD
+<<<<<<<< HEAD:geometry/render_gl/render_engine_gl_params.h
 #include "drake/common/name_value.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/geometry/render/render_label.h"
 #include "drake/geometry/rgba.h"
 
@@ -10,6 +14,7 @@ namespace render {
 
 /** Construction parameters for RenderEngineGl.  */
 struct RenderEngineGlParams {
+<<<<<<< HEAD
   /** Passes this object to an Archive.
   Refer to @ref yaml_serialization "YAML Serialization" for background. */
   template <typename Archive>
@@ -19,6 +24,8 @@ struct RenderEngineGlParams {
     a->Visit(DRAKE_NVP(default_clear_color));
   }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /** Default render label to apply to a geometry when none is otherwise
    specified.  */
   RenderLabel default_label{RenderLabel::kUnspecified};
@@ -34,3 +41,12 @@ struct RenderEngineGlParams {
 }  // namespace render
 }  // namespace geometry
 }  // namespace drake
+<<<<<<< HEAD
+========
+// NOLINTNEXTLINE
+#warning The include path drake/geometry/render/gl_renderer/render_engine_gl_params.h is deprecated and will be removed on 2022-10-01.  Use drake/geometry/render_gl/render_engine_gl_params.h instead.
+
+#include "drake/geometry/render_gl/render_engine_gl_params.h"
+>>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/gl_renderer/render_engine_gl_params.h
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

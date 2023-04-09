@@ -292,7 +292,11 @@ HttpResponse HttpServiceCurl::DoPostForm(
   if (!bin_out.good()) {
     cleanup_curl(curl, form, headerlist);
     throw std::runtime_error(fmt::format(
+<<<<<<< HEAD
         "RenderClient: unable to wtite temporary file '{}'.", bin_out_path));
+=======
+        "HttpServiceCurl: unable to wtite temporary file '{}'.", bin_out_path));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
   if (verbose) {
     LogCurlDebugData(debug_data);

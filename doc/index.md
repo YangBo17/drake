@@ -109,8 +109,15 @@ bug fixes, features, and examples!
 <article markdown="1">
 ## Tutorials
 
+<<<<<<< HEAD
 Drake offers Python-based tutorials using Jupyter notebooks. We recommend that
 you [view the tutorials online](https://deepnote.com/workspace/Drake-0b3b2c53-a7ad-441b-80f8-bf8350752305/project/Tutorials-2b4fc509-aef2-417d-a40d-6071dfed9199/%2Findex.ipynb).
+=======
+Drake offers Python-based tutorials using Jupyter notebooks.
+The tutorials can be
+[viewed online](https://deepnote.com/workspace/Drake-0b3b2c53-a7ad-441b-80f8-bf8350752305/project/Tutorials-2b4fc509-aef2-417d-a40d-6071dfed9199/%2Findex.ipynb)
+without any local installation.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 Alternatively, to run the tutorials locally via `pip`, refer to
 [drake/tutorials/README.md](https://github.com/RobotLocomotion/drake/blob/master/tutorials/README.md).

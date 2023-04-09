@@ -122,6 +122,10 @@ GlobalInverseKinematics::GlobalInverseKinematics(
     // the body position and orientation.
     if (weld_to_world_body_index_set.count(body_idx) > 0) {
       // This body is welded to the world.
+<<<<<<< HEAD
+=======
+      R_WB_[body_idx] = prog_.NewContinuousVariables<3, 3>(body_R_name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       const math::RigidTransformd X_WB = plant_.CalcRelativeTransform(
           *dummy_plant_context, plant_.world_frame(), body.body_frame());
       // TODO(hongkai.dai): clean up this for loop using
@@ -164,7 +168,11 @@ GlobalInverseKinematics::GlobalInverseKinematics(
           const WeldJoint<double>* weld_joint =
               static_cast<const WeldJoint<double>*>(joint);
 
+<<<<<<< HEAD
           const RigidTransformd X_JpJc = weld_joint->X_FM();
+=======
+          const RigidTransformd X_JpJc = weld_joint->X_PC();  // see #17600.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
           const RigidTransformd X_PC =
               X_PJp * X_JpJc * X_CJc.inverse();
           // Fixed to the parent body.
@@ -388,6 +396,50 @@ Eigen::VectorXd GlobalInverseKinematics::ReconstructGeneralizedPositionSolution(
     ++body_idx;
   }
   return q;
+}
+
+solvers::Binding<solvers::LinearConstraint>
+GlobalInverseKinematics::AddWorldPositionConstraint(
+    BodyIndex body_idx, const Eigen::Vector3d& p_BQ,
+    const Eigen::Vector3d& box_lb_F, const Eigen::Vector3d& box_ub_F,
+<<<<<<< HEAD
+    const RigidTransformd& X_WF) {
+  if (body_idx >= plant_.num_bodies() || body_idx <= 0) {
+    throw std::runtime_error("body index out of range.");
+  }
+  const Vector3<Expression> p_WQ = p_WBo_[body_idx] + R_WB_[body_idx] * p_BQ;
+  return prog_.AddLinearConstraint(X_WF.inverse().cast<Expression>() * p_WQ,
+                                   box_lb_F, box_ub_F);
+}
+
+solvers::Binding<solvers::LinearConstraint>
+GlobalInverseKinematics::AddWorldRelativePositionConstraint(
+    BodyIndex body_idx_B, const Eigen::Vector3d& p_BQ,
+    BodyIndex body_idx_A, const Eigen::Vector3d& p_AP,
+    const Eigen::Vector3d& box_lb_F, const Eigen::Vector3d& box_ub_F,
+    const RigidTransformd& X_WF) {
+  if (body_idx_B >= plant_.num_bodies() || body_idx_B <= 0) {
+    throw std::runtime_error("body index out of range.");
+  }
+  if (body_idx_A >= plant_.num_bodies() || body_idx_A <= 0) {
+    throw std::runtime_error("body index out of range.");
+  }
+  const Vector3<Expression> p_WQ =
+      p_WBo_[body_idx_B] + R_WB_[body_idx_B] * p_BQ;
+  const Vector3<Expression> p_WP =
+      p_WBo_[body_idx_A] + R_WB_[body_idx_A] * p_AP;
+  return prog_.AddLinearConstraint(
+      X_WF.rotation().inverse().cast<Expression>() * (p_WQ - p_WP), box_lb_F,
+      box_ub_F);
+=======
+    const Eigen::Isometry3d& X_WF) {
+  const Vector3<Expression> body_pt_pos =
+      p_WBo_[body_idx] + R_WB_[body_idx] * p_BQ;
+  const Vector3<Expression> body_pt_in_measured_frame =
+      X_WF.linear().transpose() * (body_pt_pos - X_WF.translation());
+  return prog_.AddLinearConstraint(body_pt_in_measured_frame, box_lb_F,
+                                   box_ub_F);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 solvers::Binding<solvers::LinearConstraint>

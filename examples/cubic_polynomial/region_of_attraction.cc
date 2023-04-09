@@ -10,8 +10,11 @@
 #include <cmath>
 #include <iostream>
 
+<<<<<<< HEAD
 #include <gflags/gflags.h>
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/symbolic/polynomial.h"
 #include "drake/common/unused.h"
 #include "drake/solvers/mathematical_program.h"

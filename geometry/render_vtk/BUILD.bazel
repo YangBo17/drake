@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",
@@ -25,7 +30,10 @@ drake_cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common:essential",
+<<<<<<< HEAD
         "//common:name_value",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//geometry/render:render_label",
     ],
 )
@@ -50,7 +58,15 @@ drake_cc_library(
     hdrs = ["internal_render_engine_vtk.h"],
     internal = True,
     visibility = [
+<<<<<<< HEAD
         "//geometry/render_gltf_client:__pkg__",
+=======
+        "//geometry/render_client_gltf:__pkg__",
+        # TODO(jwnimmer-tri) Remove this once the dev package is gone.
+        "//geometry/render/dev/render_gltf_client:__pkg__",
+        # TODO(jwnimmer-tri) Remove this after deprecation 2022-09-01.
+        "//geometry/render:__pkg__",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
     deps = [
         ":internal_render_engine_vtk_base",
@@ -68,12 +84,25 @@ drake_cc_library(
     ],
 )
 
+<<<<<<< HEAD
+=======
+# TODO(jwnimmer-tri) Remove this after deprecation 2022-09-01.
+exports_files(["internal_render_engine_vtk.h"])
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 drake_cc_library(
     name = "internal_render_engine_vtk_base",
     srcs = ["internal_render_engine_vtk_base.cc"],
     hdrs = ["internal_render_engine_vtk_base.h"],
     internal = True,
+<<<<<<< HEAD
     visibility = ["//visibility:private"],
+=======
+    visibility = [
+        # TODO(jwnimmer-tri) Switch to private after deprecation 2022-09-01.
+        "//geometry/render:__pkg__",
+    ],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     deps = [
         "//common:scope_exit",
         "//geometry:geometry_roles",
@@ -88,7 +117,14 @@ drake_cc_library(
     srcs = ["internal_vtk_util.cc"],
     hdrs = ["internal_vtk_util.h"],
     internal = True,
+<<<<<<< HEAD
     visibility = ["//visibility:private"],
+=======
+    visibility = [
+        # TODO(jwnimmer-tri) Switch to private after deprecation 2022-09-01.
+        "//geometry/render:__pkg__",
+    ],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     deps = [
         "//common:essential",
         "//math:geometric_transform",
@@ -102,10 +138,16 @@ drake_cc_library(
 drake_cc_googletest(
     name = "internal_render_engine_vtk_test",
     args = select({
+<<<<<<< HEAD
         # Disable test cases that break on Mac M1 CI.
         "@platforms//cpu:arm64": [
             "--gtest_filter=-*HorizonTest:*TerrainTest:*SphereTest",
         ],
+=======
+        # Disable all test cases on Mac M1 CI.
+        # TODO(17566) Re-enable this when possible.
+        "@platforms//cpu:arm64": ["--gtest_filter=-*"],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//conditions:default": [],
     }),
     data = [
@@ -118,7 +160,10 @@ drake_cc_googletest(
         "//common/test_utilities",
         "//geometry/test_utilities:dummy_render_engine",
         "//math:geometric_transform",
+<<<<<<< HEAD
         "@vtk//:vtkIOImage",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 

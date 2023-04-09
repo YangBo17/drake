@@ -128,6 +128,12 @@ def _impl(repository_ctx):
         if os_result.ubuntu_release == "20.04":
             archive = "vtk-9.1.0-3-focal-x86_64.tar.gz"
             sha256 = "0a899323e7927a7b3e09d1be35bf70df9630f4eba56b9af93c59401cefa227c5"  # noqa
+<<<<<<< HEAD
+=======
+        elif os_result.ubuntu_release == "22.04":
+            archive = "vtk-9.1.0-3-jammy-x86_64.tar.gz"
+            sha256 = "6ec65fa079f1278f759afd7abea8539b9e2f19ba9056267ae6484c681d3debd1"  # noqa
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         else:
             fail("Operating system is NOT supported {}".format(os_result))
 

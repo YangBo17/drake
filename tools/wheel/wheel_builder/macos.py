@@ -9,7 +9,10 @@ import subprocess
 
 from .common import die, wheel_name
 from .common import build_root, resource_root, wheelhouse
+<<<<<<< HEAD
 from .common import test_root, find_tests
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 
 def _find_wheel(path, version):
@@ -50,6 +53,7 @@ def _provision():
     subprocess.check_call(command)
 
 
+<<<<<<< HEAD
 def _test_wheel(wheel, env):
     """
     Runs the test script on `wheel`.
@@ -68,6 +72,14 @@ def _test_wheel(wheel, env):
         print(f'-- Executing test {test}')
         subprocess.check_call(['bash', test_script, test, wheel], env=env)
         print(f'-- Executing test {test} - PASSED')
+=======
+def _test_wheel(path, env):
+    """
+    Runs the test script on the wheel at `path`.
+    """
+    test_script = os.path.join(resource_root, 'macos', 'test-wheel.sh')
+    subprocess.check_call(['bash', test_script, path], env=env)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 
 def build(options):
@@ -84,6 +96,7 @@ def build(options):
     environment.pop('PYTHONPATH')
     environment.pop('RUNFILES_MANIFEST_FILE')
 
+<<<<<<< HEAD
     # Xcode updates may change the default -mmacosx-version-min when not
     # specified.  For example, Xcode 14.1 on monterey (macOS 12.x) was using a
     # deployment target of 13.0 (ventura), resulting in a wheel that could not
@@ -98,6 +111,8 @@ def build(options):
     deployment_target = f'{platform.mac_ver()[0].split(".")[0]}.0'
     environment['MACOSX_DEPLOYMENT_TARGET'] = deployment_target
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     # Build the wheel.
     build_script = os.path.join(resource_root, 'macos', 'build-wheel.sh')
     build_command = ['bash', build_script]
@@ -121,8 +136,11 @@ def build(options):
         shutil.rmtree('/opt/drake-dependencies')
         shutil.rmtree('/opt/drake')
         shutil.rmtree(build_root)
+<<<<<<< HEAD
         if options.test:
             shutil.rmtree(test_root)
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 
 def add_build_arguments(parser):
@@ -131,8 +149,12 @@ def add_build_arguments(parser):
     """
     parser.add_argument(
         '-k', '--keep-build', action='store_true',
+<<<<<<< HEAD
         help='do not delete build/test trees on success '
              '(tree(s) are always retained on failure)')
+=======
+        help='do not delete build tree after successful build')
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     parser.add_argument(
         '--incremental', action='store_true',
         help='only build Drake itself '

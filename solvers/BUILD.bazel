@@ -438,6 +438,23 @@ drake_cc_library(
 )
 
 drake_cc_library(
+<<<<<<< HEAD
+=======
+    name = "bilinear_product_util",
+    srcs = ["bilinear_product_util.cc"],
+    hdrs = ["bilinear_product_util.h"],
+    interface_deps = [
+        ":decision_variable",
+        "//common:essential",
+        "//common/symbolic:expression",
+    ],
+    deps = [
+        "//common/symbolic:polynomial",
+    ],
+)
+
+drake_cc_library(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "integer_optimization_util",
     srcs = ["integer_optimization_util.cc"],
     hdrs = ["integer_optimization_util.h"],
@@ -475,9 +492,15 @@ drake_cc_library(
         ":mixed_integer_optimization_util",
     ],
     deps = [
+<<<<<<< HEAD
         ":integer_optimization_util",
         ":solve",
         "//common/symbolic:replace_bilinear_terms",
+=======
+        ":bilinear_product_util",
+        ":integer_optimization_util",
+        ":solve",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//math:gray_code",
     ],
 )
@@ -667,9 +690,12 @@ drake_cc_library(
     name = "solution_result",
     srcs = ["solution_result.cc"],
     hdrs = ["solution_result.h"],
+<<<<<<< HEAD
     deps = [
         "//common:essential",
     ],
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
 drake_cc_library(
@@ -750,6 +776,67 @@ drake_cc_library(
         "//common:essential",
     ],
     deps = [],
+<<<<<<< HEAD
+=======
+)
+
+drake_cc_variant_library(
+    name = "dreal_solver",
+    opt_out_condition = "//tools:no_dreal",
+    srcs_always = ["dreal_solver_common.cc"],
+    srcs_enabled = ["dreal_solver.cc"],
+    srcs_disabled = ["no_dreal.cc"],
+    hdrs = ["dreal_solver.h"],
+    interface_deps = [
+        ":solver_base",
+        "//common:essential",
+    ],
+    deps_always = [
+        ":mathematical_program",
+    ],
+    deps_enabled = [
+        "@dreal//dreal/api",
+    ],
+)
+
+# Ibex is a dependency of dReal; disabling dReal disables Ibex.  We could
+# consider supporting Ibex w/o dReal, but have no use cases that need that
+# support yet.
+drake_cc_optional_library(
+    name = "ibex_converter",
+    opt_out_condition = "//tools:no_dreal",
+    srcs = ["ibex_converter.cc"],
+    hdrs = ["ibex_converter.h"],
+    interface_deps = [
+        "//common/symbolic:expression",
+        "@ibex//:ibex",
+    ],
+    deps = [],
+)
+
+# Ibex is a dependency of dReal; disabling dReal disables Ibex.  We could
+# consider supporting Ibex w/o dReal, but have no use cases that need that
+# support yet.
+drake_cc_variant_library(
+    name = "ibex_solver",
+    opt_out_condition = "//tools:no_dreal",
+    srcs_always = ["ibex_solver_common.cc"],
+    srcs_enabled = ["ibex_solver.cc"],
+    srcs_disabled = ["no_ibex.cc"],
+    hdrs = ["ibex_solver.h"],
+    interface_deps = [
+        ":mathematical_program",
+        ":mathematical_program_result",
+        ":solver_base",
+        ":solver_options",
+        "//common:essential",
+    ],
+    deps_always = [],
+    deps_enabled = [
+        ":ibex_converter",
+        "@ibex//:ibex",
+    ],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
 # External Solvers.
@@ -799,6 +886,7 @@ drake_cc_variant_library(
         ":mathematical_program",
     ],
     deps_enabled = [
+<<<<<<< HEAD
         ":mosek_solver_internal",
         "//common:scoped_singleton",
         "//common:scope_exit",
@@ -815,6 +903,10 @@ drake_cc_optional_library(
     deps = [
         ":aggregate_costs_constraints",
         ":mathematical_program",
+=======
+        "//common:scoped_singleton",
+        "//common:scope_exit",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//math:quadratic_form",
         "@mosek",
     ],
@@ -919,7 +1011,11 @@ drake_cc_variant_library(
     ],
     deps_enabled = [
         "//math:eigen_sparse_triplet",
+<<<<<<< HEAD
         "@osqp_internal//:osqp",
+=======
+        "@osqp",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -942,7 +1038,11 @@ drake_cc_variant_library(
     deps_enabled = [
         "//common:scope_exit",
         "//math:eigen_sparse_triplet",
+<<<<<<< HEAD
         "@scs_internal//:scsdir",
+=======
+        "@scs//:scsdir",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -1004,6 +1104,10 @@ drake_cc_variant_library(
     ],
     deps_always = [
         ":mathematical_program",
+<<<<<<< HEAD
+=======
+        "//common:filesystem",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//common:scope_exit",
     ],
     deps_enabled = [
@@ -1246,6 +1350,28 @@ drake_cc_googletest(
 )
 
 drake_cc_googletest(
+<<<<<<< HEAD
+=======
+    name = "ibex_solver_test",
+    deps = [
+        ":generic_trivial_constraint",
+        ":generic_trivial_cost",
+        ":ibex_solver",
+        ":mathematical_program",
+        "//common/test_utilities:expect_throws_message",
+    ],
+)
+
+drake_cc_optional_googletest(
+    name = "ibex_converter_test",
+    opt_out_condition = "//tools:no_dreal",
+    deps = [
+        ":ibex_converter",
+    ],
+)
+
+drake_cc_googletest(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "integer_optimization_util_test",
     deps = [
         ":integer_optimization_util",
@@ -1591,6 +1717,10 @@ drake_cc_googletest(
         ":quadratic_program_examples",
         ":second_order_cone_program_examples",
         ":snopt_solver",
+<<<<<<< HEAD
+=======
+        "//common:filesystem",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//common:temp_directory",
         "//common/test_utilities:eigen_matrix_compare",
         "//common/test_utilities:expect_throws_message",

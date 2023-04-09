@@ -3,23 +3,41 @@ coinor-libcoinutils3v5
 coinor-libipopt1v5
 default-jre
 jupyter-notebook
+<<<<<<< HEAD
 libblas-dev
 libbz2-1.0
+=======
+libamd2
+libblas3
+libbz2-1.0
+libcurl3-gnutls
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 libdouble-conversion3
 libeigen3-dev
 libexpat1
 libfreetype6
+<<<<<<< HEAD
+=======
+libgflags2.2
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 libgfortran5
 libglew2.2
 libglib2.0-0
 libglu1-mesa
 libglx0
+<<<<<<< HEAD
 libgomp1
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 libhdf5-103
 libjchart2d-java
 libjpeg-turbo8
 libjsoncpp25
 liblapack3
+<<<<<<< HEAD
+=======
+libldl2
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 liblz4-1
 liblzma5
 libmsgpackc2
@@ -34,10 +52,15 @@ libqt5core5a
 libqt5gui5
 libqt5printsupport5
 libqt5widgets5
+<<<<<<< HEAD
+=======
+libquadmath0
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 libspdlog-dev
 libsqlite3-0
 libtheora0
 libtiff5
+<<<<<<< HEAD
 libvtk9.1
 libx11-6
 libxml2
@@ -47,10 +70,27 @@ python3
 python3-ipywidgets
 python3-matplotlib
 python3-munkres
+=======
+libtinyxml2-dev
+libtinyxml2.6.2v5
+libx11-6
+libxml2
+libxt6
+libyaml-cpp-dev
+ocl-icd-libopencl1
+python3
+python3-ipywidgets
+python3-lxml
+python3-matplotlib
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 python3-numpy
 python3-pil
 python3-pydot
 python3-pygame
+<<<<<<< HEAD
+=======
+python3-scipy
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 python3-tornado
 python3-u-msgpack
 python3-yaml

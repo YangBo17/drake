@@ -2,6 +2,10 @@
 
 #include "drake/common/eigen_types.h"
 #include "drake/common/symbolic/expression.h"
+<<<<<<< HEAD:common/symbolic/replace_bilinear_terms.h
+=======
+#include "drake/solvers/decision_variable.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:solvers/bilinear_product_util.h
 
 namespace drake {
 namespace symbolic {

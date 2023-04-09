@@ -89,10 +89,13 @@ class QueryObject;
  See the details in KinematicsVector for details on how to provide values for
  this port.
 
+<<<<<<< HEAD
  <!-- TODO(xuchenhan-tri): Consider adding some clarification about
   "configuration" as in "deformable vertex positions" compared to
   "configuration" as in articulated rigid-body configurations (and that we use
   the word to exclusively mean the former in SceneGraph). -->
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
  __configuration port__: An abstract-valued port providing an instance of
  GeometryConfigurationVector. For each registered deformable geometry, this
  "configuration vector" maps the registered GeometryId to its world space
@@ -523,9 +526,12 @@ class SceneGraph final : public systems::LeafSystem<T> {
    the provided context.
    @pydrake_mkdoc_identifier{4args_context_source_id_geometry_id_geometry}
      */
+<<<<<<< HEAD
   DRAKE_DEPRECATED("2023-04-01",
                    "Geometries are no longer posed with respect to other "
                    "geometries -- only frames.")
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   GeometryId RegisterGeometry(systems::Context<T>* context, SourceId source_id,
                               GeometryId geometry_id,
                               std::unique_ptr<GeometryInstance> geometry) const;
@@ -597,6 +603,7 @@ class SceneGraph final : public systems::LeafSystem<T> {
       systems::Context<T>* context, SourceId source_id, FrameId frame_id,
       std::unique_ptr<GeometryInstance> geometry, double resolution_hint) const;
 
+<<<<<<< HEAD
   /** Changes the `shape` of the geometry indicated by the given `geometry_id`.
 
    The geometry is otherwise unchanged -- same geometry_id, same assigned roles,
@@ -635,6 +642,8 @@ class SceneGraph final : public systems::LeafSystem<T> {
       const Shape& shape,
       std::optional<math::RigidTransform<double>> X_FG = std::nullopt);
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /** Removes the given geometry G (indicated by `geometry_id`) from the given
    source's registered geometries. All registered geometries hanging from
    this geometry will also be removed.

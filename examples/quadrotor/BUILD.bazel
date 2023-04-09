@@ -7,12 +7,23 @@ load(
 load("//tools/skylark:drake_data.bzl", "models_filegroup")
 load("//tools/install:install_data.bzl", "install_data")
 load("//tools/lint:lint.bzl", "add_lint_tests")
+<<<<<<< HEAD
+=======
+load("//tools/workspace:forward_files.bzl", "forward_files")
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load("//tools/workspace/models_internal:files.bzl", "skydio_2_mesh_files")
 
 package(default_visibility = ["//visibility:public"])
 
+<<<<<<< HEAD
 models_filegroup(
     name = "glob_models",
+=======
+_SKYDIO_2_MESHES = forward_files(
+    srcs = ["@models_internal//:" + x for x in skydio_2_mesh_files()],
+    dest_prefix = "",
+    strip_prefix = "@models_internal//:skydio_2/",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     visibility = ["//visibility:private"],
 )
 

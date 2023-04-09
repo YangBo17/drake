@@ -232,9 +232,12 @@ class MeshcatVisualizer final : public systems::LeafSystem<T> {
   run Meshcat multithreaded */
   mutable systems::internal::InstantaneousRealtimeRateCalculator
       realtime_rate_calculator_{};
+<<<<<<< HEAD
 
   /* The name of the alpha slider, if any. */
   std::string alpha_slider_name_;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 /** A convenient alias for the MeshcatVisualizer class when using the `double`

@@ -5,7 +5,10 @@
 #include <fmt/format.h>
 
 #include "drake/common/default_scalars.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_eigen.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/math/autodiff.h"
 
 namespace drake {

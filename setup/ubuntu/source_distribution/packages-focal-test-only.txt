@@ -5,6 +5,10 @@ llvm-12
 python3-dateutil
 python3-dbg
 python3-flask
+<<<<<<< HEAD
+=======
+python3-lxml-dbg
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 python3-matplotlib-dbg
 python3-nbconvert
 python3-nbformat

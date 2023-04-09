@@ -2,12 +2,19 @@
 #include "drake/common/symbolic/expression/all.h"
 /* clang-format on */
 
+<<<<<<< HEAD
+=======
+#include <sstream>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <string>
 
 #include <gtest/gtest.h>
 
+<<<<<<< HEAD
 #include "drake/common/fmt_eigen.h"
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 namespace drake {
 namespace symbolic {
 namespace {

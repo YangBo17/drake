@@ -76,6 +76,7 @@ drake_jupyter_py_binary(
 )
 
 drake_jupyter_py_binary(
+<<<<<<< HEAD
     name = "authoring_leaf_systems",
     add_test_rule = 1,
     deps = [
@@ -92,6 +93,8 @@ drake_jupyter_py_binary(
 )
 
 drake_jupyter_py_binary(
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "authoring_multibody_simulation",
     add_test_rule = 1,
     test_timeout = "moderate",

@@ -10,8 +10,13 @@ RationalFunction::RationalFunction()
 
 RationalFunction::RationalFunction(Polynomial numerator, Polynomial denominator)
     : numerator_{std::move(numerator)}, denominator_{std::move(denominator)} {
+<<<<<<< HEAD
   DRAKE_DEMAND(!denominator_.monomial_to_coefficient_map()
                     .empty() /* zero polynomial */);
+=======
+  // TODO(hongkai.dai): replace EqualTo(Polynomial()) with Polynomial::empty()
+  DRAKE_DEMAND(!denominator_.EqualTo(Polynomial() /* zero polynomial */));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   DRAKE_ASSERT_VOID(CheckIndeterminates());
 }
 
@@ -141,7 +146,12 @@ RationalFunction& RationalFunction::operator*=(double c) {
 }
 
 RationalFunction& RationalFunction::operator/=(const RationalFunction& f) {
+<<<<<<< HEAD
   if (f.numerator().monomial_to_coefficient_map().empty()) {
+=======
+  // TODO(hongkai.dai): replace EqualTo(Polynomial()) with Polynomial::empty()
+  if (f.numerator().EqualTo(Polynomial())) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     throw std::logic_error("RationalFunction: operator/=: The divider is 0.");
   }
   numerator_ *= f.denominator();
@@ -151,7 +161,12 @@ RationalFunction& RationalFunction::operator/=(const RationalFunction& f) {
 }
 
 RationalFunction& RationalFunction::operator/=(const Polynomial& p) {
+<<<<<<< HEAD
   if (p.monomial_to_coefficient_map().empty()) {
+=======
+  // TODO(hongkai.dai): replace EqualTo(Polynomial()) with Polynomial::empty()
+  if (p.EqualTo(Polynomial())) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     throw std::logic_error("RationalFunction: operator/=: The divider is 0.");
   }
   denominator_ *= p;
@@ -262,7 +277,12 @@ RationalFunction operator/(RationalFunction f, const Polynomial& p) {
 }
 
 RationalFunction operator/(const Polynomial& p, const RationalFunction& f) {
+<<<<<<< HEAD
   if (f.numerator().monomial_to_coefficient_map().empty()) {
+=======
+  // TODO(hongkai.dai): replace EqualTo(Polynomial()) with Polynomial::empty()
+  if (f.numerator().EqualTo(Polynomial())) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     throw std::logic_error("RationalFunction: operator/=: The divider is 0.");
   }
   return {p * f.denominator(), f.numerator()};
@@ -273,7 +293,12 @@ RationalFunction operator/(RationalFunction f, const Monomial& m) {
 }
 
 RationalFunction operator/(const Monomial& m, RationalFunction f) {
+<<<<<<< HEAD
   if (f.numerator().monomial_to_coefficient_map().empty()) {
+=======
+  // TODO(hongkai.dai): replace EqualTo(Polynomial()) with Polynomial::empty()
+  if (f.numerator().EqualTo(Polynomial())) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     throw std::logic_error("RationalFunction: operator/=: The divider is 0.");
   }
   return {m * f.denominator(), f.numerator()};
@@ -282,7 +307,12 @@ RationalFunction operator/(const Monomial& m, RationalFunction f) {
 RationalFunction operator/(RationalFunction f, double c) { return f /= c; }
 
 RationalFunction operator/(double c, const RationalFunction& f) {
+<<<<<<< HEAD
   if (f.numerator().monomial_to_coefficient_map().empty()) {
+=======
+  // TODO(hongkai.dai): replace EqualTo(Polynomial()) with Polynomial::empty()
+  if (f.numerator().EqualTo(Polynomial())) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     throw std::logic_error("RationalFunction: operator/=: The divider is 0.");
   }
   return {c * f.denominator(), f.numerator()};

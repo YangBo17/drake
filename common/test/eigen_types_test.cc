@@ -218,10 +218,15 @@ GTEST_TEST(EigenTypesTest, FixedSizeVector) {
 GTEST_TEST(EigenTypesTest, LikewiseStorageOrder) {
   using LikewiseCol = MatrixLikewise<float, Vector3<double>>;
   using LikewiseRow = MatrixLikewise<float, RowVector3<double>>;
+<<<<<<< HEAD
   EXPECT_EQ(static_cast<int>(LikewiseCol::Options) & Eigen::ColMajor,
             Eigen::ColMajor);
   EXPECT_EQ(static_cast<int>(LikewiseRow::Options) & Eigen::RowMajor,
             Eigen::RowMajor);
+=======
+  EXPECT_EQ(LikewiseCol::Options & Eigen::ColMajor, Eigen::ColMajor);
+  EXPECT_EQ(LikewiseRow::Options & Eigen::RowMajor, Eigen::RowMajor);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 }  // namespace

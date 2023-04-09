@@ -28,6 +28,14 @@ in [Source Installation](/from_source.html).
 ## Stable Releases
 
 <div class="warning" markdown="1">
+<<<<<<< HEAD
+=======
+Drake's pip wheels are only published for CPython 3.8 through CPython 3.9
+running on Linux.  In the future, we intend to publish macOS wheel builds.
+</div>
+
+<div class="warning" markdown="1">
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 Drake does not support the Python environment supplied by Anaconda. Before
 installing or using Drake, please `conda deactivate` (repeatedly, until even
 the conda base environment has been deactivated) such that none of the paths

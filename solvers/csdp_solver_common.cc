@@ -15,6 +15,10 @@ CsdpSolver::CsdpSolver()
     : SolverBase(id(), &is_available, &is_enabled,
                  &ProgramAttributesSatisfied) {}
 
+CsdpSolver::CsdpSolver()
+    : SolverBase(&id, &is_available, &is_enabled, &ProgramAttributesSatisfied),
+      method_{RemoveFreeVariableMethod::kNullspace} {}
+
 CsdpSolver::~CsdpSolver() = default;
 
 SolverId CsdpSolver::id() {

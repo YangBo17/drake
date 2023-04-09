@@ -1,5 +1,6 @@
 #pragma once
 
+<<<<<<<< HEAD:common/symbolic/latex.h
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -56,3 +57,6 @@ std::string ToLatex(const Eigen::PlainObjectBase<Derived>& M,
 
 }  // namespace symbolic
 }  // namespace drake
+========
+#include "drake/common/symbolic/latex.h"
+>>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:common/symbolic_latex.h

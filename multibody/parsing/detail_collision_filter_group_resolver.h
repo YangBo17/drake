@@ -4,7 +4,10 @@
 #include <optional>
 #include <set>
 #include <string>
+<<<<<<< HEAD
 #include <string_view>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 #include "drake/common/diagnostic_policy.h"
 #include "drake/common/drake_copyable.h"
@@ -115,6 +118,13 @@ class CollisionFilterGroupResolver {
   void Resolve(const drake::internal::DiagnosticPolicy& diagnostic);
 
  private:
+<<<<<<< HEAD
+=======
+  bool CheckLegalName(const drake::internal::DiagnosticPolicy& diagnostic,
+                      std::string_view name,
+                      const std::string& description) const;
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   std::string FullyQualify(
       const std::string& name,
       std::optional<ModelInstanceIndex> model_instance) const;
@@ -123,7 +133,11 @@ class CollisionFilterGroupResolver {
       const drake::internal::DiagnosticPolicy& diagnostic,
       const std::string& group_name) const;
 
+<<<<<<< HEAD
   const Body<double>* FindBody(std::string_view name,
+=======
+  const Body<double>* FindBody(const std::string& name,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
                                ModelInstanceIndex model_instance);
 
   MultibodyPlant<double>* const plant_;

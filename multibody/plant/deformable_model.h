@@ -3,7 +3,10 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+<<<<<<< HEAD
 #include <vector>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 #include "drake/common/eigen_types.h"
 #include "drake/common/identifier.h"
@@ -14,6 +17,7 @@
 
 namespace drake {
 namespace multibody {
+<<<<<<< HEAD
 
 /** Uniquely identifies a deformable body. It is valid before and after
  Finalize(). */
@@ -22,11 +26,19 @@ using DeformableBodyId = Identifier<class DeformableBodyTag>;
 using DeformableBodyIndex = TypeSafeIndex<class DeformableBodyTag>;
 
 /** DeformableModel implements the interface in PhysicalModel and provides the
+=======
+namespace internal {
+
+using DeformableBodyId = Identifier<class DeformableBodyTag>;
+
+/* DeformableModel implements the interface in PhysicalModel and provides the
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
  functionalities to specify deformable bodies. Unlike rigid bodies, the shape of
  deformable bodies can change in a simulation. Each deformable body is modeled
  as a volumetric mesh with persisting topology, changing vertex positions, and
  an approximated signed distance field. A finite element model is built for each
  registered deformable body that is used to evaluate the dynamics of the body.
+<<<<<<< HEAD
  @experimental
  @tparam_double_only */
 template <typename T>
@@ -35,6 +47,15 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DeformableModel)
 
   /** Constructs a DeformableModel to be owned by the given MultibodyPlant.
+=======
+ @tparam_double_only */
+template <typename T>
+class DeformableModel final : public multibody::internal::PhysicalModel<T> {
+ public:
+  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DeformableModel)
+
+  /* Construct a DeformableModel to be owned by the given MultibodyPlant.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    @pre plant != nullptr.
    @pre Finalize() has not been called on `plant`. */
   explicit DeformableModel(MultibodyPlant<T>* plant) : plant_(plant) {
@@ -42,23 +63,39 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
     DRAKE_DEMAND(!plant_->is_finalized());
   }
 
+<<<<<<< HEAD
   /** Returns the number of deformable bodies registered with this
+=======
+  /* Returns the number of deformable bodies registered with this
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    DeformableModel. */
   int num_bodies() const { return reference_positions_.size(); }
 
   // TODO(xuchenhan-tri): Document the minimal requirement on the geometry
   //  instance. For example, it must have a friction proximity property to be
+<<<<<<< HEAD
   //  simulated with an MbP that involves contact.
   // TODO(xuchenhan-tri): Consider allowing registering deformable bodies with
   //  non-world frames.
   /** Registers a deformable body in `this` DeformableModel with the given
+=======
+  //  simulated with an MbP that involves contact. Also, move resolution_hint
+  //  into the properties of the instance.
+  // TODO(xuchenhan-tri): Consider allowing registering deformable bodies with
+  //  non-world frames.
+  /* Registers a deformable body in `this` DeformableModel with the given
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    GeometryInstance. The body is represented in the world frame and simulated
    with FEM with linear elements and a first order quadrature rule that
    integrates linear functions exactly. See FemModel for details. Returns a
    unique identifier for the added geometry.
    @param[in] geometry_instance  The geometry to be registered with the model.
    @param[in] config             The physical properties of deformable body.
+<<<<<<< HEAD
    @param[in] resolution_hint    The parameter that guides the level of mesh
+=======
+   @parame[in] resolution_hint   The parameter that guides the level of mesh
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
                                  refinement of the deformable geometry. It has
                                  length units (in meters) and roughly
                                  corresponds to a typical edge length in the
@@ -70,6 +107,7 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
       std::unique_ptr<geometry::GeometryInstance> geometry_instance,
       const fem::DeformableBodyConfig<T>& config, double resolution_hint);
 
+<<<<<<< HEAD
   // TODO(xuchenhan-tri): Consider pulling PosedHalfSpace out of internal
   // namespace and use it here.
   /** Sets wall boundary conditions for the body with the given `id`. All
@@ -92,13 +130,20 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
                                 const Vector3<T>& n_W);
 
   /** Returns the discrete state index of the deformable body identified by the
+=======
+  /* Returns the discrete state index of the deformable body identified by the
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    given `id`.
    @throws std::exception if MultibodyPlant::Finalize() has not been called yet.
    or if no deformable body with the given `id` has been registered in this
    model. */
   systems::DiscreteStateIndex GetDiscreteStateIndex(DeformableBodyId id) const;
 
+<<<<<<< HEAD
   /** Returns the FemModel for the body with `id`.
+=======
+  /* Returns the FemModel for the body with `id`.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    @throws exception if no deformable body with `id` is registered with `this`
    %DeformableModel. */
   const fem::FemModel<T>& GetFemModel(DeformableBodyId id) const;
@@ -106,7 +151,11 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
   // TODO(xuchenhan-tri): The use of T over double is not well-reasoned.
   //  Consider whether T is really necessary when we support autodiff in
   //  deformable simulations.
+<<<<<<< HEAD
   /** Returns the reference positions of the vertices of the deformable body
+=======
+  /* Returns the reference positions of the vertices of the deformable body
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    identified by the given `id`.
    The reference positions are represented as a VectorX with 3N values where N
    is the number of vertices. The x-, y-, and z-positions (measured and
@@ -116,6 +165,7 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
    registered in this model. */
   const VectorX<T>& GetReferencePositions(DeformableBodyId id) const;
 
+<<<<<<< HEAD
   /** Returns the DeformableBodyId of the body with the given body index.
    @throws std::exception if MultibodyPlant::Finalize() has not been called yet
    or if index is larger than or equal to the total number of registered
@@ -154,6 +204,9 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
     return PhysicalModelPointerVariant<T>(this);
   }
 
+=======
+ private:
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // TODO(xuchenhan-tri): Implement CloneToDouble() and CloneToAutoDiffXd()
   // and the corresponding is_cloneable methods.
 
@@ -173,11 +226,14 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
       DeformableBodyId id, const geometry::VolumeMesh<double>& mesh,
       const fem::DeformableBodyConfig<T>& config);
 
+<<<<<<< HEAD
   /* Copies the vertex positions of all deformable bodies to the output port
    value which is guaranteed to be of type GeometryConfigurationVector. */
   void CopyVertexPositions(const systems::Context<T>& context,
                            AbstractValue* output) const;
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /* Helper to throw a useful message if a deformable body with the given `id`
    doesn't exist. */
   void ThrowUnlessRegistered(const char* source_method,
@@ -193,6 +249,7 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
       discrete_state_indexes_;
   std::unordered_map<DeformableBodyId, geometry::GeometryId>
       body_id_to_geometry_id_;
+<<<<<<< HEAD
   std::unordered_map<geometry::GeometryId, DeformableBodyId>
       geometry_id_to_body_id_;
   std::unordered_map<DeformableBodyId, std::unique_ptr<fem::FemModel<T>>>
@@ -202,5 +259,12 @@ class DeformableModel final : public multibody::PhysicalModel<T> {
   systems::OutputPortIndex vertex_positions_port_index_;
 };
 
+=======
+  std::unordered_map<DeformableBodyId, std::unique_ptr<fem::FemModel<T>>>
+      fem_models_;
+};
+
+}  // namespace internal
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace multibody
 }  // namespace drake

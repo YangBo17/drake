@@ -7,7 +7,11 @@
 #include <variant>
 
 #include <drake_vendor/sdf/Element.hh>
+<<<<<<< HEAD
 #include <drake_vendor/tinyxml2.h>
+=======
+#include <tinyxml2.h>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 #include "drake/common/diagnostic_policy.h"
 #include "drake/common/drake_copyable.h"

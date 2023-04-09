@@ -369,6 +369,7 @@ TEST_F(TwoFreeBodiesTest, PointToPointDistanceConstraint) {
   EXPECT_LE(distance_sol, distance_upper + 1e-6);
 }
 
+<<<<<<< HEAD
 TEST_F(TwoFreeBodiesTest, PointToLineDistanceConstraint) {
   const Eigen::Vector3d p_B1P(0.2, -0.4, 0.9);
   const Eigen::Vector3d p_B2Q(1.4, -0.1, 1.8);
@@ -401,6 +402,8 @@ TEST_F(TwoFreeBodiesTest, PointToLineDistanceConstraint) {
   EXPECT_LE(distance_sol, distance_upper + 2e-6);
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 TEST_F(TwoFreeBodiesTest, PolyhedronConstraint) {
   const Frame<double>& frameF = body1_frame_;
   const Frame<double>& frameG = body2_frame_;

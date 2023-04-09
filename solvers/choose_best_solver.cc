@@ -62,12 +62,21 @@ class StaticSolverInterface {
     return std::make_unique<SomeSolver>();
   }
 
+<<<<<<< HEAD
   SolverId (*id_)() = nullptr;
   bool (*is_available_)() = nullptr;
   bool (*is_enabled_)() = nullptr;
   bool (*are_program_attributes_satisfied_)(const MathematicalProgram& prog) =
       nullptr;
   std::unique_ptr<SolverInterface> (*make_)() = nullptr;
+=======
+  SolverId(*id_)() = nullptr;
+  bool(*is_available_)() = nullptr;
+  bool (*is_enabled_)() = nullptr;
+  bool (*are_program_attributes_satisfied_)(const MathematicalProgram& prog) =
+      nullptr;
+  std::unique_ptr<SolverInterface>(*make_)() = nullptr;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 // The list of all solvers compiled in Drake.

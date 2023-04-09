@@ -5,6 +5,7 @@ load(
 load("//tools/skylark:drake_data.bzl", "models_filegroup")
 load("//tools/install:install_data.bzl", "install_data")
 load("//tools/lint:lint.bzl", "add_lint_tests")
+<<<<<<< HEAD
 load(
     "//tools/workspace/models_internal:files.bzl",
     "jaco_description_mesh_files",
@@ -18,6 +19,22 @@ models_filegroup(
         "LICENSE.TXT",
         "README.md",
     ],
+=======
+load("@drake//tools/workspace:forward_files.bzl", "forward_files")
+load(
+    "//tools/workspace/models_internal:files.bzl",
+    "jaco_description_mesh_files",
+)
+
+package(
+    default_visibility = [":__subpackages__"],
+)
+
+_JACO_DESCRIPTION_MESHES = forward_files(
+    srcs = ["@models_internal//:" + x for x in jaco_description_mesh_files()],
+    dest_prefix = "",
+    strip_prefix = "@models_internal//:jaco_description/",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     visibility = ["//visibility:private"],
 )
 

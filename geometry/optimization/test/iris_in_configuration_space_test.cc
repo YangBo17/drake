@@ -9,6 +9,7 @@
 #include "drake/geometry/test_utilities/meshcat_environment.h"
 #include "drake/multibody/inverse_kinematics/inverse_kinematics.h"
 #include "drake/multibody/parsing/parser.h"
+#include "drake/solvers/ibex_solver.h"
 #include "drake/systems/framework/diagram_builder.h"
 
 namespace drake {
@@ -496,6 +497,12 @@ GTEST_TEST(IrisInConfigurationSpaceTest, BlockOnGround) {
 // Ibex found counter-examples that Snopt missed; now Snopt succeeds due to
 // having options.num_collision_infeasible_samples > 1.
 GTEST_TEST(IrisInConfigurationSpaceTest, ConvexConfigurationSpace) {
+  if (!solvers::IbexSolver::is_available() ||
+      !solvers::IbexSolver::is_enabled()) {
+    // This test requires Ibex.
+    return;
+  }
+
   const double l = 1.5;
   const double r = 0.1;
   const std::string convex_urdf = fmt::format(

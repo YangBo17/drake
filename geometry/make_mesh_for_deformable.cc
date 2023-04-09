@@ -18,6 +18,7 @@ std::unique_ptr<VolumeMesh<double>> MeshBuilderForDeformable::Build(
   return std::move(data.mesh);
 }
 
+<<<<<<< HEAD
 void MeshBuilderForDeformable::ImplementGeometry(const Mesh& mesh_spec,
                                                  void* user_data) {
   DRAKE_DEMAND(user_data != nullptr);
@@ -37,6 +38,18 @@ void MeshBuilderForDeformable::ImplementGeometry(const Sphere& sphere,
       TessellationStrategy::kDenseInteriorVertices));
 }
 
+=======
+void MeshBuilderForDeformable::ImplementGeometry(const Sphere& sphere,
+                                                 void* user_data) {
+  ReifyData& data = *static_cast<ReifyData*>(user_data);
+  DRAKE_DEMAND(data.resolution_hint > 0);
+  // Relying on move construction from r-value return from MakeSphereVolumeMesh.
+  data.mesh = std::make_unique<VolumeMesh<double>>(MakeSphereVolumeMesh<double>(
+      sphere, data.resolution_hint,
+      TessellationStrategy::kDenseInteriorVertices));
+}
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void MeshBuilderForDeformable::ThrowUnsupportedGeometry(
     const std::string& shape_name) {
   throw std::logic_error(

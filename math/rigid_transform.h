@@ -416,6 +416,7 @@ class RigidTransform {
         rotation().IsNearlyIdentity();
   }
 
+<<<<<<< HEAD
   /// Returns true if `this` is exactly equal to `other`.
   /// @param[in] other %RigidTransform to compare to `this`.
   /// @returns `true` if each element of `this` is exactly equal to the
@@ -439,6 +440,8 @@ class RigidTransform {
     return GetMaximumAbsoluteDifference(other) <= tolerance;
   }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /// Returns X_BA = X_AB⁻¹, the inverse of `this` %RigidTransform.
   /// @note The inverse of %RigidTransform X_AB is X_BA, which contains the
   /// rotation matrix R_BA = R_AB⁻¹ = R_ABᵀ and the position vector `p_BoAo_B_`

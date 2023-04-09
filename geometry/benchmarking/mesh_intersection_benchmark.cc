@@ -1,5 +1,9 @@
 #include <iostream>
 
+<<<<<<< HEAD
+=======
+#include "fmt/format.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <benchmark/benchmark.h>
 #include <fmt/format.h>
 

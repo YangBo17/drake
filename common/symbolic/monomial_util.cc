@@ -1,8 +1,11 @@
 #include "drake/common/symbolic/monomial_util.h"
 
+<<<<<<< HEAD
 #include <algorithm>
 #include <vector>
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/drake_assert.h"
 
 namespace drake {
@@ -24,6 +27,7 @@ Eigen::Matrix<Monomial, Eigen::Dynamic, 1> OddDegreeMonomialBasis(
   return internal::ComputeMonomialBasis<Eigen::Dynamic>(
       vars, degree, internal::DegreeType::kOdd);
 }
+<<<<<<< HEAD
 
 namespace {
 // Generates all the monomials with degree up to 1 for each variable, for all
@@ -80,5 +84,7 @@ VectorX<Monomial> CalcMonomialBasisOrderUpToOne(const Variables& x,
   }
   return ret;
 }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace symbolic
 }  // namespace drake

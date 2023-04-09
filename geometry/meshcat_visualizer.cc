@@ -103,6 +103,7 @@ systems::EventStatus MeshcatVisualizer<T>::UpdateMeshcat(
     version_ = current_version;
   }
   SetTransforms(context, query_object);
+<<<<<<< HEAD
   if (params_.enable_alpha_slider) {
     double new_alpha_value = meshcat_->GetSliderValue(alpha_slider_name_);
     if (new_alpha_value != alpha_value_) {
@@ -110,6 +111,8 @@ systems::EventStatus MeshcatVisualizer<T>::UpdateMeshcat(
       SetColorAlphas();
     }
   }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   std::optional<double> rate = realtime_rate_calculator_.UpdateAndRecalculate(
       ExtractDoubleOrThrow(context.get_time()));
   if (rate) {

@@ -288,7 +288,10 @@ drake_cc_binary(
         ":acrobot_plant",
         "//common:is_approx_equal_abstol",
         "//geometry:drake_visualizer",
+<<<<<<< HEAD
         "//planning/trajectory_optimization:direct_collocation",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//solvers:snopt_solver",
         "//solvers:solve",
         "//systems/analysis:simulator",
@@ -434,4 +437,9 @@ drake_py_test(
     ],
 )
 
+<<<<<<< HEAD
+=======
+install_data()
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 add_lint_tests()

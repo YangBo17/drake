@@ -123,7 +123,23 @@ class _Generic:
     same type classes as Python's built-in generics (e.g., `typing.Union`) but
     is careful to canonicalize any type aliases in params during instantiation.
     """
+<<<<<<< HEAD
     def __init__(self, name, instantiator, num_params):
+=======
+    Provides a way to denote unique "classes" for C++ generics that do not
+    normally convert to unique types in Python (via pybind11).
+
+    As an example, pybind11 casts ``std::vector<T>`` to ``list()``, but we may
+    still want to associate a unique type with it for registration in
+    templates. We can do this by creating a unique class (or object),
+    ``List[T]``.
+
+    The ``typing`` module in Python provides generics like this; however, the
+    API does not admit easy inspection, at least in Python 3.8, thus we
+    reinvent a smaller wheel.
+    """
+    def __init__(self, name, factory, num_param):
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         self._name = name
         self._instantiator = instantiator
         self._num_params = num_params

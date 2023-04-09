@@ -8,7 +8,10 @@
 #include "drake/common/drake_assert.h"
 #include "drake/common/drake_copyable.h"
 #include "drake/multibody/parsing/detail_collision_filter_group_resolver.h"
+<<<<<<< HEAD
 #include "drake/multibody/parsing/detail_common.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/multibody/parsing/package_map.h"
 #include "drake/multibody/plant/multibody_plant.h"
 
@@ -102,13 +105,18 @@ struct ParsingOptions {
 //
 // Note that code using this struct may pass it via const-ref, but the
 // indicated plant and collision resolver objects will still be mutable; only
+<<<<<<< HEAD
 // the pointer values of the plant and resolver within the struct are const.
+=======
+// the pointer values within the struct are const.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 struct ParsingWorkspace {
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ParsingWorkspace)
 
   // All parameters are aliased; they must have a lifetime greater than that of
   // this struct.
   ParsingWorkspace(
+<<<<<<< HEAD
       const ParsingOptions& options_in,
       const PackageMap& package_map_in,
       const drake::internal::DiagnosticPolicy& diagnostic_in,
@@ -124,6 +132,18 @@ struct ParsingWorkspace {
     DRAKE_DEMAND(plant != nullptr);
     DRAKE_DEMAND(collision_resolver != nullptr);
     DRAKE_DEMAND(parser_selector != nullptr);
+=======
+      const PackageMap& package_map_in,
+      const drake::internal::DiagnosticPolicy& diagnostic_in,
+      MultibodyPlant<double>* plant_in,
+      internal::CollisionFilterGroupResolver* collision_resolver_in)
+      : package_map(package_map_in),
+        diagnostic(diagnostic_in),
+        plant(plant_in),
+        collision_resolver(collision_resolver_in) {
+    DRAKE_DEMAND(plant != nullptr);
+    DRAKE_DEMAND(collision_resolver != nullptr);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   const ParsingOptions& options;
@@ -131,7 +151,10 @@ struct ParsingWorkspace {
   const drake::internal::DiagnosticPolicy& diagnostic;
   MultibodyPlant<double>* const plant;
   internal::CollisionFilterGroupResolver* const collision_resolver;
+<<<<<<< HEAD
   const ParserSelector parser_selector;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 }  // namespace internal

@@ -8,6 +8,14 @@ namespace drake {
 namespace multibody {
 
 template <typename T>
+<<<<<<< HEAD
+=======
+RigidBody<T>::RigidBody(const SpatialInertia<double>& M)
+    : Body<T>("", default_model_instance()),
+      default_spatial_inertia_(M) {}
+
+template <typename T>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 RigidBody<T>::RigidBody(const std::string& body_name,
                         const SpatialInertia<double>& M)
     : Body<T>(body_name, default_model_instance()),

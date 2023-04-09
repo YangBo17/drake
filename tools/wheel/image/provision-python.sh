@@ -41,8 +41,12 @@ ln -s /usr/local/bin/python /usr/bin/python
 # TODO(jwnimmer-tri): Should these be version-pinned? What's the process for
 # keeping them up to date if they are?
 pip install \
+<<<<<<< HEAD
     matplotlib \
     numpy \
+=======
+    lxml \
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     pyyaml \
     semantic-version \
     setuptools \

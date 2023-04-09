@@ -118,11 +118,52 @@ drake_pybind_library(
 )
 
 drake_pybind_library(
+<<<<<<< HEAD
+=======
+    name = "geometry_py",
+    cc_deps = [
+        "//bindings/pydrake:documentation_pybind",
+        "//bindings/pydrake/common:default_scalars_pybind",
+        "//bindings/pydrake/common:deprecation_pybind",
+        "//bindings/pydrake/common:identifier_pybind",
+        "//bindings/pydrake/common:monostate_pybind",
+        "//bindings/pydrake/common:type_pack",
+        "//bindings/pydrake/common:type_safe_index_pybind",
+        "//bindings/pydrake/common:value_pybind",
+    ],
+    cc_srcs = [
+        "geometry_py.cc",
+        "geometry_py.h",
+        "geometry_py_common.cc",
+        "geometry_py_hydro.cc",
+        "geometry_py_optimization.cc",
+        "geometry_py_render.cc",
+        "geometry_py_scene_graph.cc",
+        "geometry_py_visualizers.cc",
+    ],
+    package_info = PACKAGE_INFO,
+    py_data = [
+        "//setup:deepnote",
+    ],
+    py_deps = [
+        ":math_py",
+        ":module_py",
+        "//bindings/pydrake/systems:framework_py",
+        "//bindings/pydrake/systems:lcm_py",
+    ],
+    py_srcs = ["_geometry_extra.py"],
+)
+
+drake_pybind_library(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "lcm_py",
     cc_deps = [
         "//bindings/pydrake:documentation_pybind",
         "//bindings/pydrake/common:deprecation_pybind",
+<<<<<<< HEAD
         "//bindings/pydrake/common:serialize_pybind",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
     cc_srcs = ["lcm_py.cc"],
     package_info = PACKAGE_INFO,
@@ -220,7 +261,11 @@ drake_pybind_library(
     cc_deps = [
         ":symbolic_types_pybind",
         "//bindings/pydrake:documentation_pybind",
+<<<<<<< HEAD
         "//bindings/pydrake:math_operators_pybind",
+=======
+        "//bindings/pydrake/common:deprecation_pybind",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//bindings/pydrake/common:eigen_pybind",
     ],
     cc_srcs = [
@@ -270,7 +315,10 @@ drake_py_library(
 
 PYBIND_SUBPACKAGES_FOR_COVERAGE = [
     "//bindings/pydrake/common",
+<<<<<<< HEAD
     "//bindings/pydrake/geometry",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "//bindings/pydrake/manipulation",
     "//bindings/pydrake/multibody",
     "//bindings/pydrake/planning",
@@ -289,6 +337,10 @@ PY_LIBRARIES_WITH_INSTALL = [
     ":trajectories_py",
     "//bindings/pydrake/examples",
     "//bindings/pydrake/examples/multibody",
+<<<<<<< HEAD
+=======
+    "//bindings/pydrake/visualization",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ] + PYBIND_SUBPACKAGES_FOR_COVERAGE
 
 add_pybind_coverage_data(
@@ -461,6 +513,98 @@ drake_py_unittest(
 )
 
 drake_py_unittest(
+<<<<<<< HEAD
+=======
+    name = "frame_id_test",
+    deps = [
+        ":geometry_py",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_common_test",
+    deps = [
+        ":geometry_py",
+        "//bindings/pydrake/common/test_utilities",
+        "//bindings/pydrake/multibody:parsing_py",
+        "//bindings/pydrake/multibody:plant_py",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_hydro_test",
+    data = [
+        "//geometry:test_obj_files",
+    ],
+    deps = [
+        ":geometry_py",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_optimization_test",
+    deps = [
+        ":geometry_py",
+        ":math_py",
+        "//bindings/pydrake/common/test_utilities:deprecation_py",
+        "//bindings/pydrake/common/test_utilities:pickle_compare_py",
+        "//bindings/pydrake/multibody:parsing_py",
+        "//bindings/pydrake/multibody:plant_py",
+        "//bindings/pydrake/solvers",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_render_test",
+    deps = [
+        ":geometry_py",
+        "//bindings/pydrake/common/test_utilities",
+        "//bindings/pydrake/systems:sensors_py",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_render_engine_gl_test",
+    deps = [
+        ":geometry_py",
+        "//bindings/pydrake/common/test_utilities",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_render_engine_subclass_test",
+    flaky = True,
+    deps = [
+        ":geometry_py",
+        "//bindings/pydrake/common/test_utilities",
+        "//bindings/pydrake/systems:sensors_py",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_scene_graph_test",
+    deps = [
+        ":geometry_py",
+        "//bindings/pydrake/common/test_utilities",
+        "//bindings/pydrake/systems:sensors_py",
+    ],
+)
+
+drake_py_unittest(
+    name = "geometry_visualizers_test",
+    deps = [
+        ":geometry_py",
+        ":lcm_py",
+        ":perception_py",
+        "//bindings/pydrake/common/test_utilities",
+        "//bindings/pydrake/multibody:plant_py",
+        "//bindings/pydrake/systems:analysis_py",
+        "//bindings/pydrake/systems:lcm_py",
+    ],
+)
+
+drake_py_unittest(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "lcm_test",
     deps = [
         ":lcm_py",
@@ -558,12 +702,17 @@ generate_pybind_coverage(
 drake_py_binary(
     name = "stubgen",
     srcs = ["stubgen.py"],
+<<<<<<< HEAD
+=======
+    args = ["--package=pydrake"],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     deps = [
         ":all_py",
         "@mypy_internal//:mypy",
     ],
 )
 
+<<<<<<< HEAD
 # TODO(jwnimmer-tri): This list should be automatically generated.
 PYI_FILES = [
     "pydrake/__init__.pyi",
@@ -674,10 +823,20 @@ drake_py_unittest(
     ],
     deps = [
         "@bazel_tools//tools/python/runfiles",
+=======
+# TODO(mwoehlke-kitware): actually install the .pyi's.
+
+drake_py_unittest(
+    name = "stubgen_test",
+    timeout = "moderate",
+    deps = [
+        ":all_py",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "@mypy_internal//:mypy",
     ],
 )
 
+<<<<<<< HEAD
 install(
     name = "install",
     install_tests = [
@@ -695,6 +854,8 @@ install(
     deps = get_drake_py_installs(PY_LIBRARIES_WITH_INSTALL),
 )
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 add_lint_tests_pydrake(
     python_lint_extra_srcs = [
         ":test/all_install_test.py",

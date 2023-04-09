@@ -10,6 +10,7 @@ namespace lcm {
 
 /** The set of parameters for configuring DrakeLcm.  */
 struct DrakeLcmParams {
+<<<<<<< HEAD
   /** Passes this object to an Archive.
   Refer to @ref yaml_serialization "YAML Serialization" for background. */
   template <typename Archive>
@@ -18,6 +19,11 @@ struct DrakeLcmParams {
     a->Visit(DRAKE_NVP(channel_suffix));
     a->Visit(DRAKE_NVP(defer_initialization));
   }
+=======
+  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DrakeLcmParams)
+  DrakeLcmParams() = default;
+  ~DrakeLcmParams();
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /** The URL for DrakeLcm communication. If empty, DrakeLcm will use the
   default URL per the DrakeLcm::DrakeLcm() no-argument constructor. */
@@ -33,8 +39,12 @@ struct DrakeLcmParams {
   channel name "FOO_ALT", and a call to `Subscribe(&lcm, "BAR", handler)` will
   only call the handler for messages received on the "BAR_ALT" channel name.
 
+<<<<<<< HEAD
   Simiarly, DrakeLcm::SubscribeMultichannel() and
   DrakeLcm::SubscribeAllChannels() only subscribe to network messages
+=======
+  Simiarly, DrakeLcm::SubscribeAllChannels() only subscribes to network messages
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   that end with the suffix. A network message on a non-matching channel name
   (e.g., "QUUX") will silently discarded.
   The DrakeLcmInterface::MultichannelHandlerFunction callback will be passed the
@@ -48,6 +58,16 @@ struct DrakeLcmParams {
   configuration for new threads varies between the construction time and first
   use. */
   bool defer_initialization{false};
+<<<<<<< HEAD
+=======
+
+  template <typename Archive>
+  void Serialize(Archive* a) {
+    a->Visit(DRAKE_NVP(lcm_url));
+    a->Visit(DRAKE_NVP(channel_suffix));
+    a->Visit(DRAKE_NVP(defer_initialization));
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 }  // namespace lcm

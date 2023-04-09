@@ -16,12 +16,17 @@ drake_cc_package_library(
     name = "optimization",
     visibility = ["//visibility:public"],
     deps = [
+<<<<<<< HEAD
         ":c_iris_collision_geometry",
         ":c_iris_separating_plane",
+=======
+        ":bspline_graph_of_convex_sets",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         ":convex_set",
         ":cspace_free_polytope",
         ":graph_of_convex_sets",
         ":iris",
+        ":polytope_cover",
     ],
 )
 
@@ -59,6 +64,7 @@ drake_cc_library(
         "//solvers:ipopt_solver",
         "//solvers:mosek_solver",
         "//solvers:scs_solver",
+<<<<<<< HEAD
         "//solvers:solve",
         "@qhull_internal//:qhull",
     ],
@@ -102,6 +108,10 @@ drake_cc_library(
         "//solvers:mathematical_program",
         "//solvers:mosek_solver",
         "//solvers:solve",
+=======
+        "//solvers:solve",
+        "@qhull_internal//:qhull",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -127,9 +137,26 @@ drake_cc_library(
         ":convex_set",
         "//geometry:scene_graph",
         "//multibody/plant",
+<<<<<<< HEAD
         "//solvers:choose_best_solver",
+=======
+        "//multibody/rational_forward_kinematics",
+        "//solvers:choose_best_solver",
+        "//solvers:ibex_solver",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//solvers:ipopt_solver",
         "//solvers:snopt_solver",
+    ],
+)
+
+drake_cc_library(
+    name = "polytope_cover",
+    srcs = ["polytope_cover.cc"],
+    hdrs = ["polytope_cover.h"],
+    deps = [
+        "//math:gray_code",
+        "//solvers:mathematical_program",
+        "//solvers:solve",
     ],
 )
 
@@ -143,6 +170,21 @@ drake_cc_library(
         "//geometry:scene_graph",
         "//solvers:mathematical_program",
         "//solvers:solve",
+<<<<<<< HEAD
+=======
+    ],
+)
+
+drake_cc_library(
+    name = "bspline_graph_of_convex_sets",
+    srcs = ["bspline_graph_of_convex_sets.cc"],
+    hdrs = ["bspline_graph_of_convex_sets.h"],
+    deps = [
+        ":convex_set",
+        ":graph_of_convex_sets",
+        "//common:symbolic",
+        "//common/trajectories:bspline_trajectory",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -161,6 +203,7 @@ drake_cc_googletest(
         ":convex_set",
         "//common/test_utilities:eigen_matrix_compare",
         "//solvers:clp_solver",
+<<<<<<< HEAD
     ],
 )
 
@@ -223,6 +266,8 @@ drake_cc_googletest(
     deps = [
         ":c_iris_separating_plane",
         "//common/test_utilities:symbolic_test_util",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -237,10 +282,29 @@ drake_cc_googletest(
         "//common/test_utilities:expect_throws_message",
         "//solvers:choose_best_solver",
         "//solvers:clp_solver",
+<<<<<<< HEAD
         "//solvers:csdp_solver",
         "//solvers:gurobi_solver",
         "//solvers:ipopt_solver",
         "//solvers:mosek_solver",
+=======
+        "//solvers:gurobi_solver",
+        "//solvers:ipopt_solver",
+        "//solvers:mosek_solver",
+    ],
+)
+
+drake_cc_googletest(
+    name = "bspline_graph_of_convex_sets_test",
+    # TODO(avalenzu): Remove this once IPOPT flakiness is resolved. See note in
+    # bspline_graph_of_convex_sets.cc.
+    flaky = True,
+    deps = [
+        ":bspline_graph_of_convex_sets",
+        "//common/test_utilities:eigen_matrix_compare",
+        "//solvers:gurobi_solver",
+        "//solvers:mosek_solver",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -331,6 +395,14 @@ drake_cc_googletest(
         ":test_utilities",
         "//common/test_utilities:eigen_matrix_compare",
         "//common/test_utilities:expect_throws_message",
+    ],
+)
+
+drake_cc_googletest(
+    name = "polytope_cover_test",
+    deps = [
+        ":polytope_cover",
+        "//common/test_utilities:eigen_matrix_compare",
     ],
 )
 

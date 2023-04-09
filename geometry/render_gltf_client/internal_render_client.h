@@ -30,7 +30,11 @@ class RenderClient {
   /* Constructs the render engine from the given RenderEngineGltfClientParams.
 
    @note
+<<<<<<< HEAD
      RenderEngineGltfClientParams.default_label struct member is not relevant
+=======
+     RenderEngineGltfClientParams.default_label struct member is not relavant
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
      for the RenderClient construction. */
   explicit RenderClient(const RenderEngineGltfClientParams& params);
 
@@ -46,7 +50,11 @@ class RenderClient {
    temp_directory(), users do not need to delete the file manually after they
    are finished.
 
+<<<<<<< HEAD
    @sa get_params().cleanup
+=======
+   @sa get_params().no_cleanup
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    @param camera_core
      The RenderCameraCore of the camera being rendered.  Its
      RenderCameraCore::intrinsics() will be communicated to the server.
@@ -160,10 +168,19 @@ class RenderClient {
 
    This method supports loading:
 
+<<<<<<< HEAD
    - Single channel 16-bit or 32-bit float TIFF images.  The depth channel of
      the TIFF images are assumed to be encoded in units of meters.
    - Single channel 16-bit unsigned integer TIFF or PNG images.  The depth
      channel of the images are assumed to be encoded in units of millimeters.
+=======
+   - Single channel 16 bit or 32 bit TIFF images.  The depth channel of the TIFF
+     images are assumed to be encoded in units of meters.
+   - TODO(svenevs): Support single channel 16 bit unsigned short PNG images as
+     the input.  The depth channel of the PNG images are assumed to be encoded
+     in units of millimeters and will be converted to meters when copying to the
+     output buffer.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
    @param path
      The path to the file to try and load as a depth image.  The path returned
@@ -171,12 +188,38 @@ class RenderClient {
    @param depth_image_out
      The already allocated drake image buffer to load `path` into.
    @throws std::exception
+<<<<<<< HEAD
      If the specified `path` has an unsupported extension or channel type, or
      the image denoted by `path` does not have the same width and height as the
      specified `depth_image_out`. */
   static void LoadDepthImage(
       const std::string& path,
       drake::systems::sensors::ImageDepth32F* depth_image_out);
+=======
+     If the specified `path` cannot be loaded as a single channel 16-bit or
+     32-bit TIFF image, or the image denoted by `path` does not have the same
+     width and height as the specified `depth_image_out`. */
+  static void LoadDepthImage(
+      const std::string& path,
+      drake::systems::sensors::ImageDepth32F* depth_image_out);
+
+  /* Loads the specified image file to a drake output buffer.
+
+   This method only supports loading single channel unsigned short PNG images.
+
+   @param path
+     The path to the file to try and load as a label image.  The path returned
+     by RetrieveRender() can be used directly for this parameter.
+   @param label_image_out
+     The already allocated drake image buffer to load `path` into.
+   @throws std::exception
+     If the specified `path` cannot be loaded as a single channel unsigned short
+     PNG image, or the image denoted by `path` does not have the same width and
+     height as the specified `label_image_out`. */
+  static void LoadLabelImage(
+      const std::string& path,
+      drake::systems::sensors::ImageLabel16I* label_image_out);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   //@}
 
@@ -193,7 +236,11 @@ class RenderClient {
    encouraged) to utilize this directory to create any additional files needed
    to communicate with the server such as scene files to upload.  The temporary
    directory will be deleted upon destruction of this instance unless
+<<<<<<< HEAD
    get_params().cleanup is false. */
+=======
+   get_params().no_cleanup is true. */
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const std::string& temp_directory() const { return temp_directory_; }
 
   //@}

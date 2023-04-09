@@ -180,9 +180,25 @@ drake_pybind_library(
 # 2023-05-01 Remove this target upon completion of deprecation.
 drake_py_library(
     name = "trajectory_optimization_py",
+<<<<<<< HEAD
     srcs = ["trajectory_optimization.py"],
     imports = PACKAGE_INFO.py_imports,
     deps = ["//bindings/pydrake/planning"],
+=======
+    cc_deps = [
+        "//bindings/pydrake:documentation_pybind",
+        "//bindings/pydrake:symbolic_types_pybind",
+        "//bindings/pydrake/common:deprecation_pybind",
+    ],
+    cc_srcs = ["trajectory_optimization_py.cc"],
+    package_info = PACKAGE_INFO,
+    py_deps = [
+        ":framework_py",
+        ":module_py",
+        "//bindings/pydrake/solvers",
+        "//bindings/pydrake:trajectories_py",
+    ],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
 # TODO(eric.cousineau): Put this under test once `pydot` is in
@@ -238,6 +254,25 @@ drake_py_unittest(
 )
 
 drake_py_library(
+<<<<<<< HEAD
+=======
+    name = "meshcat_visualizer_py",
+    srcs = ["meshcat_visualizer.py"],
+    imports = PACKAGE_INFO.py_imports,
+    deps = [
+        ":framework_py",
+        ":module_py",
+        ":rendering_py",
+        "//bindings/pydrake:geometry_py",
+        "//bindings/pydrake:lcm_py",
+        "//bindings/pydrake:math_py",
+        "//bindings/pydrake/common:eigen_geometry_py",
+        "@meshcat_python//:meshcat_sans_deprecation_warning",
+    ],
+)
+
+drake_py_library(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "jupyter_widgets_py",
     srcs = ["jupyter_widgets.py"],
     imports = PACKAGE_INFO.py_imports,
@@ -312,7 +347,10 @@ PY_LIBRARIES = [
     ":perception_py",
     ":planar_scenegraph_visualizer_py",
     ":pyplot_visualizer_py",
+<<<<<<< HEAD
     ":trajectory_optimization_py",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ]
 
 # Symbol roll-up (for user ease).
@@ -557,10 +595,17 @@ drake_py_unittest(
 )
 
 drake_py_unittest(
+<<<<<<< HEAD
     name = "trajectory_optimization_dep_test",
     deps = [
         ":trajectory_optimization_py",
         "//bindings/pydrake/common/test_utilities:deprecation_py",
+=======
+    name = "trajectory_optimization_test",
+    deps = [
+        ":trajectory_optimization_py",
+        "//bindings/pydrake/examples",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 

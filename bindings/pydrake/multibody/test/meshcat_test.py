@@ -136,6 +136,9 @@ class TestMeshcat(unittest.TestCase):
         # The SetPositions function doesn't crash (Acrobot has two positions).
         dut.SetPositions(q=[1, 2])
 
+        # The SetPositions function doesn't crash (Acrobot has two positions).
+        dut.SetPositions(q=[1, 2])
+
     def test_internal_point_contact_visualizer(self):
         """A very basic existence test, since this class is internal use only.
         The pydrake-internal user (meldis) has additional acceptance tests.
@@ -145,7 +148,11 @@ class TestMeshcat(unittest.TestCase):
         dut = _PointContactVisualizer(meshcat=meshcat, params=params)
 
     def test_internal_hydroelastic_contact_visualizer(self):
+<<<<<<< HEAD
         """A very basic existence test, since this class is internal use only.
+=======
+        """A very basic existance test, since this class is internal use only.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         The pydrake-internal user (meldis) has additional acceptance tests.
         """
         meshcat = Meshcat()

@@ -651,6 +651,7 @@ GTEST_TEST(SnoptTest, TestCostExceptionHandling) {
   }
 }
 
+<<<<<<< HEAD
 TEST_F(QuadraticEqualityConstrainedProgram1, test) {
   SnoptSolver solver;
   if (solver.available()) {
@@ -658,6 +659,8 @@ TEST_F(QuadraticEqualityConstrainedProgram1, test) {
   }
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace test
 }  // namespace solvers
 }  // namespace drake

@@ -1,6 +1,9 @@
 #include "drake/multibody/plant/deformable_model.h"
 
+<<<<<<< HEAD
 #include <algorithm>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <utility>
 
 #include "drake/geometry/proximity/volume_mesh.h"
@@ -13,6 +16,10 @@
 
 namespace drake {
 namespace multibody {
+<<<<<<< HEAD
+=======
+namespace internal {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 using geometry::FrameId;
 using geometry::GeometryId;
@@ -40,6 +47,7 @@ DeformableBodyId DeformableModel<T>::RegisterDeformableBody(
   /* Record the reference positions. */
   const geometry::SceneGraphInspector<T>& inspector =
       scene_graph.model_inspector();
+<<<<<<< HEAD
   const geometry::VolumeMesh<double>* mesh_G =
       inspector.GetReferenceMesh(geometry_id);
   DRAKE_DEMAND(mesh_G != nullptr);
@@ -49,21 +57,38 @@ DeformableBodyId DeformableModel<T>::RegisterDeformableBody(
   VectorX<T> reference_position(3 * mesh_W.num_vertices());
   for (int v = 0; v < mesh_W.num_vertices(); ++v) {
     reference_position.template segment<3>(3 * v) = mesh_W.vertex(v);
+=======
+  const geometry::VolumeMesh<double>* mesh_ptr =
+      inspector.GetReferenceMesh(geometry_id);
+  DRAKE_DEMAND(mesh_ptr != nullptr);
+  const auto& mesh = *mesh_ptr;
+  VectorX<T> reference_position(3 * mesh.num_vertices());
+  for (int v = 0; v < mesh.num_vertices(); ++v) {
+    reference_position.template segment<3>(3 * v) = mesh.vertex(v);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   const DeformableBodyId body_id = DeformableBodyId::get_new_id();
   /* Build FEM model for the deformable body. */
+<<<<<<< HEAD
   BuildLinearVolumetricModel(body_id, mesh_W, config);
+=======
+  BuildLinearVolumetricModel(body_id, mesh, config);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Do the book-keeping. */
   reference_positions_.emplace(body_id, std::move(reference_position));
   body_id_to_geometry_id_.emplace(body_id, geometry_id);
+<<<<<<< HEAD
   geometry_id_to_body_id_.emplace(geometry_id, body_id);
   body_ids_.emplace_back(body_id);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   return body_id;
 }
 
 template <typename T>
+<<<<<<< HEAD
 void DeformableModel<T>::SetWallBoundaryCondition(DeformableBodyId id,
                                                   const Vector3<T>& p_WQ,
                                                   const Vector3<T>& n_W) {
@@ -97,6 +122,8 @@ void DeformableModel<T>::SetWallBoundaryCondition(DeformableBodyId id,
 }
 
 template <typename T>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 systems::DiscreteStateIndex DeformableModel<T>::GetDiscreteStateIndex(
     DeformableBodyId id) const {
   this->ThrowIfSystemResourcesNotDeclared(__func__);
@@ -119,6 +146,7 @@ const VectorX<T>& DeformableModel<T>::GetReferencePositions(
 }
 
 template <typename T>
+<<<<<<< HEAD
 DeformableBodyId DeformableModel<T>::GetBodyId(
     DeformableBodyIndex index) const {
   this->ThrowIfSystemResourcesNotDeclared(__func__);
@@ -153,6 +181,8 @@ DeformableBodyId DeformableModel<T>::GetBodyId(
 }
 
 template <typename T>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void DeformableModel<T>::BuildLinearVolumetricModel(
     DeformableBodyId id, const geometry::VolumeMesh<double>& mesh,
     const fem::DeformableBodyConfig<T>& config) {
@@ -232,6 +262,7 @@ void DeformableModel<T>::DoDeclareSystemResources(MultibodyPlant<T>* plant) {
     discrete_state_indexes_.emplace(
         deformable_id, this->DeclareDiscreteState(plant, model_state));
   }
+<<<<<<< HEAD
 
   /* Declare the vertex position output port. */
   vertex_positions_port_index_ =
@@ -269,6 +300,8 @@ void DeformableModel<T>::CopyVertexPositions(const systems::Context<T>& context,
         context.get_discrete_state(discrete_state_index).value().head(num_dofs);
     output_value.set_value(geometry_id, std::move(vertex_positions));
   }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 template <typename T>
@@ -281,7 +314,15 @@ void DeformableModel<T>::ThrowUnlessRegistered(const char* source_method,
   }
 }
 
+<<<<<<< HEAD
 }  // namespace multibody
 }  // namespace drake
 
 template class drake::multibody::DeformableModel<double>;
+=======
+}  // namespace internal
+}  // namespace multibody
+}  // namespace drake
+
+template class drake::multibody::internal::DeformableModel<double>;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

@@ -24,7 +24,9 @@ drake_cc_package_library(
     ],
 )
 
+# A deprecation shim library, to be removed on or after 2022-11-01.
 drake_cc_library(
+<<<<<<< HEAD
     name = "constraint_relaxing_ik",
     srcs = ["constraint_relaxing_ik.cc"],
     hdrs = ["constraint_relaxing_ik.h"],
@@ -57,6 +59,15 @@ drake_cc_library(
         ":differential_inverse_kinematics",
         "//systems/framework:leaf_system",
     ],
+=======
+    name = "kinematic_constraint",
+    deprecation = "The new name is 'kinematic_evaluators' instead of 'kinematic_constraint'.",  # noqa
+    tags = [
+        "exclude_from_package",
+        "manual",
+    ],
+    deps = [":kinematic_evaluators"],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
 drake_cc_library(
@@ -73,7 +84,10 @@ drake_cc_library(
         "minimum_distance_constraint.cc",
         "orientation_constraint.cc",
         "orientation_cost.cc",
+<<<<<<< HEAD
         "point_to_line_distance_constraint.cc",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "point_to_point_distance_constraint.cc",
         "polyhedron_constraint.cc",
         "position_constraint.cc",
@@ -92,7 +106,10 @@ drake_cc_library(
         "minimum_distance_constraint.h",
         "orientation_constraint.h",
         "orientation_cost.h",
+<<<<<<< HEAD
         "point_to_line_distance_constraint.h",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "point_to_point_distance_constraint.h",
         "polyhedron_constraint.h",
         "position_constraint.h",
@@ -272,6 +289,7 @@ drake_cc_googletest(
     deps = [
         ":inverse_kinematics_test_utilities",
         ":kinematic_evaluators",
+<<<<<<< HEAD
     ],
 )
 
@@ -280,6 +298,8 @@ drake_cc_googletest(
     deps = [
         ":inverse_kinematics_test_utilities",
         ":kinematic_evaluators",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -298,6 +318,7 @@ drake_cc_googletest(
     deps = [
         ":inverse_kinematics_test_utilities",
         ":kinematic_evaluators",
+<<<<<<< HEAD
         "//solvers/test_utilities",
     ],
 )
@@ -307,6 +328,8 @@ drake_cc_googletest(
     deps = [
         ":inverse_kinematics_test_utilities",
         ":kinematic_evaluators",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//solvers/test_utilities",
     ],
 )

@@ -4,7 +4,10 @@
 #include <mutex>
 #include <optional>
 #include <string>
+<<<<<<< HEAD
 #include <string_view>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 #include "drake/common/drake_copyable.h"
 #include "drake/lcm/drake_lcm_interface.h"

@@ -16,6 +16,7 @@ SpatialInertia<T> SpatialInertia<T>::MakeUnitary() {
 }
 
 template <typename T>
+<<<<<<< HEAD
 SpatialInertia<T> SpatialInertia<T>::PointMass(
     const T& mass, const Vector3<T>& position) {
   // Ensure mass is non-negative.
@@ -275,6 +276,8 @@ SpatialInertia<T> SpatialInertia<T>::SolidTetrahedronAboutVertexWithDensity(
 }
 
 template <typename T>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void SpatialInertia<T>::ThrowNotPhysicallyValid() const {
   std::string error_message = fmt::format(
           "Spatial inertia fails SpatialInertia::IsPhysicallyValid().");

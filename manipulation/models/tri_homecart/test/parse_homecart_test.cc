@@ -18,7 +18,11 @@ GTEST_TEST(ParseHomecartTest, BasicTest) {
   multibody::Parser parser(&plant);
   multibody::parsing::ModelDirectives directives =
       multibody::parsing::LoadModelDirectives(FindResourceOrThrow(
+<<<<<<< HEAD
           "drake/manipulation/models/tri_homecart/homecart.dmd.yaml"));
+=======
+          "drake/manipulation/models/tri_homecart/homecart.yaml"));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   multibody::parsing::ProcessModelDirectives(directives, &plant, nullptr,
                                              &parser);
   plant.Finalize();

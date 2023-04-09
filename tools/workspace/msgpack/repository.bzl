@@ -43,7 +43,10 @@ cc_library(
     includes = ["msgpack"],
     defines = ["MSGPACK_NO_BOOST"],
     visibility = ["//visibility:public"],
+<<<<<<< HEAD
     deprecation = {},
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
     """.format(hdrs_patterns, repr(deprecation))
 

@@ -1,11 +1,21 @@
 #include <unistd.h>
 
+<<<<<<< HEAD
 #include <filesystem>
 
+=======
+#include <iostream>
+
+#include "fmt/format.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <benchmark/benchmark.h>
 #include <fmt/format.h>
 #include <gflags/gflags.h>
 
+<<<<<<< HEAD
+=======
+#include "drake/common/filesystem.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/geometry/render_gl/factory.h"
 #include "drake/geometry/render_vtk/factory.h"
 #include "drake/systems/sensors/image_writer.h"

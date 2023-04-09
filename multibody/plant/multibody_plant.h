@@ -121,12 +121,15 @@ enum class ContactModel {
 
 /// The type of the contact solver used for a discrete MultibodyPlant model.
 ///
+<<<<<<< HEAD
 /// Note: the SAP solver only fully supports scalar type `double`. For
 /// scalar type `AutoDiffXd`, the SAP solver throws if any constraint (including
 /// contact) is detected. As a consequence, one can only run dynamic simulations
 /// without any constraints under the combination of SAP and `AutoDiffXd`. The
 /// SAP solver does not support symbolic calculations.
 ///
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 /// <h2>References</h2>
 ///
 /// - [Castro et al., 2019] Castro, A.M, Qu, A., Kuppuswamy, N., Alspach, A.,
@@ -4306,7 +4309,14 @@ class MultibodyPlant : public internal::MultibodyTreeSystem<T> {
   std::string GetTopologyGraphvizString() const;
 
   /// Returns the size of the generalized position vector q for this model.
+<<<<<<< HEAD
   /// @throws std::exception if called pre-finalize.
+=======
+  /// @warning The intent of this function is only to be used after Finalize().
+  /// Calling it prior to Finalize() will return inaccurate results. On or after
+  /// 2022-10-01, calling this function before Finalize() will result in an
+  /// exception.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   int num_positions() const { return internal_tree().num_positions(); }
 
   /// Returns the size of the generalized position vector qᵢ for model
@@ -4317,7 +4327,14 @@ class MultibodyPlant : public internal::MultibodyTreeSystem<T> {
   }
 
   /// Returns the size of the generalized velocity vector v for this model.
+<<<<<<< HEAD
   /// @throws std::exception if called pre-finalize.
+=======
+  /// @warning The intent of this function is only to be used after Finalize().
+  /// Calling it prior to Finalize() will return inaccurate results. On or after
+  /// 2022-10-01, calling this function before Finalize() will result in an
+  /// exception.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   int num_velocities() const { return internal_tree().num_velocities(); }
 
   /// Returns the size of the generalized velocity vector vᵢ for model
@@ -4331,7 +4348,14 @@ class MultibodyPlant : public internal::MultibodyTreeSystem<T> {
   // integrated power and other discrete states, hence the specific name.
   /// Returns the size of the multibody system state vector x = [q v]. This
   /// will be `num_positions()` plus `num_velocities()`.
+<<<<<<< HEAD
   /// @throws std::exception if called pre-finalize.
+=======
+  /// @warning The intent of this function is only to be used after Finalize().
+  /// Calling it prior to Finalize() will return inaccurate results. On or after
+  /// 2022-10-01, calling this function before Finalize() will result in an
+  /// exception.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   int num_multibody_states() const { return internal_tree().num_states(); }
 
   /// Returns the size of the multibody system state vector xᵢ = [qᵢ vᵢ] for
@@ -4691,9 +4715,46 @@ class MultibodyPlant : public internal::MultibodyTreeSystem<T> {
   // shown to be exactly conserved and to be within O(dt) of the real energy of
   // the mechanical system.)
   // TODO(amcastro-tri): Update this docs when contact is added.
+<<<<<<< HEAD
   systems::EventStatus CalcDiscreteStep(
       const systems::Context<T>& context0,
       systems::DiscreteValues<T>* updates) const;
+=======
+  void DoCalcDiscreteVariableUpdates(
+      const drake::systems::Context<T>& context0,
+      const std::vector<const drake::systems::DiscreteUpdateEvent<T>*>& events,
+      drake::systems::DiscreteValues<T>* updates) const override;
+
+  // Helper method used within DoCalcDiscreteVariableUpdates() to update
+  // generalized velocities from previous step value v0 to next step value v.
+  // This helper uses num_substeps within a time interval of duration dt
+  // to perform the update using a step size dt_substep = dt/num_substeps.
+  // During the time span dt the problem data M, Jn, Jt and minus_tau, are
+  // approximated to be constant, a first order approximation.
+  TamsiSolverResult SolveUsingSubStepping(
+      TamsiSolver<T>* tamsi_solver,
+      int num_substeps, const MatrixX<T>& M0, const MatrixX<T>& Jn,
+      const MatrixX<T>& Jt, const VectorX<T>& minus_tau,
+      const VectorX<T>& stiffness, const VectorX<T>& damping,
+      const VectorX<T>& mu, const VectorX<T>& v0, const VectorX<T>& fn0) const;
+
+  // This method performs the computation of the impulses to advance the state
+  // stored in `context0` in time.
+  // Contact forces and velocities are computed and stored in `results`. See
+  // ContactSolverResults for further details on the returned data.
+  void CalcContactSolverResults(
+      const drake::systems::Context<T>& context0,
+      contact_solvers::internal::ContactSolverResults<T>* results) const;
+
+
+  // Eval version of the method CalcContactSolverResults().
+  const contact_solvers::internal::ContactSolverResults<T>&
+  EvalContactSolverResults(const systems::Context<T>& context) const {
+    return this->get_cache_entry(cache_indexes_.contact_solver_results)
+        .template Eval<contact_solvers::internal::ContactSolverResults<T>>(
+            context);
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Computes the array of indices of velocities that are not locked in the
   // current configuration. The resulting index values in @p

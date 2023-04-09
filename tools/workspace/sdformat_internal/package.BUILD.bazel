@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # -*- bazel -*-
+=======
+# -*- python -*-
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 load(
     "@drake//tools/skylark:py.bzl",
@@ -38,15 +42,24 @@ cmake_configure_file(
     cmakelists = ["CMakeLists.txt"],
     defines = [
         "PROJECT_NAME=SDFormat",
+<<<<<<< HEAD
+=======
+        "SDF_VERSION_NAME=",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "PROJECT_VERSION_MAJOR=0",
         "PROJECT_VERSION_MINOR=0",
         "PROJECT_VERSION_PATCH=0",
         "PROJECT_VERSION=0.0",
         "PROJECT_VERSION_FULL=0.0.0",
+<<<<<<< HEAD
+=======
+        "PROJECT_VERSION_NAME=",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "SDF_PKG_VERSION=0.0",
         "SDF_MAJOR_VERSION=0",
         "CMAKE_INSTALL_FULL_DATAROOTDIR=does/not/exist",
     ],
+<<<<<<< HEAD
     undefines = [
         "USE_INTERNAL_URDF",
         # TODO(jwnimmer-tri) We could probably enable this and be able to drop
@@ -54,6 +67,8 @@ cmake_configure_file(
         "SDFORMAT_DISABLE_CONSOLE_LOGFILE",
     ],
     strict = True,
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     visibility = ["//visibility:private"],
 )
 
@@ -62,8 +77,13 @@ generate_file(
     content = """
 #pragma once
 // Simplified version of visibility and deprecation macros.
+<<<<<<< HEAD
 #define GZ_SDFORMAT_VISIBLE __attribute__ ((visibility("default")))
 #define GZ_DEPRECATED(version) __attribute__ ((__deprecated__))
+=======
+#define IGNITION_SDFORMAT_VISIBLE __attribute__ ((visibility("default")))
+#define IGN_DEPRECATED(version) __attribute__ ((__deprecated__))
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     """,
 )
 
@@ -71,7 +91,10 @@ generate_file(
 _MOST_HDRS = [
     "include/sdf/Actor.hh",
     "include/sdf/AirPressure.hh",
+<<<<<<< HEAD
     "include/sdf/AirSpeed.hh",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "include/sdf/Altimeter.hh",
     "include/sdf/Assert.hh",
     "include/sdf/Atmosphere.hh",
@@ -160,14 +183,22 @@ _HDRS = _MOST_HDRS + [
 ]
 
 # This list of sources matches upstream's explicitly listed sources
+<<<<<<< HEAD
 # (sdformat/src/CMakeLists.txt), with two exceptions: gz.hh and gz.cc are not
 # incorporated in this library, but are incorporated into the `gz_sdf_cmdline`
+=======
+# (sdformat/src/CMakeLists.txt), with two exceptions: ign.hh and ign.cc are not
+# incorporated in this library, but are incorporated into the `ign_sdf_cmdline`
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 # library defined below; and the parser_urdf.hh and parser_urdf.cc are excluded
 # because we don't use them.
 _SRCS = [
     "src/Actor.cc",
     "src/AirPressure.cc",
+<<<<<<< HEAD
     "src/AirSpeed.cc",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "src/Altimeter.cc",
     "src/Atmosphere.cc",
     "src/Box.cc",
@@ -260,9 +291,14 @@ cc_library_vendored(
     ],
     edit_include = {
         "sdf/": "drake_vendor/sdf/",
+<<<<<<< HEAD
         "gz/math/": "drake_vendor/gz/math/",
         "gz/utils/": "drake_vendor/gz/utils/",
         "tinyxml2": "drake_vendor/tinyxml2",
+=======
+        "ignition/math/": "drake_vendor/ignition/math/",
+        "ignition/utils/": "drake_vendor/ignition/utils/",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     },
     includes = ["drake_src"],
     copts = ["-w"],
@@ -272,7 +308,11 @@ cc_library_vendored(
     deps = [
         "@gz_math_internal//:gz_math",
         "@gz_utils_internal//:gz_utils",
+<<<<<<< HEAD
         "@tinyxml2_internal//:tinyxml2",
+=======
+        "@tinyxml2",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         # N.B. It's very unusual to add a dependency from a third-party library
         # onto Drake, but in this case it's the simplest way to be able to send
         # error messages from sdformat parsing into Drake's logging API.
@@ -281,8 +321,13 @@ cc_library_vendored(
 )
 
 _IGN_CMDLINE_SRCS = [
+<<<<<<< HEAD
     "src/gz.cc",
     "src/gz.hh",
+=======
+    "src/ign.cc",
+    "src/ign.hh",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ]
 
 cc_library_vendored(
@@ -294,7 +339,11 @@ cc_library_vendored(
     ],
     edit_include = {
         "sdf/": "drake_vendor/sdf/",
+<<<<<<< HEAD
         "gz/math/": "drake_vendor/gz/math/",
+=======
+        "ignition/math/": "drake_vendor/ignition/math/",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     },
     copts = ["-w"],
     linkstatic = 1,

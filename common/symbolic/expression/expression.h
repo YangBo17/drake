@@ -37,6 +37,10 @@ namespace drake {
 namespace symbolic {
 
 class ExpressionCell;                   // In expression_cell.h
+<<<<<<< HEAD
+=======
+class ExpressionConstant;               // In expression_cell.h
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 class ExpressionVar;                    // In expression_cell.h
 class UnaryExpressionCell;              // In expression_cell.h
 class BinaryExpressionCell;             // In expression_cell.h
@@ -535,6 +539,10 @@ class Expression {
   // Note that the following cast functions are only for low-level operations
   // and not exposed to the user of drake/common/symbolic/expression.h header.
   // These functions are declared in the expression_cell.h header.
+<<<<<<< HEAD
+=======
+  friend const ExpressionConstant& to_constant(const Expression& e);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   friend const ExpressionVar& to_variable(const Expression& e);
   friend const UnaryExpressionCell& to_unary(const Expression& e);
   friend const BinaryExpressionCell& to_binary(const Expression& e);
@@ -1446,8 +1454,14 @@ auto operator*(
 ///                           @p random_generator is `nullptr`.
 /// @pydrake_mkdoc_identifier{expression}
 template <typename Derived>
+<<<<<<< HEAD
 std::enable_if_t<std::is_same_v<typename Derived::Scalar, Expression>,
                  MatrixLikewise<double, Derived>>
+=======
+std::enable_if_t<
+    std::is_same_v<typename Derived::Scalar, Expression>,
+    MatrixLikewise<double, Derived>>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 Evaluate(const Eigen::MatrixBase<Derived>& m,
          const Environment& env = Environment{},
          RandomGenerator* random_generator = nullptr) {
@@ -1484,8 +1498,13 @@ Eigen::SparseMatrix<double> Evaluate(
 /// @returns a matrix of symbolic expressions whose size is the size of @p m.
 /// @throws std::exception if NaN is detected during substitution.
 template <typename Derived>
+<<<<<<< HEAD
 MatrixLikewise<Expression, Derived> Substitute(
     const Eigen::MatrixBase<Derived>& m, const Substitution& subst) {
+=======
+MatrixLikewise<Expression, Derived>
+Substitute(const Eigen::MatrixBase<Derived>& m, const Substitution& subst) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   static_assert(std::is_same_v<typename Derived::Scalar, Expression>,
                 "Substitute only accepts a symbolic matrix.");
   // Note that the return type is written out explicitly to help gcc 5 (on
@@ -1500,9 +1519,15 @@ MatrixLikewise<Expression, Derived> Substitute(
 /// @returns a matrix of symbolic expressions whose size is the size of @p m.
 /// @throws std::exception if NaN is detected during substitution.
 template <typename Derived>
+<<<<<<< HEAD
 MatrixLikewise<Expression, Derived> Substitute(
     const Eigen::MatrixBase<Derived>& m, const Variable& var,
     const Expression& e) {
+=======
+MatrixLikewise<Expression, Derived>
+Substitute(const Eigen::MatrixBase<Derived>& m, const Variable& var,
+           const Expression& e) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   static_assert(std::is_same_v<typename Derived::Scalar, Expression>,
                 "Substitute only accepts a symbolic matrix.");
   // Note that the return type is written out explicitly to help gcc 5 (on

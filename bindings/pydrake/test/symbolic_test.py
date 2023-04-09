@@ -15,6 +15,7 @@ from pydrake.test.algebra_test_util import ScalarAlgebra, VectorizedAlgebra
 from pydrake.common.containers import EqualToDict
 from pydrake.common.deprecation import install_numpy_warning_filters
 from pydrake.common.test_utilities import numpy_compare
+from pydrake.common.test_utilities.deprecation import catch_drake_warnings
 
 # TODO(eric.cousineau): Replace usages of `sym` math functions with the
 # overloads from `pydrake.math`.
@@ -1337,6 +1338,7 @@ class TestSymbolicPolynomial(unittest.TestCase):
             p_expand.monomial_to_coefficient_map()[
                 sym.Monomial(x)].EqualTo(a+2))
 
+<<<<<<< HEAD
     def test_substitute_and_exand(self):
         a = sym.Variable("a")
         x = sym.Variable("x")
@@ -1376,6 +1378,8 @@ class TestSymbolicPolynomial(unittest.TestCase):
         self.assertTrue(p_expected.EqualTo(p_sub2))
         self.assertTrue(p_expected.EqualTo(p_sub3))
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     def test_remove_terms_with_small_coefficients(self):
         e = 3 * x + 1e-12 * y
         p = sym.Polynomial(e, [x, y])
@@ -1414,6 +1418,12 @@ class TestSymbolicPolynomial(unittest.TestCase):
         p_not_expand = sym.Polynomial(
             {sym.Monomial(): a ** 2 - 1 - (a-1) * (a+1)})
         p_expand = sym.Polynomial({sym.Monomial(): 0})
+<<<<<<< HEAD
+=======
+        # TODO(2022-09-01) Remove with completion of deprecation.
+        with catch_drake_warnings(expected_count=1):
+            self.assertTrue(p_not_expand.EqualToAfterExpansion(p_expand))
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         self.assertFalse(p_not_expand.EqualTo(p_expand))
 
     def test_repr(self):
@@ -1650,6 +1660,7 @@ class TestSymbolicPolynomial(unittest.TestCase):
                     (A_coeff[i].dot(decision_variables) + b_coeff[i]).Expand())
             )
 
+<<<<<<< HEAD
     def test_calc_polynomial_w_gram_lower(self):
         monomial_basis = np.array([sym.Monomial(x, 2), sym.Monomial(x)])
         Q1_lower = np.array([1., 2., 3.])
@@ -1662,6 +1673,8 @@ class TestSymbolicPolynomial(unittest.TestCase):
         poly3 = sym.CalcPolynomialWLowerTriangularPart(
             monomial_basis=monomial_basis, gram_lower=Q3_lower)
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 class TestSymbolicRationalFunction(unittest.TestCase):
     def test_default_constructor(self):
@@ -2368,10 +2381,15 @@ class TestStereographicSubstitution(unittest.TestCase):
             sym.Polynomial((1+ty*ty)*(1+tx*tx)).Expand()))
 
         e = 2 * np.sin(x) + np.sin(y) * np.cos(x)
+<<<<<<< HEAD
+=======
+        r = sym.SubstituteStereographicProjection(e=e, subs={x: tx, y: ty})
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         self.assertTrue(r.numerator().Expand().EqualTo(
             sym.Polynomial(4*tx*(1+ty*ty) + 2*ty * (1-tx*tx)).Expand()))
         self.assertTrue(r.denominator().Expand().EqualTo(
             sym.Polynomial((1+ty*ty)*(1+tx*tx)).Expand()))
+<<<<<<< HEAD
 
 
 class TestReplaceBilinearTerms(unittest.TestCase):
@@ -2402,3 +2420,5 @@ class TestIssue17898(unittest.TestCase):
             np.sqrt(v)
             # Ensure no user-visible warnings occur.
             self.assertEqual(len(w), 0)
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

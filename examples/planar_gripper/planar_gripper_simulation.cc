@@ -239,10 +239,17 @@ int DoMain() {
       multibody::AddMultibodyPlantSceneGraph(&builder, FLAGS_time_step);
 
   // Make and add the planar_gripper model.
+<<<<<<< HEAD
   const std::string gripper_url =
       "package://drake/examples/planar_gripper/planar_gripper.sdf";
   const ModelInstanceIndex gripper_index =
       Parser(&plant).AddModelsFromUrl(gripper_url).at(0);
+=======
+  const std::string full_name =
+      FindResourceOrThrow("drake/examples/planar_gripper/planar_gripper.sdf");
+  const ModelInstanceIndex gripper_index =
+      Parser(&plant).AddModelFromFile(full_name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   WeldGripperFrames<double>(&plant);
 
   // Adds the brick to be manipulated.

@@ -16,6 +16,10 @@
 
   <script type="text/javascript" src="meshcat.js"></script>
   <script type="text/javascript" src="stats.min.js"></script>
+<<<<<<< HEAD
+=======
+  <script type="text/javascript" src="msgpack.min.js"></script>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   <script>
     // TODO(#16486): add tooltips to Stats to describe chart contents
     var stats = new Stats();
@@ -36,6 +40,7 @@
       }
     }
 
+<<<<<<< HEAD
     const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
     // Gamepad support - first check if the gamepad feature is available.
@@ -81,24 +86,35 @@
       }
     }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     function animate() {
       stats.begin();
       // convert realtime rate to percentage so it is easier to read
       realtimeRatePanel.update(latestRealtimeRate*100, 100);
       viewer.animate()
       stats.end();
+<<<<<<< HEAD
       if (gamepads_supported) {
         handle_gamepads();
       }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       requestAnimationFrame(animate);
     }
 
     // TODO(#16486): Replace this function with more robust custom command
     //  handling in Meshcat
     function handle_message(ws_message) {
+<<<<<<< HEAD
       let decoded = viewer.decode(ws_message);
       if (decoded.type == "realtime_rate") {
         latestRealtimeRate = decoded.rate;
+=======
+      let decoded = msgpack.decode(new Uint8Array(ws_message.data));
+      if (decoded.type == "realtime_rate") {
+        rtr = decoded.rate;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       } else if (decoded.type == "show_realtime_rate") {
         stats.dom.style.display = decoded.show ? "block" : "none";
       } else {
@@ -113,6 +129,7 @@
     // Set the initial view looking up the y-axis.
     viewer.set_property(['Cameras', 'default', 'rotated', '<object>'],
                         "position", [0.0, 1.0, 3.0])
+<<<<<<< HEAD
 
     <!-- CONNECTION BLOCK BEGIN -->
     // The lifespan of the server may be much shorter than this visualizer
@@ -151,6 +168,23 @@
           setTimeout(() => {make_connection(url, reconnect_ms);}, reconnect_ms);
         }
       }
+=======
+    try {
+      url = location.toString();
+      url = url.replace("http://", "ws://")
+      url = url.replace("https://", "wss://")
+      url = url.replace("/index.html", "/")
+      url = url.replace("/meshcat.html", "/")
+      connection = new WebSocket(url);
+      connection.binaryType = "arraybuffer";
+      connection.onmessage = (msg) => handle_message(msg);
+      connection.onclose = function(evt) {
+        console.log("onclose:", evt);
+      }
+      viewer.connection = connection
+    } catch (e) {
+      console.info("Not connected to MeshCat websocket server: ", e);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     }
 
     const queryString = window.location.search;
@@ -182,6 +216,7 @@
       overflow: hidden;
     }
 
+<<<<<<< HEAD
     #status-message{
       width: 50vw;
       text-align: center;
@@ -192,6 +227,8 @@
       display: none;
     }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     #stats-plot {
       display: none;
     }

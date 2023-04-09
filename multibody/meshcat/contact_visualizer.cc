@@ -23,6 +23,8 @@ using meshcat::internal::HydroelasticContactVisualizer;
 using meshcat::internal::HydroelasticContactVisualizerItem;
 using meshcat::internal::PointContactVisualizer;
 using meshcat::internal::PointContactVisualizerItem;
+using meshcat::internal::HydroelasticContactVisualizer;
+using meshcat::internal::HydroelasticContactVisualizerItem;
 using multibody::internal::GeometryNames;
 using systems::CacheEntry;
 using systems::Context;
@@ -201,9 +203,15 @@ void ContactVisualizer<T>::CalcHydroelasticContacts(
   result->reserve(contact_results.num_hydroelastic_contacts());
 
   // Update our output vector of items.
+<<<<<<< HEAD
   for (int ci = 0; ci < contact_results.num_hydroelastic_contacts(); ++ci) {
     const HydroelasticContactInfo<T>& info =
         contact_results.hydroelastic_contact_info(ci);
+=======
+  for (int i = 0; i < contact_results.num_hydroelastic_contacts(); ++i) {
+    const HydroelasticContactInfo<T>& info =
+        contact_results.hydroelastic_contact_info(i);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
     const geometry::ContactSurface<T>& contact_surface = info.contact_surface();
 
@@ -215,6 +223,7 @@ void ContactVisualizer<T>::CalcHydroelasticContacts(
     Vector3d centroid_W = ExtractDoubleOrThrow(contact_surface.centroid());
     Vector3d force_C_W = ExtractDoubleOrThrow(info.F_Ac_W().translational());
     Vector3d moment_C_W = ExtractDoubleOrThrow(info.F_Ac_W().rotational());
+<<<<<<< HEAD
 
     if (contact_surface.is_triangle()) {
       const auto& mesh = contact_surface.tri_mesh_W();
@@ -274,6 +283,10 @@ void ContactVisualizer<T>::CalcHydroelasticContacts(
                            force_C_W, moment_C_W, std::move(vertices),
                            std::move(faces), std::move(pressure));
     }
+=======
+    result->emplace_back(std::move(body_A), std::move(body_B), centroid_W,
+                       force_C_W, moment_C_W);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 }
 

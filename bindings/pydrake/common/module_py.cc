@@ -103,6 +103,19 @@ PYBIND11_MODULE(_module_py, m) {
   // Python users should not touch the C++ level; thus, we bind this privately.
   m.def("_set_log_level", &logging::set_log_level, py::arg("level"),
       doc.logging.set_log_level.doc);
+<<<<<<< HEAD
+=======
+  {
+    const char* doc_deprecated =
+        "Deprecated:\n"
+        "    Do not use ``pydrake.common.set_log_level(...)``.\n"
+        "    Instead, use ``logging.getLogger('drake').setLevel(...)``.\n"
+        "    This function will be removed from Drake on or after 2022-09-01";
+    m.def("set_log_level",
+        WrapDeprecated(doc_deprecated, &logging::set_log_level),
+        py::arg("level"), doc_deprecated);
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   internal::MaybeRedirectPythonLogging();
 

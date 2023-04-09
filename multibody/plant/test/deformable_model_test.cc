@@ -12,7 +12,10 @@ namespace {
 
 using geometry::GeometryInstance;
 using geometry::SceneGraph;
+<<<<<<< HEAD
 using geometry::SceneGraphInspector;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 using geometry::Sphere;
 using math::RigidTransformd;
 using std::make_unique;
@@ -33,6 +36,7 @@ class DeformableModelTest : public ::testing::Test {
   DeformableModel<double>* deformable_model_ptr_{nullptr};
   MultibodyPlant<double>* plant_{nullptr};
   SceneGraph<double>* scene_graph_{nullptr};
+<<<<<<< HEAD
 
   DeformableBodyId RegisterSphere(double resolution_hint) {
     auto geometry = make_unique<GeometryInstance>(
@@ -41,6 +45,8 @@ class DeformableModelTest : public ::testing::Test {
         std::move(geometry), default_body_config_, resolution_hint);
     return body_id;
   }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 /* Verifies that a DeformableModel has been successfully created. */
@@ -51,7 +57,14 @@ TEST_F(DeformableModelTest, Constructor) {
 
 TEST_F(DeformableModelTest, RegisterDeformableBody) {
   constexpr double kRezHint = 0.5;
+<<<<<<< HEAD
   DeformableBodyId body_id = RegisterSphere(kRezHint);
+=======
+  auto geometry = make_unique<GeometryInstance>(
+      RigidTransformd(), make_unique<Sphere>(1), "sphere");
+  DeformableBodyId body_id = deformable_model_ptr_->RegisterDeformableBody(
+      std::move(geometry), default_body_config_, kRezHint);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   EXPECT_EQ(deformable_model_ptr_->num_bodies(), 1);
   /* Verify that a corresponding FemModel has been built. */
   EXPECT_NO_THROW(deformable_model_ptr_->GetFemModel(body_id));
@@ -66,6 +79,7 @@ TEST_F(DeformableModelTest, RegisterDeformableBody) {
       ".*RegisterDeformableBody.*after system resources have been declared.*");
 }
 
+<<<<<<< HEAD
 /* Coarsely tests that SetWallBoundaryCondition adds some sort of boundary
  condition. Showing that boundary conditions only get conditionally added (based
  on location of the boundary wall) is sufficient evidence to infer that the
@@ -105,14 +119,21 @@ TEST_F(DeformableModelTest, SetWallBoundaryCondition) {
       "declared.*");
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 TEST_F(DeformableModelTest, DiscreteStateIndexAndReferencePositions) {
   constexpr double kRezHint = 0.5;
   Sphere sphere(1.0);
   auto geometry = make_unique<GeometryInstance>(
       RigidTransformd(), make_unique<Sphere>(sphere), "sphere");
+<<<<<<< HEAD
   const DeformableBodyId body_id =
       deformable_model_ptr_->RegisterDeformableBody(
           std::move(geometry), default_body_config_, kRezHint);
+=======
+  DeformableBodyId body_id = deformable_model_ptr_->RegisterDeformableBody(
+      std::move(geometry), default_body_config_, kRezHint);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Getting state index before Finalize() is prohibited. */
   DRAKE_EXPECT_THROWS_MESSAGE(
@@ -159,6 +180,7 @@ TEST_F(DeformableModelTest, InvalidBodyId) {
       "GetReferencePositions.*No deformable body with id.*");
 }
 
+<<<<<<< HEAD
 TEST_F(DeformableModelTest, GetBodyIdFromBodyIndex) {
   constexpr double kRezHint = 0.5;
   const DeformableBodyId body_id = RegisterSphere(kRezHint);
@@ -257,6 +279,8 @@ TEST_F(DeformableModelTest, VertexPositionsOutputPort) {
             deformable_model_ptr_->GetReferencePositions(body_id));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace
 }  // namespace internal
 }  // namespace multibody

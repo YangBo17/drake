@@ -2,7 +2,10 @@ import copy
 import unittest
 
 from pydrake.common.test_utilities import numpy_compare
+<<<<<<< HEAD
 from pydrake.math import isnan
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 from pydrake.symbolic import Variable, Expression
 from pydrake.autodiffutils import AutoDiffXd
 from pydrake.systems.primitives import (

@@ -290,7 +290,14 @@ TEST_F(MujocoParserTest, GeometryPose) {
       RigidTransformd(RollPitchYawd{M_PI / 6.0, M_PI / 4.0, M_PI / 3.0}, p));
 }
 
+<<<<<<< HEAD
 TEST_F(MujocoParserTest, GeometryPoseErrors) {
+=======
+GTEST_TEST(MujocoParser, GeometryPoseErrors) {
+  MultibodyPlant<double> plant(0.0);
+  SceneGraph<double> scene_graph;
+  plant.RegisterAsSourceForSceneGraph(&scene_graph);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const std::string xml = R"""(
 <mujoco model="test">
   <worldbody>
@@ -300,9 +307,20 @@ TEST_F(MujocoParserTest, GeometryPoseErrors) {
 </mujoco>
 )""";
   DRAKE_EXPECT_THROWS_MESSAGE(
+<<<<<<< HEAD
       AddModelFromMujocoString(xml, "test"),
       ".*has more than one orientation attribute specified.*");
 }
+=======
+      AddModelFromMujocoXml({DataSource::kContents, &xml}, "test", {}, &plant),
+      ".*has more than one orientation attribute specified.*");
+}
+
+GTEST_TEST(MujocoParser, GeometryProperties) {
+  MultibodyPlant<double> plant(0.0);
+  SceneGraph<double> scene_graph;
+  plant.RegisterAsSourceForSceneGraph(&scene_graph);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 TEST_F(MujocoParserTest, GeometryProperties) {
   std::string xml = R"""(

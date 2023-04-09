@@ -34,6 +34,10 @@ body:
         - Unknown / Other
         - Ubuntu 20.04
         - Ubuntu 22.04
+<<<<<<< HEAD
+=======
+        - macOS 11 (Big Sur)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         - macOS 12 (Monterey)
         - Other
   - type: dropdown

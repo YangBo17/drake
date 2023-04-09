@@ -13,18 +13,31 @@ load(
 load("//tools/lint:lint.bzl", "add_lint_tests")
 load("//tools/skylark:test_tags.bzl", "vtk_test_tags")
 
+<<<<<<< HEAD
 package(default_visibility = ["//visibility:private"])
+=======
+# TODO(jwnimmer-tri) Replace with "//visibility:private" once dev code is gone.
+_VISIBILITY = [
+    "//geometry/render/dev/render_gltf_client:__pkg__",
+]
+
+package(default_visibility = _VISIBILITY)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 drake_cc_package_library(
     name = "render_gltf_client",
     visibility = ["//visibility:public"],
     deps = [
+<<<<<<< HEAD
         ":factory",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         ":render_engine_gltf_client_params",
     ],
 )
 
 drake_cc_library(
+<<<<<<< HEAD
     name = "factory",
     srcs = ["factory.cc"],
     hdrs = ["factory.h"],
@@ -45,6 +58,12 @@ drake_cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common:name_value",
+=======
+    name = "render_engine_gltf_client_params",
+    srcs = ["render_engine_gltf_client_params.cc"],
+    hdrs = ["render_engine_gltf_client_params.h"],
+    deps = [
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//geometry/render:render_label",
     ],
 )
@@ -54,7 +73,11 @@ drake_cc_library(
     srcs = ["internal_http_service.cc"],
     hdrs = ["internal_http_service.h"],
     internal = True,
+<<<<<<< HEAD
     visibility = ["//visibility:private"],
+=======
+    visibility = _VISIBILITY,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     interface_deps = [
         "//common:essential",
     ],
@@ -68,6 +91,7 @@ drake_cc_library(
     srcs = ["internal_http_service_curl.cc"],
     hdrs = ["internal_http_service_curl.h"],
     internal = True,
+<<<<<<< HEAD
     visibility = ["//visibility:private"],
     interface_deps = [
         ":internal_http_service",
@@ -76,6 +100,15 @@ drake_cc_library(
         "//common:unused",
         "@curl_internal//:libcurl",
         "@fmt",
+=======
+    visibility = _VISIBILITY,
+    deps = [
+        ":internal_http_service",
+        "//common:filesystem",
+        "//common:unused",
+        "@fmt",
+        "@libcurl",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -88,11 +121,19 @@ drake_cc_library(
         "internal_render_client.h",
     ],
     internal = True,
+<<<<<<< HEAD
     visibility = ["//visibility:private"],
+=======
+    visibility = _VISIBILITY,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     deps = [
         ":internal_http_service",
         ":internal_http_service_curl",
         ":render_engine_gltf_client_params",
+<<<<<<< HEAD
+=======
+        "//common:filesystem",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//common:temp_directory",
         "//geometry/render:render_camera",
         "//geometry/render:render_engine",
@@ -102,6 +143,7 @@ drake_cc_library(
     ],
 )
 
+<<<<<<< HEAD
 drake_cc_library(
     name = "internal_render_engine_gltf_client",
     srcs = [
@@ -134,6 +176,11 @@ drake_cc_googletest(
 )
 
 drake_cc_googletest(
+=======
+# === test/ ===
+
+drake_cc_googletest(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "render_engine_gltf_client_params_test",
     deps = [
         ":render_engine_gltf_client_params",
@@ -162,10 +209,15 @@ drake_cc_googletest(
 filegroup(
     name = "test_resources",
     srcs = [
+<<<<<<< HEAD
         "test/test_colored_label_rgba_8U.png",
         "test/test_depth_16U.png",
         "test/test_depth_16U.tiff",
         "test/test_depth_32F.tiff",
+=======
+        "test/test_depth_32F.tiff",
+        "test/test_label_16I.png",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "test/test_rgb_8U.png",
         "test/test_rgba_8U.png",
     ],
@@ -176,6 +228,10 @@ drake_cc_library(
     testonly = True,
     srcs = ["test/internal_sample_image_data.cc"],
     hdrs = ["test/internal_sample_image_data.h"],
+<<<<<<< HEAD
+=======
+    visibility = _VISIBILITY,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     deps = [
         "//systems/sensors:image",
     ],
@@ -195,6 +251,7 @@ drake_cc_googletest(
     ],
 )
 
+<<<<<<< HEAD
 drake_cc_googletest(
     name = "internal_render_engine_gltf_client_test",
     data = [
@@ -300,4 +357,6 @@ drake_py_unittest(
     ],
 )
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 add_lint_tests()

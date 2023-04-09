@@ -26,8 +26,13 @@ in the gz_sdf command-line tool.
  
    // Read an SDF string, and store the result in sdfParsed.
    if (!readString(_sdf, _config, sdfParsed, errors))
+<<<<<<< HEAD
 --- src/gz.cc
 +++ src/gz.cc
+=======
+--- src/ign.cc
++++ src/ign.cc
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 @@ -43,7 +43,7 @@
    int result = 0;
  

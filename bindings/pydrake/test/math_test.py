@@ -175,7 +175,10 @@ class TestMath(unittest.TestCase):
             self.assertTrue(X.IsExactlyIdentity())
             self.assertTrue(X.IsNearlyIdentity(translation_tolerance=0))
             self.assertTrue(X.IsNearlyEqualTo(other=X, tolerance=0))
+<<<<<<< HEAD
             self.assertTrue(X.IsExactlyEqualTo(other=X))
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         # - Test shaping (#13885).
         v = np.array([0., 0., 0.])
         vs = np.array([[1., 2., 3.], [4., 5., 6.]]).T

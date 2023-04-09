@@ -22,7 +22,10 @@
 #include "drake/math/rigid_transform.h"
 #include "drake/math/roll_pitch_yaw.h"
 #include "drake/multibody/parsing/detail_path_utils.h"
+<<<<<<< HEAD
 #include "drake/multibody/parsing/detail_urdf_parser.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/multibody/parsing/test/diagnostic_policy_test_base.h"
 #include "drake/multibody/plant/multibody_plant.h"
 #include "drake/multibody/tree/ball_rpy_joint.h"
@@ -63,9 +66,13 @@ const double kEps = std::numeric_limits<double>::epsilon();
 
 class SdfParserTest : public test::DiagnosticPolicyTestBase{
  public:
+<<<<<<< HEAD
   SdfParserTest() {
     RecordErrors();
   }
+=======
+  SdfParserTest() {}
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   void AddSceneGraph() {
     plant_.RegisterAsSourceForSceneGraph(&scene_graph_);
@@ -81,6 +88,7 @@ class SdfParserTest : public test::DiagnosticPolicyTestBase{
 
   ModelInstanceIndex AddModelFromSdfFile(
       const std::string& file_name,
+<<<<<<< HEAD
       const std::string& model_name,
       const std::optional<std::string>& parent_model_name = {}) {
     const DataSource data_source{DataSource::kFilename, &file_name};
@@ -89,12 +97,21 @@ class SdfParserTest : public test::DiagnosticPolicyTestBase{
                        &plant_, &resolver, TestingSelect};
     std::optional<ModelInstanceIndex> result =
         AddModelFromSdf(data_source, model_name, parent_model_name, w);
+=======
+      const std::string& model_name) {
+    const DataSource data_source{DataSource::kFilename, &file_name};
+    internal::CollisionFilterGroupResolver resolver{&plant_};
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver};
+    std::optional<ModelInstanceIndex> result = AddModelFromSdf(
+        data_source, model_name, w);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(result.has_value());
     resolver.Resolve(diagnostic_policy_);
     return result.value_or(ModelInstanceIndex{});
   }
 
   std::vector<ModelInstanceIndex> AddModelsFromSdfFile(
+<<<<<<< HEAD
       const std::string& file_name,
       const std::optional<std::string>& parent_model_name = {}) {
     const DataSource data_source{DataSource::kFilename, &file_name};
@@ -102,11 +119,19 @@ class SdfParserTest : public test::DiagnosticPolicyTestBase{
     ParsingWorkspace w{options_, package_map_, diagnostic_policy_,
                        &plant_, &resolver, TestingSelect};
     auto result = AddModelsFromSdf(data_source, parent_model_name, w);
+=======
+      const std::string& file_name) {
+    const DataSource data_source{DataSource::kFilename, &file_name};
+    internal::CollisionFilterGroupResolver resolver{&plant_};
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver};
+    auto result = AddModelsFromSdf(data_source, w);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     resolver.Resolve(diagnostic_policy_);
     return result;
   }
 
   std::vector<ModelInstanceIndex> AddModelsFromSdfString(
+<<<<<<< HEAD
       const std::string& file_contents,
       const std::optional<std::string>& parent_model_name = {}) {
     const DataSource data_source{DataSource::kContents, &file_contents};
@@ -114,6 +139,13 @@ class SdfParserTest : public test::DiagnosticPolicyTestBase{
     ParsingWorkspace w{options_, package_map_, diagnostic_policy_,
                        &plant_, &resolver, TestingSelect};
     auto result = AddModelsFromSdf(data_source, parent_model_name, w);
+=======
+      const std::string& file_contents) {
+    const DataSource data_source{DataSource::kContents, &file_contents};
+    internal::CollisionFilterGroupResolver resolver{&plant_};
+    ParsingWorkspace w{package_map_, diagnostic_policy_, &plant_, &resolver};
+    auto result = AddModelsFromSdf(data_source, w);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     resolver.Resolve(diagnostic_policy_);
     return result;
   }
@@ -149,6 +181,46 @@ class SdfParserTest : public test::DiagnosticPolicyTestBase{
                   contains(names));
       }
     }
+<<<<<<< HEAD
+=======
+    return error_records_[0].FormatError();
+  }
+
+  // Returns the first warning as a string (or else fails the test case,
+  // if there were no warnings). Also fails if there were any errors.
+  std::string FormatFirstWarning() {
+    for (const auto& error : error_records_) {
+      drake::log()->error(error.FormatError());
+    }
+    EXPECT_TRUE(error_records_.empty());
+    if (warning_records_.empty()) {
+      EXPECT_TRUE(warning_records_.size() > 0)
+          << "FormatFirstWarning did not get any warnings";
+      return {};
+    }
+    return warning_records_[0].FormatWarning();
+  }
+
+  void VerifyCollisionFilters(
+      const std::vector<GeometryId>& ids,
+      const std::set<CollisionPair>& expected_filters) {
+    const int num_links = ids.size();
+    const auto& inspector = scene_graph_.model_inspector();
+    for (int m = 0; m < num_links; ++m) {
+      const std::string& m_name = inspector.GetName(ids[m]);
+      for (int n = m + 1; n < num_links; ++n) {
+        const std::string& n_name = inspector.GetName(ids[n]);
+        SCOPED_TRACE(fmt::format("{}[{}] vs {}[{}]", m_name, m, n_name, n));
+        CollisionPair names{m_name, n_name};
+        auto contains =
+            [&expected_filters](const CollisionPair& key) {
+              return expected_filters.count(key) > 0;
+            };
+        EXPECT_EQ(inspector.CollisionFiltered(ids[m], ids[n]),
+                  contains(names));
+      }
+    }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
  protected:
@@ -959,8 +1031,14 @@ TEST_F(SdfParserTest, ThrowsWhenJointDampingIsNegative) {
       "drake/multibody/parsing/test/sdf_parser_test/"
       "negative_damping_joint.sdf");
   AddModelFromSdfFile(sdf_file_path, "");
+<<<<<<< HEAD
   EXPECT_THAT(TakeError(), ::testing::MatchesRegex(
       ".*damping is negative.*"));
+=======
+  EXPECT_THAT(FormatFirstError(), ::testing::MatchesRegex(
+      ".*damping is negative.*"));
+  ClearDiagnostics();
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 TEST_F(SdfParserTest, IncludeTags) {
@@ -1426,6 +1504,129 @@ TEST_F(SdfParserTest, MisspelledJointParsingTest) {
 </model>)""");
   EXPECT_THAT(TakeError(), ::testing::MatchesRegex(
       ".*revoluteqqq is invalid.*"));
+}
+
+// Tests the error handling for an unsupported joint type (when actuated).
+TEST_F(SdfParserTest, ActuatedUniversalJointParsingTest) {
+  ParseTestString(R"""(
+<model name="molly">
+  <link name="larry" />
+  <joint name="jerry" type="universal">
+    <parent>world</parent>
+    <child>larry</child>
+    <axis>
+      <xyz>0 0 1</xyz>
+      <limit>
+        <effort>100</effort>
+      </limit>
+    </axis>
+    <axis2>
+      <xyz>0 1 0</xyz>
+      <limit>
+        <effort>100</effort>
+      </limit>
+    </axis2>
+  </joint>
+</model>)""");
+  EXPECT_THAT(FormatFirstWarning(), ::testing::MatchesRegex(
+      ".*effort limits.*universal joint.*not implemented.*"));
+  ClearDiagnostics();
+}
+
+// Tests the error handling for an unsupported joint type (when actuated).
+TEST_F(SdfParserTest, ActuatedBallJointParsingTest) {
+  ParseTestString(R"""(
+<model name="molly">
+  <link name="larry" />
+  <joint name="jerry" type="ball">
+    <parent>world</parent>
+    <child>larry</child>
+    <axis>
+      <xyz>0 0 1</xyz>
+      <limit>
+        <effort>100</effort>
+      </limit>
+    </axis>
+  </joint>
+</model>)""");
+  EXPECT_THAT(FormatFirstWarning(), ::testing::MatchesRegex(
+      ".*effort limits.*ball joint.*not implemented.*"));
+  ClearDiagnostics();
+}
+
+// Tests the error handling for an unsupported joint type.
+TEST_F(SdfParserTest, ContinuousJointParsingTest) {
+  ParseTestString(R"""(
+<model name="molly">
+  <link name="larry" />
+  <joint name="jerry" type="continuous">
+    <parent>world</parent>
+    <child>larry</child>
+  </joint>
+</model>)""");
+  EXPECT_THAT(FormatFirstError(), ::testing::MatchesRegex(
+      ".*continuous.*not supported.*jerry.*"));
+  ClearDiagnostics();
+}
+
+// Tests the error handling for an unsupported joint type.
+TEST_F(SdfParserTest, ScrewJointParsingTest) {
+  ParseTestString(R"""(
+<model name="molly">
+  <link name="larry" />
+  <joint name="jerry" type="screw">
+    <parent>world</parent>
+    <child>larry</child>
+  </joint>
+</model>)""");
+  EXPECT_THAT(FormatFirstError(), ::testing::MatchesRegex(
+      ".*screw.*not supported.*jerry.*"));
+  ClearDiagnostics();
+}
+
+// Tests the error handling for an unsupported joint type.
+TEST_F(SdfParserTest, GearboxJointParsingTest) {
+  ParseTestString(R"""(
+<model name="molly">
+  <link name="larry" />
+  <joint name="jerry" type="gearbox">
+    <parent>world</parent>
+    <child>larry</child>
+  </joint>
+</model>)""");
+  EXPECT_THAT(FormatFirstError(), ::testing::MatchesRegex(
+      ".*gearbox.*not supported.*jerry.*"));
+  ClearDiagnostics();
+}
+
+// Tests the error handling for an unsupported joint type.
+TEST_F(SdfParserTest, Revolute2JointParsingTest) {
+  ParseTestString(R"""(
+<model name="molly">
+  <link name="larry" />
+  <joint name="jerry" type="revolute2">
+    <parent>world</parent>
+    <child>larry</child>
+  </joint>
+</model>)""");
+  EXPECT_THAT(FormatFirstError(), ::testing::MatchesRegex(
+      ".*revolute2.*not supported.*jerry.*"));
+  ClearDiagnostics();
+}
+
+// Tests the error handling for a misspelled joint type.
+TEST_F(SdfParserTest, MisspelledJointParsingTest) {
+  ParseTestString(R"""(
+<model name="molly">
+  <link name="larry" />
+  <joint name="jerry" type="revoluteQQQ">
+    <parent>world</parent>
+    <child>larry</child>
+  </joint>
+</model>)""");
+  EXPECT_THAT(FormatFirstError(), ::testing::MatchesRegex(
+      ".*revoluteqqq is invalid.*"));
+  ClearDiagnostics();
 }
 
 // Verifies that the SDF parser parses the joint actuator limit correctly.
@@ -2681,7 +2882,11 @@ TEST_F(SdfParserTest, CollisionFilterGroupParsingTest) {
 
   // Read in the SDF file.
   package_map_.PopulateFromFolder(
+<<<<<<< HEAD
       std::filesystem::path(full_sdf_filename).parent_path());
+=======
+      filesystem::path(full_sdf_filename).parent_path());
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   AddModelFromSdfFile(full_sdf_filename, "");
 
   // Get geometry ids for all the bodies.
@@ -2737,17 +2942,30 @@ TEST_F(SdfParserTest, CollisionFilterGroupParsingTest) {
 
 TEST_F(SdfParserTest, CollisionFilterGroupParsingErrorsTest) {
   AddSceneGraph();
+<<<<<<< HEAD
   DRAKE_EXPECT_NO_THROW(ParseTestString(R"""(
+=======
+  DRAKE_EXPECT_NO_THROW(
+      ParseTestString(R"""(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 <model name='error1'>
   <link name='a'/>
   <drake:collision_filter_group/>
 </model>)"""));
+<<<<<<< HEAD
   EXPECT_THAT(TakeError(), ::testing::MatchesRegex(
       ".*The tag <drake:collision_filter_group> is "
       "missing the required attribute \"name\".*"));
   FlushDiagnostics();
 
   // Testing several errors set to keep record instead of throwing
+=======
+  EXPECT_THAT(TakeError(), MatchesRegex(
+                  ".*The tag <drake:collision_filter_group> is "
+                  "missing the required attribute \"name\".*"));
+  FlushDiagnostics();
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   DRAKE_EXPECT_NO_THROW(
       ParseTestString(R"""(
 <model name='error2'>
@@ -2774,7 +2992,10 @@ TEST_F(SdfParserTest, CollisionFilterGroupParsingErrorsTest) {
   EXPECT_THAT(TakeError(), MatchesRegex(
                   ".*The tag <drake:ignored_collision_filter_group> is missing"
                   " a required string value.*"));
+<<<<<<< HEAD
   FlushDiagnostics();
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 TEST_F(SdfParserTest, PoseWithRotationInDegreesOrQuaternions) {
@@ -2878,6 +3099,7 @@ TEST_F(SdfParserTest, UnsupportedElements) {
   EXPECT_THAT(TakeError(), MatchesRegex(".*drake:QQQ_dynamic"));
 }
 
+<<<<<<< HEAD
 TEST_F(SdfParserTest, WorldJoint) {
   const std::string full_name = FindResourceOrThrow(
       "drake/multibody/parsing/test/sdf_parser_test/"
@@ -3037,6 +3259,8 @@ TEST_F(SdfParserTest, TestSingleModelEnforcement) {
   ClearDiagnostics();
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace
 }  // namespace internal
 }  // namespace multibody

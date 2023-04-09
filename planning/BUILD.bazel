@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",
@@ -12,6 +17,7 @@ drake_cc_package_library(
     name = "planning",
     visibility = ["//visibility:public"],
     deps = [
+<<<<<<< HEAD
         ":body_shape_description",
         ":collision_avoidance",
         ":collision_checker",
@@ -23,10 +29,15 @@ drake_cc_package_library(
         ":robot_diagram_builder",
         ":scene_graph_collision_checker",
         ":unimplemented_collision_checker",
+=======
+        ":robot_diagram",
+        ":robot_diagram_builder",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
 drake_cc_library(
+<<<<<<< HEAD
     name = "body_shape_description",
     srcs = ["body_shape_description.cc"],
     hdrs = ["body_shape_description.h"],
@@ -105,6 +116,8 @@ drake_cc_library(
 )
 
 drake_cc_library(
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "robot_diagram",
     srcs = ["robot_diagram.cc"],
     hdrs = ["robot_diagram.h"],
@@ -131,6 +144,7 @@ drake_cc_library(
     ],
 )
 
+<<<<<<< HEAD
 drake_cc_library(
     name = "scene_graph_collision_checker",
     srcs = ["scene_graph_collision_checker.cc"],
@@ -227,6 +241,8 @@ drake_cc_googletest(
     ],
 )
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 drake_cc_googletest(
     name = "robot_diagram_test",
     data = [
@@ -239,6 +255,7 @@ drake_cc_googletest(
     ],
 )
 
+<<<<<<< HEAD
 drake_cc_googletest(
     name = "scene_graph_collision_checker_test",
     timeout = "moderate",
@@ -264,3 +281,6 @@ drake_cc_googletest(
 )
 
 add_lint_tests(enable_clang_format_lint = True)
+=======
+add_lint_tests()
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

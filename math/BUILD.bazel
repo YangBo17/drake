@@ -541,6 +541,17 @@ drake_cc_googletest(
 )
 
 drake_cc_googletest(
+<<<<<<< HEAD
+=======
+    name = "saturate_test",
+    deps = [
+        ":saturate",
+        "//common:default_scalars",
+    ],
+)
+
+drake_cc_googletest(
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     name = "rigid_transform_test",
     deps = [
         ":autodiff",

@@ -96,7 +96,11 @@ unique_ptr<MeshFieldLinear<typename MeshType::ScalarType, MeshType>> MakeField(
 // We also test the sugar mesh representation-independent APIs if
 // `test_return_value` is `true`. We don't test the mesh field internal values
 // directly. Instead, we evaluate the field at various positions.
+<<<<<<< HEAD
 // The floating-point comparisons purposefully use a tolerance of zero because
+=======
+// The floating-point comparisions purposefully use a tolerance of zero because
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 // all of the inputs and intermediate results are exactly representable.
 template <typename MeshType>
 ContactSurface<typename MeshType::ScalarType> TestContactSurface(

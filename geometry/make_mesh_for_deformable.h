@@ -31,7 +31,10 @@ class MeshBuilderForDeformable : public ShapeReifier {
   };
 
   using ShapeReifier::ImplementGeometry;
+<<<<<<< HEAD
   void ImplementGeometry(const Mesh& mesh_spec, void* user_data) override;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   void ImplementGeometry(const Sphere& sphere, void* user_data) override;
   // TODO(xuchenhan-tri): As other shapes get supported, include their specific
   //  overrides here.

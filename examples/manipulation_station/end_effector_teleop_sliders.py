@@ -3,13 +3,32 @@ from dataclasses import dataclass
 import sys
 import webbrowser
 
+<<<<<<< HEAD
 import numpy as np
 
 from pydrake.common.value import AbstractValue
+=======
+if sys.platform == "darwin":
+    # TODO(jamiesnape): Fix this example on macOS Big Sur. Skipping on all
+    # macOS for simplicity and because of the tendency for macOS versioning
+    # schemes to unexpectedly change.
+    # ImportError: C++ type is not registered in pybind:
+    # NSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE
+    print("ERROR: Skipping this example on macOS because it fails on Big Sur")
+    sys.exit(0)
+
+import numpy as np
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 from pydrake.examples import (
     ManipulationStation, ManipulationStationHardwareInterface,
     CreateClutterClearingYcbObjectList, SchunkCollisionModel)
 from pydrake.geometry import DrakeVisualizer, Meshcat, MeshcatVisualizer
+<<<<<<< HEAD
+=======
+from pydrake.manipulation.planner import (
+    DifferentialInverseKinematicsParameters)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 from pydrake.math import RigidTransform, RollPitchYaw, RotationMatrix
 from pydrake.multibody.inverse_kinematics import (
     DifferentialInverseKinematicsIntegrator,
@@ -21,6 +40,10 @@ from pydrake.systems.lcm import LcmPublisherSystem
 from pydrake.systems.primitives import FirstOrderLowPassFilter, VectorLogSink
 from pydrake.systems.sensors import ImageToLcmImageArrayT, PixelType
 
+<<<<<<< HEAD
+=======
+from drake.examples.manipulation_station.differential_ik import DifferentialIK
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 from drake.examples.manipulation_station.schunk_wsg_buttons import \
     SchunkWsgButtons
 
@@ -51,10 +74,14 @@ class EndEffectorTeleop(LeafSystem):
         """
 
         LeafSystem.__init__(self)
+<<<<<<< HEAD
         # Note: Disable caching because meshcat's sliders have undeclared
         # state.
         self.DeclareVectorOutputPort(
             "rpy_xyz", 6, self.DoCalcOutput).disable_caching_by_default()
+=======
+        self.DeclareVectorOutputPort("rpy_xyz", 6, self.DoCalcOutput)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         self.meshcat = meshcat
         self.planar = planar
 
@@ -130,6 +157,7 @@ class EndEffectorTeleop(LeafSystem):
         output.SetAtIndex(3, x)
         output.SetAtIndex(4, y)
         output.SetAtIndex(5, z)
+<<<<<<< HEAD
 
 
 class ToPose(LeafSystem):
@@ -144,6 +172,8 @@ class ToPose(LeafSystem):
         rpy_xyz = self.get_input_port().Eval(context)
         output.set_value(RigidTransform(RollPitchYaw(rpy_xyz[:3]),
                                         rpy_xyz[3:]))
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 
 def main():
@@ -311,12 +341,15 @@ def main():
 
     builder.Connect(teleop.get_output_port(0), filter.get_input_port(0))
 
+<<<<<<< HEAD
     to_pose = builder.AddSystem(ToPose())
     builder.Connect(filter.get_output_port(0),
                     to_pose.get_input_port())
     builder.Connect(to_pose.get_output_port(),
                     differential_ik.GetInputPort("X_WE_desired"))
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     wsg_buttons = builder.AddSystem(SchunkWsgButtons(meshcat=meshcat))
     builder.Connect(wsg_buttons.GetOutputPort("position"),
                     station.GetInputPort("wsg_position"))

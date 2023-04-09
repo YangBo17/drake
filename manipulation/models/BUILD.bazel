@@ -11,7 +11,11 @@ install(
         "//manipulation/models/jaco_description:install_data",
         "//manipulation/models/realsense2_description:install_data",
         "//manipulation/models/tri_homecart:install_data",
+<<<<<<< HEAD
         "//manipulation/models/ur3e:install_data",
+=======
+        "//manipulation/models/ur3e_description:install_data",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//manipulation/models/wsg_50_description:install_data",
         "//manipulation/models/ycb:install_data",
     ],

@@ -2,6 +2,11 @@
 
 import argparse
 
+<<<<<<< HEAD
+=======
+from pydrake.common import FindResourceOrThrow
+from pydrake.geometry import DrakeVisualizer
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 from pydrake.multibody.plant import AddMultibodyPlantSceneGraph
 from pydrake.multibody.parsing import Parser
 from pydrake.systems.framework import DiagramBuilder
@@ -28,11 +33,18 @@ def main():
     builder = DiagramBuilder()
     cart_pole, scene_graph = AddMultibodyPlantSceneGraph(
         builder=builder, time_step=args.time_step)
+<<<<<<< HEAD
     Parser(plant=cart_pole).AddModelsFromUrl(
         url="package://drake/examples/multibody/cart_pole/cart_pole.sdf")
     cart_pole.Finalize()
 
     AddDefaultVisualization(builder=builder)
+=======
+    Parser(plant=cart_pole).AddModelFromFile(file_name)
+    cart_pole.Finalize()
+
+    DrakeVisualizer.AddToBuilder(builder=builder, scene_graph=scene_graph)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     diagram = builder.Build()
 
     diagram_context = diagram.CreateDefaultContext()

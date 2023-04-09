@@ -1,14 +1,25 @@
 # Developing your own Server
+<<<<<<< HEAD
 A [testing suite](../../render_gltf_client/test), including a sample
 [flask](https://flask.palletsprojects.com/en/2.0.x/)
 [server](../../render_gltf_client/test/server_demo.py) and a
 [VTK server backend](../../render_gltf_client/test/server_vtk_backend.cc),
+=======
+A [testing suite](../../render/dev/render_gltf_client/test), including a sample
+[flask](https://flask.palletsprojects.com/en/2.0.x/)
+[server](../../render/dev/render_gltf_client/test/gltf_render_server.py) and a
+[VTK server backend](../../render/dev/render_gltf_client/test/gltf_render_server_backend.cc),
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 is provided as a working example that can be used with minimal change for your
 development.
 
 ## Install Dependencies
 
+<<<<<<< HEAD
 The test server uses `flask(>=1.1)`, so be sure that you've run
+=======
+The test server uses `flask`, so be sure that you've run
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 `setup/ubuntu/install_prereqs.sh` (or `setup/mac/install_prereqs.sh`) to install
 it before proceeding.
 
@@ -24,34 +35,60 @@ A single threaded / single worker flask development server on host `127.0.0.1`
 and port `8000` can be launched by:
 
 ```
+<<<<<<< HEAD
 $ bazel run //geometry/render_gltf_client:server_demo
+=======
+$ bazel run //geometry/render/dev/render_gltf_client:gltf_render_server
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ```
 
 You may specify host and port by supplying extra arguments.
 
 ```
+<<<<<<< HEAD
 $ bazel run //geometry/render_gltf_client:server_demo -- --host 0.0.0.0 --port 8192
 ```
 
 There is also a `--debug` option available to support reloading the server
 automatically, see a dedicated section below for more information.
+=======
+$ bazel run //geometry/render/dev/render_gltf_client:gltf_render_server -- --host 0.0.0.0 --port 8192
+```
+
+There is also a `--debug` option available to support reloading the server
+automatically, see the documentation in `gltf_render_server.py` for more
+information on flask debug targets.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 ### Run the Client
 In another terminal, run the test simulation and the client.
 
 ```
+<<<<<<< HEAD
 $ bazel run //geometry/render_gltf_client:client_demo
+=======
+$ bazel run //geometry/render/dev/render_gltf_client:run_simulation_and_render -- --render_engine client
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ```
 As a comparison, you can also render with the normal VTK by setting
 --render_engine to vtk instead.
 
 ```
+<<<<<<< HEAD
 $ bazel run //geometry/render_gltf_client:client_demo -- --render_engine vtk
 ```
 
 Note that if you ran your server on an alternate `--host` or `--port`, you will
 need to specify that in `--server_base_url` when running `client_demo`
 executable as well.
+=======
+$ bazel run //geometry/render/dev/render_gltf_client:run_simulation_and_render -- --render_engine vtk
+```
+
+Note that if you ran your server on an alternate `--host` or `--port`, you will
+need to specify that in `--server_base_url` when running
+`run_simulation_and_render` executable as well.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 ### (Optional) Run Drake Visualizer
 
@@ -61,6 +98,7 @@ In a separate terminal, launch drake_visualizer.
 $ bazel run //tools:drake_visualizer
 ```
 
+<<<<<<< HEAD
 ## Testing of the client-server RPC pipeline
 To ensure the RPC (Remote Procedure Call) infrastructure works as expected,
 different layers of testing are in place.  Each file in
@@ -165,6 +203,12 @@ user issues a `GET /` (e.g., you visit `localhost:8000` in your browser).  When
 `FLASK_ENV=development`, this server will include the path to the temp folder so
 you may easily navigate there for debugging purposes.  Information about the
 server directory structure should not be revealed in production.
+=======
+## Prototyping your own Server
+If everything is running as expected, then you can begin changing the
+implementation of `render_callback` in `gltf_render_server.py` to invoke the
+renderer you desire.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 ### Notes on Deploying your Server
 
@@ -215,6 +259,7 @@ if __name__ == "__main__":
 to `sudo apt-get install gunicorn` (not `python3-gunicorn`).  If using a virtual
 environment or `pip` directly, `pip install gunicorn` will make the `gunicorn`
 executable available.
+<<<<<<< HEAD
 
 There are some global variables in the current server implementation, e.g.,
 `RENDER_ENDPOINT`.  This will only work in the single threaded development
@@ -222,3 +267,5 @@ server provided by flask, but will not be coherent when using a wsgi wrapper
 such as `gunicorn`.  If your needs require shared state between server
 processes, you will want to use a proper database or implement a scheme using
 multiprocessing.
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

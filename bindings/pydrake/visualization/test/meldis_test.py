@@ -150,6 +150,7 @@ class TestMeldis(unittest.TestCase):
         self.assertEqual(meshcat.HasPath("/DRAKE_VIEWER"), True)
         self.assertEqual(meshcat.HasPath(link_path), True)
 
+<<<<<<< HEAD
     def test_viewer_applet_robot_meshes(self):
         """Checks _ViewerApplet support for meshes.
         """
@@ -244,6 +245,10 @@ class TestMeldis(unittest.TestCase):
 
     def test_contact_applet_point_pair(self):
         """Checks that _ContactApplet doesn't crash when receiving point
+=======
+    def test_contact_applet_point_pair(self):
+        """Check that _ContactApplet doesn't crash when receiving point
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
            contact messages.
         """
         # Create the device under test.
@@ -286,7 +291,11 @@ class TestMeldis(unittest.TestCase):
         self.assertEqual(meshcat.HasPath(pair_path), True)
 
     def test_contact_applet_hydroelastic(self):
+<<<<<<< HEAD
         """Checks that _ContactApplet doesn't crash when receiving hydroelastic
+=======
+        """Check that _ContactApplet doesn't crash when receiving hydroelastic
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
            messages.
         """
         # Create the device under test.
@@ -300,6 +309,7 @@ class TestMeldis(unittest.TestCase):
         builder = DiagramBuilder()
         plant, scene_graph = AddMultibodyPlantSceneGraph(builder, 0.001)
         parser = Parser(plant=plant)
+<<<<<<< HEAD
         parser.AddModels(sdf_file)
         body1 = plant.GetBodyByName("body1")
         body2 = plant.GetBodyByName("body2")
@@ -308,6 +318,16 @@ class TestMeldis(unittest.TestCase):
             frame_on_child=body1.body_frame(), axis=[0, 0, 1]))
         plant.AddJoint(PrismaticJoint(
             name="body2", frame_on_parent=plant.world_body().body_frame(),
+=======
+        parser.AddModelFromFile(sdf_file)
+        body1 = plant.GetBodyByName("body1")
+        body2 = plant.GetBodyByName("body2")
+        plant.AddJoint(PrismaticJoint(
+            name="sphere1", frame_on_parent=plant.world_body().body_frame(),
+            frame_on_child=body1.body_frame(), axis=[1, 0, 0]))
+        plant.AddJoint(PrismaticJoint(
+            name="sphere2", frame_on_parent=plant.world_body().body_frame(),
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
             frame_on_child=body2.body_frame(), axis=[1, 0, 0]))
         plant.Finalize()
         ConnectContactResultsToDrakeVisualizer(
@@ -315,6 +335,7 @@ class TestMeldis(unittest.TestCase):
         diagram = builder.Build()
         context = diagram.CreateDefaultContext()
         plant.SetPositions(plant.GetMyMutableContextFromRoot(context),
+<<<<<<< HEAD
                            [0.1, 0.3])
         diagram.ForcedPublish(context)
 
@@ -407,3 +428,16 @@ class TestMeldis(unittest.TestCase):
                 dut._lcm.HandleSubscriptions(timeout_millis=1)
                 dut._invoke_subscriptions()
                 self.assertEqual(dut.meshcat.HasPath(meshcat_path), True)
+=======
+                           [-0.05, 0.1])
+        diagram.Publish(context)
+
+        # The geometry isn't registered until the load is processed.
+        hydro_path = "/CONTACT_RESULTS/hydroelastic/body1+body2"
+        self.assertEqual(meshcat.HasPath(hydro_path), False)
+
+        # Process the load + draw; contact results should now exist.
+        lcm.HandleSubscriptions(timeout_millis=0)
+        dut._invoke_subscriptions()
+        self.assertEqual(meshcat.HasPath(hydro_path), True)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

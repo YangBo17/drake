@@ -161,6 +161,7 @@ class CpuSpeedSettings:
 
 def do_benchmark(args):
     if not CpuSpeedSettings().is_supported_cpu():
+<<<<<<< HEAD
         raise RuntimeError(f"""
 No method of controlling cpu frequency scaling was detected. Without it, there
 is no way to prevent arbitrary cpu frequency scaling, and experiment results
@@ -170,6 +171,12 @@ will be invalid. Supported methods are:
    {LinuxKernelBoost().CPUFREQ_BOOST_FILE}.
  * intel_pstate driver, controlled through
    {IntelBoost().NO_TURBO_CONTROL_FILE}.
+=======
+        raise RuntimeError("""
+The intel_pstate Linux kernel driver is not running. Without it, there is no
+way to prevent Turbo Boost cpu frequency scaling, and experiment results will
+be invalid.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 """)
 
     command_prologue = []

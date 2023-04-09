@@ -4,7 +4,10 @@
 #include <cstring>
 
 #include <drake_vendor/yaml-cpp/yaml.h>
+<<<<<<< HEAD
 #include <fmt/format.h>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <fmt/ostream.h>
 
 #include "drake/common/nice_type_name.h"

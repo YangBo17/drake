@@ -473,7 +473,11 @@ void CsdpSolver::DoSolve(const MathematicalProgram& prog,
   } else {
     const auto int_options = merged_options.GetOptionsInt(CsdpSolver::id());
     const auto it_method = int_options.find("drake::RemoveFreeVariableMethod");
+<<<<<<< HEAD
     RemoveFreeVariableMethod method = RemoveFreeVariableMethod::kNullspace;
+=======
+    RemoveFreeVariableMethod method = method_;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     if (it_method != int_options.end()) {
       if (it_method->second >= 1 && it_method->second <= 3) {
         method = static_cast<RemoveFreeVariableMethod>(it_method->second);

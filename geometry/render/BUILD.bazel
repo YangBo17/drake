@@ -9,12 +9,30 @@ load("//tools/skylark:test_tags.bzl", "vtk_test_tags")
 
 package(default_visibility = ["//visibility:public"])
 
-drake_cc_package_library(
+# TODO(jwnimmer-tri) Along with deprecation removals on 2022-09-01, switch
+# this back to drake_cc_package_library and just use `name = "render"`.
+drake_cc_library(
+    name = "render_unpolluted",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        ":render_camera",
+        ":render_engine",
+        ":render_label",
+    ],
+)
+
+# TODO(jwnimmer-tri) Remove this along with deprecation on 2022-09-01.
+drake_cc_library(
     name = "render",
+    tags = ["nolint"],
     visibility = ["//visibility:public"],
     deps = [
         ":render_camera",
         ":render_engine",
+<<<<<<< HEAD
+=======
+        ":render_engine_vtk",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         ":render_label",
     ],
 )
@@ -51,6 +69,62 @@ drake_cc_library(
     ],
 )
 
+<<<<<<< HEAD
+=======
+# TODO(jwnimmer-tri) Remove this along with deprecation on 2022-09-01.
+_STUB_HDRS = [
+    "render_engine_vtk.h",
+    "render_engine_vtk_base.h",
+    "render_engine_vtk_factory.h",
+    "vtk_util.h",
+]
+
+# TODO(jwnimmer-tri) Remove this along with deprecation on 2022-09-01.
+[
+    genrule(
+        name = "_cp_" + hdr,
+        srcs = ["stub/" + hdr],
+        outs = [hdr],
+        cmd = "cp $< $@",
+        tags = ["nolint"],
+        visibility = ["//visibility:private"],
+    )
+    for hdr in _STUB_HDRS
+]
+
+# TODO(jwnimmer-tri) Remove this along with deprecation on 2022-09-01.
+drake_cc_library(
+    name = "render_engine_vtk",
+    hdrs = _STUB_HDRS,
+    install_hdrs_exclude = [
+        # Since these directly use VTK headers, leave them out of the install.
+        "render_engine_vtk.h",
+        "render_engine_vtk_base.h",
+        "vtk_util.h",
+    ],
+    tags = ["nolint"],
+    deps = [
+        "//geometry/render_vtk:factory",
+        "//geometry/render_vtk:internal_render_engine_vtk",
+        "//geometry/render_vtk:internal_render_engine_vtk_base",
+        "//geometry/render_vtk:internal_vtk_util",
+        "//geometry/render_vtk:render_engine_vtk_params",
+    ],
+)
+
+# TODO(jwnimmer-tri) Remove this along with deprecation on 2022-09-01.
+drake_cc_library(
+    name = "render_engine_vtk_factory",
+    hdrs = ["render_engine_vtk_factory.h"],
+    tags = ["nolint"],
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//geometry/render_vtk:factory",
+        "//geometry/render_vtk:render_engine_vtk_params",
+    ],
+)
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 drake_cc_library(
     name = "render_label",
     srcs = ["render_label.cc"],
@@ -104,4 +178,18 @@ drake_cc_googletest(
     ],
 )
 
+<<<<<<< HEAD
+=======
+drake_cc_googletest(
+    name = "deprecation_test",
+    copts = [
+        "-Wno-cpp",
+        "-Wno-deprecated-declarations",
+    ],
+    deps = [
+        ":render",
+    ],
+)
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 add_lint_tests()

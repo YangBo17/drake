@@ -47,7 +47,11 @@ bool PhysicalModel<T>::is_cloneable_to_symbolic() const {
 template <typename T>
 geometry::SceneGraph<T>& PhysicalModel<T>::mutable_scene_graph(
     MultibodyPlant<T>* plant) {
+<<<<<<< HEAD
   return internal::MultibodyPlantModelAttorney<T>::mutable_scene_graph(plant);
+=======
+  return MultibodyPlantModelAttorney<T>::mutable_scene_graph(plant);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 template <typename T>

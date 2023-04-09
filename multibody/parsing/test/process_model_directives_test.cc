@@ -95,6 +95,7 @@ GTEST_TEST(ProcessModelDirectivesTest, BasicSmokeTest) {
   EXPECT_TRUE(plant.HasFrameNamed("sub_added_frame_explicit"));
 }
 
+<<<<<<< HEAD
 // Smoke test of the most basic model directives, now loading from string.
 GTEST_TEST(ProcessModelDirectivesTest, FromString) {
   std::ifstream file_stream(
@@ -127,6 +128,12 @@ GTEST_TEST(ProcessModelDirectivesTest, FromString) {
 GTEST_TEST(ProcessModelDirectivesTest, SugarSmokeTest) {
   const ModelDirectives station_directives = LoadModelDirectives(
       FindResourceOrThrow(std::string(kTestDir) + "/add_scoped_sub.dmd.yaml"));
+=======
+// Simple smoke test of the simpler function signature.
+GTEST_TEST(ProcessModelDirectivesTest, SugarSmokeTest) {
+  const ModelDirectives station_directives = LoadModelDirectives(
+      FindResourceOrThrow(std::string(kTestDir) + "/add_scoped_sub.yaml"));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   MultibodyPlant<double> plant(0.0);
   std::vector<ModelInstanceInfo> added_models =
@@ -350,6 +357,38 @@ GTEST_TEST(ProcessModelDirectivesTest, DefaultPositions) {
       0.2);
 }
 
+// Test collision filter groups in ModelDirectives.
+GTEST_TEST(ProcessModelDirectivesTest, CollisionFilterGroupSmokeTest) {
+  ModelDirectives directives = LoadModelDirectives(
+      FindResourceOrThrow(std::string(kTestDir) +
+                          "/collision_filter_group.yaml"));
+
+  // Ensure that we have a SceneGraph present so that we test relevant visual
+  // pieces.
+  DiagramBuilder<double> builder;
+  auto [plant, scene_graph] = AddMultibodyPlantSceneGraph(&builder, 0.);
+  ProcessModelDirectives(directives, &plant,
+                         nullptr, make_parser(&plant).get());
+
+  // Make sure the plant is not finalized such that the Finalize() default
+  // filtering has not taken into effect yet. This guarantees that the
+  // collision filtering is applied due to the collision filter group parsing.
+  ASSERT_FALSE(plant.is_finalized());
+
+  std::set<CollisionPair> expected_filters = {
+    // From group 'across_models'.
+    {"model1::collision",             "model2::collision"},
+    // From group 'nested_members'.
+    {"model1::collision",             "nested::sub_model2::collision"},
+    // From group 'nested_group'.
+    {"model3::collision",             "nested::sub_model1::collision"},
+    {"model3::collision",             "nested::sub_model2::collision"},
+    // From group 'across_sub_models'.
+    {"nested::sub_model1::collision", "nested::sub_model2::collision"},
+  };
+  VerifyCollisionFilters(scene_graph, expected_filters);
+}
+
 // Make sure we have good error messages.
 GTEST_TEST(ProcessModelDirectivesTest, ErrorMessages) {
   // When the user gives a bogus filename, at minimum we must echo it back to
@@ -362,12 +401,20 @@ GTEST_TEST(ProcessModelDirectivesTest, ErrorMessages) {
   {
     MultibodyPlant<double> plant(0.0);
     ModelDirectives directives = LoadModelDirectives(
+<<<<<<< HEAD
         FindResourceOrThrow(std::string(kTestDir) +
                             "/bad_package_uri.dmd.yaml"));
     DRAKE_EXPECT_THROWS_MESSAGE(
         ProcessModelDirectives(directives, &plant, nullptr,
                                make_parser(&plant).get()),
         ".*unknown package 'nonexistent'.*");
+=======
+        FindResourceOrThrow(std::string(kTestDir) + "/bad_package_uri.yaml"));
+    DRAKE_EXPECT_THROWS_MESSAGE(
+        ProcessModelDirectives(directives, &plant, nullptr,
+                               make_parser(&plant).get()),
+        ".*unknown package 'nonexistant'.*");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 }
 

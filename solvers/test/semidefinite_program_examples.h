@@ -70,7 +70,11 @@ void SolveEigenvalueProblem(const SolverInterface& solver,
                             double tol);
 
 /// Solve an SDP with a second order cone constraint. This example is taken from
+<<<<<<< HEAD
 /// https://docs.mosek.com/10.0/capi/tutorial-sdo-shared.html
+=======
+/// https://docs.mosek.com/9.3/capi/tutorial-sdo-shared.html
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void SolveSDPwithSecondOrderConeExample1(const SolverInterface& solver,
                                          double tol);
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # -*- bazel -*-
+=======
+# -*- python -*-
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 load(
     "@drake//tools/workspace:cmake_configure_file.bzl",
@@ -24,30 +28,52 @@ package(default_visibility = ["//visibility:private"])
 
 cmake_configure_file(
     name = "config",
+<<<<<<< HEAD
     src = "include/gz/utils/config.hh.in",
     out = "include/gz/utils/config.hh",
     cmakelists = ["CMakeLists.txt"],
     defines = [
+=======
+    src = "include/ignition/utils/config.hh.in",
+    out = "include/ignition/utils/config.hh",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "IGN_DESIGNATION=utils",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "PROJECT_VERSION_MAJOR=0",
         "PROJECT_VERSION_MINOR=0",
         "PROJECT_VERSION_PATCH=0",
         "PROJECT_VERSION=0.0",
         "PROJECT_VERSION_FULL=0.0.0",
+<<<<<<< HEAD
         "PROJECT_NAME_NO_VERSION=gz-utils",
+=======
+        "PROJECT_NAME_NO_VERSION=ignition-utils",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
 generate_file(
+<<<<<<< HEAD
     name = "include/gz/utils/Export.hh",
     content = """
 #pragma once
 // Simplified version of visibility and deprecation macros.
 #define GZ_UTILS_VISIBLE
 #define GZ_DEPRECATED(version) __attribute__ ((__deprecated__))
+=======
+    name = "include/ignition/utils/Export.hh",
+    content = """
+#pragma once
+// Simplified version of visibility and deprecation macros.
+#define IGNITION_UTILS_VISIBLE
+#define IGN_DEPRECATED(version) __attribute__ ((__deprecated__))
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     """,
 )
 
 _MOST_PUBLIC_HDRS = [
+<<<<<<< HEAD
     "include/gz/utils/Environment.hh",
     "include/gz/utils/ImplPtr.hh",
     "include/gz/utils/NeverDestroyed.hh",
@@ -55,6 +81,15 @@ _MOST_PUBLIC_HDRS = [
     "include/gz/utils/detail/DefaultOps.hh",
     "include/gz/utils/detail/ImplPtr.hh",
     "include/gz/utils/detail/SuppressWarning.hh",
+=======
+    "include/ignition/utils/Environment.hh",
+    "include/ignition/utils/ImplPtr.hh",
+    "include/ignition/utils/NeverDestroyed.hh",
+    "include/ignition/utils/SuppressWarning.hh",
+    "include/ignition/utils/detail/DefaultOps.hh",
+    "include/ignition/utils/detail/ImplPtr.hh",
+    "include/ignition/utils/detail/SuppressWarning.hh",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ]
 
 _SRCS = [
@@ -69,6 +104,7 @@ check_lists_consistency(
     ],
     glob_exclude = [
         # These are test utilities, not for use by library code.
+<<<<<<< HEAD
         "include/gz/utils/ExtraTestMacros.hh",
         "include/gz/utils/detail/ExtraTestMacros.hh",
         # These headers are deprecated.
@@ -85,21 +121,34 @@ check_lists_consistency(
         "include/ignition/utils/detail/ImplPtr.hh",
         "include/ignition/utils/detail/SuppressWarning.hh",
         "include/ignition/utils.hh",
+=======
+        "include/ignition/utils/ExtraTestMacros.hh",
+        "include/ignition/utils/detail/ExtraTestMacros.hh",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         # These are test code, not library code.
         "**/*TEST*",
     ],
 )
 
 _HDRS = _MOST_PUBLIC_HDRS + [
+<<<<<<< HEAD
     "include/gz/utils/config.hh",
     "include/gz/utils/Export.hh",
+=======
+    "include/ignition/utils/config.hh",
+    "include/ignition/utils/Export.hh",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ]
 
 cc_library_vendored(
     name = "gz_utils",
     hdrs = _HDRS,
     hdrs_vendored = [
+<<<<<<< HEAD
         x.replace("include/gz/", "drake_src/drake_vendor/gz/")
+=======
+        x.replace("include/ignition/", "drake_src/drake_vendor/ignition/")
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         for x in _HDRS
     ],
     srcs = _SRCS,
@@ -108,10 +157,15 @@ cc_library_vendored(
         for x in _SRCS
     ],
     edit_include = {
+<<<<<<< HEAD
         "gz/": "drake_vendor/gz/",
     },
     copts = ["-w"],
     linkstatic = True,
+=======
+        "ignition/": "drake_vendor/ignition/",
+    },
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     includes = ["drake_src"],
     visibility = ["//visibility:public"],
 )

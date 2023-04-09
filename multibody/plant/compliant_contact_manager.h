@@ -91,7 +91,11 @@ class CompliantContactManager final
 
   using internal::DiscreteUpdateManager<T>::plant;
 
+<<<<<<< HEAD
   CompliantContactManager();
+=======
+  CompliantContactManager() = default;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   ~CompliantContactManager() final;
 
@@ -126,11 +130,14 @@ class CompliantContactManager final
     systems::CacheIndex non_contact_forces_accelerations;
   };
 
+<<<<<<< HEAD
   // Allow different specializations to access each other's private data for
   // scalar conversion.
   template <typename U>
   friend class CompliantContactManager;
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // Provide private access for unit testing only.
   friend class CompliantContactManagerTester;
 
@@ -138,6 +145,7 @@ class CompliantContactManager final
     return internal::GetInternalTree(this->plant()).get_topology();
   }
 
+<<<<<<< HEAD
   std::unique_ptr<DiscreteUpdateManager<double>> CloneToDouble() const final;
   std::unique_ptr<DiscreteUpdateManager<AutoDiffXd>> CloneToAutoDiffXd()
       const final;
@@ -168,6 +176,15 @@ class CompliantContactManager final
   // @throws For SAP if T = symbolic::Expression.
   // @throws For TAMSI if T = symbolic::Expression only if the model contains
   // contact geometry.
+=======
+  // Extracts non state dependent model information from MultibodyPlant. See
+  // DiscreteUpdateManager for details.
+  void ExtractModelInfo() final;
+
+  void DeclareCacheEntries() final;
+
+  // TODO(amcastro-tri): implement these APIs according to #16955.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   void DoCalcContactSolverResults(
       const systems::Context<T>&,
       contact_solvers::internal::ContactSolverResults<T>*) const final;
@@ -176,18 +193,55 @@ class CompliantContactManager final
   void DoCalcAccelerationKinematicsCache(
       const systems::Context<T>&,
       multibody::internal::AccelerationKinematicsCache<T>*) const final;
+<<<<<<< HEAD
   void DoCalcContactResults(
       const systems::Context<T>&,
       ContactResults<T>* contact_results) const final;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // This method computes sparse kinematics information for each contact pair at
   // the given configuration stored in `context`.
   std::vector<ContactPairKinematics<T>> CalcContactKinematics(
       const systems::Context<T>& context) const;
 
+<<<<<<< HEAD
   // Eval version of CalcContactKinematics().
   const std::vector<ContactPairKinematics<T>>& EvalContactKinematics(
       const systems::Context<T>& context) const;
+=======
+  // Returns the dissipation time constant stored in group
+  // geometry::internal::kMaterialGroup with property
+  // "dissipation_time_constant". If not present, it returns
+  // plant().time_step().
+  T GetDissipationTimeConstant(
+      geometry::GeometryId id,
+      const geometry::SceneGraphInspector<T>& inspector) const;
+
+  // Helper to acquire per-geometry Coulomb friction coefficients from
+  // SceneGraph. Discrete models cannot make a distinction between static and
+  // dynamic coefficients of friction. Therefore this method returns the
+  // coefficient of dynamic friction stored by SceneGraph while the coefficient
+  // of static friction is ignored.
+  // @pre id is a valid GeometryId in the inspector.
+  double GetCoulombFriction(
+      geometry::GeometryId id,
+      const geometry::SceneGraphInspector<T>& inspector) const;
+
+  // Utility to combine stiffnesses k1 and k2 according to the rule:
+  //   k  = k₁⋅k₂/(k₁+k₂)
+  // In other words, the combined compliance (the inverse of stiffness) is the
+  // sum of the individual compliances.
+  static T CombineStiffnesses(const T& k1, const T& k2);
+
+  // Utility to combine linear dissipation time constants. Consider two
+  // spring-dampers with stiffnesses k₁ and k₂, and dissipation timescales τ₁
+  // and τ₂, respectively. When these spring-dampers are connected in series,
+  // they result in an equivalent spring-damper with stiffness k  =
+  // k₁⋅k₂/(k₁+k₂) and dissipation τ = τ₁ + τ₂.
+  // This method returns tau1 + tau2.
+  static T CombineDissipationTimeConstant(const T& tau1, const T& tau2);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Given the configuration stored in `context`, this method appends discrete
   // pairs corresponding to point contact into `pairs`.
@@ -235,6 +289,14 @@ class CompliantContactManager final
   void CalcNonContactForcesExcludingJointLimits(
       const systems::Context<T>& context, MultibodyForces<T>* forces) const;
 
+  // Computes all continuous forces in the MultibodyPlant model. Joint limits
+  // are not included as continuous compliant forces but rather as constraints
+  // in the solver, and therefore must be excluded.
+  // Values in `forces` will be overwritten.
+  // @pre forces != nullptr and is consistent with plant().
+  void CalcNonContactForcesExcludingJointLimits(
+      const systems::Context<T>& context, MultibodyForces<T>* forces) const;
+
   // Calc non-contact forces and the accelerations they induce.
   void CalcAccelerationsDueToNonContactForcesCache(
       const systems::Context<T>& context,
@@ -253,6 +315,7 @@ class CompliantContactManager final
       const systems::Context<T>& context,
       ContactResults<T>* contact_results) const;
 
+<<<<<<< HEAD
   // Helper method to fill in `contact_results` with hydroelastic contact
   // information for the given state stored in `context`.
   // @param[in,out] contact_results is appended to
@@ -274,6 +337,52 @@ class CompliantContactManager final
   // Only one of these drivers will be non-nullptr.
   std::unique_ptr<SapDriver<T>> sap_driver_;
   std::unique_ptr<TamsiDriver<T>> tamsi_driver_;
+=======
+  // Add limit constraints for the configuration stored in `context` into
+  // `problem`. Limit constraints are only added when the state q₀ for a
+  // particular joint is "close" to the joint's limits (qₗ,qᵤ). To decide when
+  // the state q₀ is close to the joint's limits, this method estimates a window
+  // (wₗ,wᵤ) for the expected value of the configuration q at the next time
+  // step. Lower constraints are considered whenever qₗ > wₗ and upper
+  // constraints are considered whenever qᵤ < wᵤ. This window (wₗ,wᵤ) is
+  // estimated based on the current velocity v₀ and the free motion velocities
+  // v*, provided with `v_star`.
+  // Since the implementation uses the current velocity v₀ to estimate whether
+  // the constraint should be enabled, it is at least as good as a typical
+  // continuous collision detection method. It could mispredict under conditions
+  // of strong acceleration (it is assuming constant velocity across a step).
+  // Still, at typical robotics step sizes and rates it would be surprising to
+  // see that happen, and if it did the limit would come on in the next step.
+  // TODO(amcastro-tri): Consider using the acceleration at t₀ to get a second
+  // order prediction for the configuration at the next time step.
+  // @pre problem must not be nullptr.
+  void AddLimitConstraints(
+      const systems::Context<T>& context, const VectorX<T>& v_star,
+      contact_solvers::internal::SapContactProblem<T>* problem) const;
+
+  // This method takes SAP results for a given `problem` and loads forces due to
+  // contact only into `contact_results`. `contact_results` is properly resized
+  // on output.
+  // @pre contact_results is not nullptr.
+  // @pre All `num_contacts` contact constraints in `problem` were added before
+  // any other SAP constraint. This requirement is imposed by this manager which
+  // adds constraints (with AddContactConstraints()) to the contact problem
+  // before any other constraints are added. See the implementation of
+  // CalcContactProblemCache(), who is responsible for adding constraints in
+  // this particular order.
+  void PackContactSolverResults(
+      const contact_solvers::internal::SapContactProblem<T>& problem,
+      int num_contacts,
+      const contact_solvers::internal::SapSolverResults<T>& sap_results,
+      contact_solvers::internal::ContactSolverResults<T>* contact_results)
+      const;
+
+  CacheIndexes cache_indexes_;
+  contact_solvers::internal::SapSolverParameters sap_parameters_;
+  // Vector of joint damping coefficients, of size plant().num_velocities().
+  // This information is extracted during the call to ExtractModelInfo().
+  VectorX<T> joint_damping_;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 // N.B. These geometry queries are not supported when T = symbolic::Expression

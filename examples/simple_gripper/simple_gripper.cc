@@ -161,11 +161,21 @@ int do_main() {
   DRAKE_DEMAND(FLAGS_simulator_max_time_step > 0);
   DRAKE_DEMAND(FLAGS_mbp_discrete_update_period >= 0);
 
+<<<<<<< HEAD
   MultibodyPlantConfig plant_config;
   plant_config.time_step = FLAGS_mbp_discrete_update_period;
   plant_config.discrete_contact_solver = FLAGS_discrete_solver;
   auto [plant, scene_graph] =
       multibody::AddMultibodyPlant(plant_config, &builder);
+=======
+  auto [plant, scene_graph] = multibody::AddMultibodyPlantSceneGraph(
+      &builder, FLAGS_mbp_discrete_update_period);
+
+  Parser parser(&plant);
+  std::string full_name =
+      FindResourceOrThrow("drake/examples/simple_gripper/simple_gripper.sdf");
+  parser.AddModelFromFile(full_name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   Parser parser(&plant);
   parser.AddModelsFromUrl(
@@ -255,7 +265,14 @@ int do_main() {
   DRAKE_DEMAND(plant.num_actuators() == 2);
   DRAKE_DEMAND(plant.num_actuated_dofs() == 2);
 
+<<<<<<< HEAD
   visualization::AddDefaultVisualization(&builder);
+=======
+  DrakeLcm lcm;
+  geometry::DrakeVisualizerd::AddToBuilder(&builder, scene_graph, &lcm);
+  // Publish contact results for visualization.
+  ConnectContactResultsToDrakeVisualizer(&builder, plant, scene_graph, &lcm);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Sinusoidal force input. We want the gripper to follow a trajectory of the
   // form x(t) = X0 * sin(ω⋅t). By differentiating once, we can compute the

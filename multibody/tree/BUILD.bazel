@@ -106,7 +106,10 @@ drake_cc_library(
         "body_node_impl.cc",
         "door_hinge.cc",
         "fixed_offset_frame.cc",
+<<<<<<< HEAD
         "frame.cc",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "joint.cc",
         "joint_actuator.cc",
         "linear_bushing_roll_pitch_yaw.cc",
@@ -193,7 +196,10 @@ drake_cc_library(
         ":spatial_inertia",
         ":string_view_map_key",
         "//common:default_scalars",
+<<<<<<< HEAD
         "//common:name_value",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//common:nice_type_name",
         "//common:unused",
         "//math:geometric_transform",

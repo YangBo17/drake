@@ -40,6 +40,10 @@ LIBDRAKE_COMPONENTS = [
     "//geometry/optimization",
     "//geometry/proximity",
     "//geometry/query_results",
+<<<<<<< HEAD
+=======
+    "//geometry/render/gl_renderer",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "//geometry/render/shaders",
     "//geometry/render_gl",
     "//geometry/render_gltf_client",
@@ -47,7 +51,11 @@ LIBDRAKE_COMPONENTS = [
     "//lcm",
     "//manipulation/kinova_jaco",
     "//manipulation/kuka_iiwa",
+<<<<<<< HEAD
     "//manipulation/planner",  # 2023-06-01 Remove this with completed deprecation  # noqa
+=======
+    "//manipulation/planner",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "//manipulation/schunk_wsg",
     "//manipulation/util",
     "//math",
@@ -68,14 +76,21 @@ LIBDRAKE_COMPONENTS = [
     "//multibody/optimization",
     "//multibody/parsing",
     "//multibody/plant",
+    "//multibody/rational_forward_kinematics",
     "//multibody/plant:contact_results_to_lcm",  # unpackaged
+<<<<<<< HEAD
     "//multibody/rational",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "//multibody/topology:multibody_graph",  # unpackaged
     "//multibody/tree",
     "//multibody/triangle_quadrature",
     "//perception",
     "//planning",
+<<<<<<< HEAD
     "//planning/trajectory_optimization",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "//solvers",
     "//systems/analysis",
     "//systems/controllers",
@@ -87,5 +102,13 @@ LIBDRAKE_COMPONENTS = [
     "//systems/rendering",
     "//systems/sensors",
     "//systems/trajectory_optimization",
+<<<<<<< HEAD
     "//visualization",
+=======
+    # N.B. These are added by hand for deprecation 2022-09-01. Once the
+    # deprecation clears, we should go back to auto-generating this file
+    # without any manual edits.
+    "//geometry/render:render_engine_vtk_factory",
+    "//geometry/render:render_unpolluted",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ]

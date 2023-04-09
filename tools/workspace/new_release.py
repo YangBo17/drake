@@ -57,7 +57,10 @@ from drake.tools.workspace.metadata import read_repository_metadata
 _IGNORED_REPOSITORIES = [
     # We don't know how to check non-default branches yet.
     "clang_cindex_python3_internal",
+<<<<<<< HEAD
     "gym_py",  # Pinned at 0.21; see tools/workspace/gym_py/README.md.
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "pybind11",
     "usockets",  # Pinned due to upstream regression.
     "uwebsockets",  # Pinned due to upstream regression.
@@ -70,8 +73,13 @@ _IGNORED_REPOSITORIES = [
 # (This can be used to pin to a given major or major.minor release series.)
 _OVERLOOK_RELEASE_REPOSITORIES = {
     "github3_py_internal": r"^(\d+.)",
+<<<<<<< HEAD
     "gz_math_internal": "^(gz)",
     "gz_utils_internal": "^(gz)",
+=======
+    "gz_math_internal": "",
+    "gz_utils_internal": "",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "intel_realsense_ros_internal": r"^(\d+\.\d+\.)",
     "petsc": r"^(v)",
     "pycodestyle": "",

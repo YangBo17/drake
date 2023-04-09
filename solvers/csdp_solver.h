@@ -1,6 +1,7 @@
 #pragma once
 
 #include "drake/common/drake_copyable.h"
+#include "drake/common/drake_deprecated.h"
 #include "drake/solvers/sdpa_free_format.h"
 #include "drake/solvers/solver_base.h"
 
@@ -67,6 +68,19 @@ class CsdpSolver final : public SolverBase {
  public:
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(CsdpSolver)
 
+<<<<<<< HEAD
+=======
+  /**
+   * Constructs CsdpSolver with a specified method to remove free variables.
+   */
+  DRAKE_DEPRECATED(
+      "2022-09-01",
+      "Use the CsdpSolver() constructor without an input argument, and set the "
+      "method through SetOption(CsdpSolver::id(), "
+      "\"drake::RemoveFreeVariableMethod\", METHOD)")
+  explicit CsdpSolver(RemoveFreeVariableMethod method);
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /** Default constructor */
   CsdpSolver();
 
@@ -88,6 +102,13 @@ class CsdpSolver final : public SolverBase {
  private:
   void DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
                const SolverOptions&, MathematicalProgramResult*) const final;
+<<<<<<< HEAD
+=======
+
+  // TODO(hongkai.dai): remove this field on 2022-09-01 when we deprecate the
+  // constructor with input argument `method`.
+  RemoveFreeVariableMethod method_;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 }  // namespace solvers
 }  // namespace drake

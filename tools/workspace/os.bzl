@@ -52,8 +52,12 @@ def _make_result(
         macos_release = None,
         ubuntu_release = None,
         is_wheel = False,
+<<<<<<< HEAD
         homebrew_prefix = None,
         macos_arch_result = None):
+=======
+        homebrew_prefix = None):
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     """Return a fully-populated struct result for determine_os, below."""
     is_macos = (macos_release != None) and not is_wheel
     is_macos_wheel = (macos_release != None) and is_wheel
@@ -186,6 +190,18 @@ def _determine_macos(repository_ctx):
     else:
         homebrew_prefix = "/usr/local"
 
+<<<<<<< HEAD
+=======
+    # Match supported macOS release(s).
+    if macos_release in ["11", "12"]:
+        return _make_result(
+            macos_release = macos_release,
+            homebrew_prefix = homebrew_prefix,
+            is_wheel = is_macos_wheel,
+        )
+
+    # Nothing matched.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     return _make_result(
         macos_release = macos_release,
         is_wheel = is_macos_wheel,

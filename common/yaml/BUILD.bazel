@@ -91,12 +91,20 @@ drake_cc_library(
 )
 
 drake_cc_googletest(
+<<<<<<< HEAD
     name = "json_test",
     deps = [
         ":example_structs",
         ":yaml_io",
         "//common:temp_directory",
         "//common/test_utilities:expect_throws_message",
+=======
+    name = "yaml_deprecation_test",
+    copts = ["-Wno-deprecated-declarations"],
+    deps = [
+        ":yaml_read_archive",
+        ":yaml_write_archive",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 

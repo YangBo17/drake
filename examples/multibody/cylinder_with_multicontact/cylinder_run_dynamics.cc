@@ -4,6 +4,10 @@
 
 #include "drake/common/drake_assert.h"
 #include "drake/examples/multibody/cylinder_with_multicontact/populate_cylinder_plant.h"
+<<<<<<< HEAD
+=======
+#include "drake/geometry/drake_visualizer.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/geometry/scene_graph.h"
 #include "drake/lcm/drake_lcm.h"
 #include "drake/systems/analysis/simulator.h"
@@ -55,6 +59,10 @@ using geometry::SceneGraph;
 // "multibody" namespace is ambiguous here without "drake::".
 using drake::multibody::AddMultibodyPlantSceneGraph;
 using drake::multibody::CoulombFriction;
+<<<<<<< HEAD
+=======
+using drake::multibody::ConnectContactResultsToDrakeVisualizer;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 using drake::multibody::SpatialVelocity;
 
 int do_main() {
@@ -83,7 +91,14 @@ int do_main() {
   DRAKE_DEMAND(plant.num_velocities() == 6);
   DRAKE_DEMAND(plant.num_positions() == 7);
 
+<<<<<<< HEAD
   visualization::AddDefaultVisualization(&builder);
+=======
+  DrakeLcm lcm;
+  geometry::DrakeVisualizerd::AddToBuilder(&builder, scene_graph, &lcm);
+  // Publish contact results for visualization.
+  ConnectContactResultsToDrakeVisualizer(&builder, plant, scene_graph, &lcm);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   auto diagram = builder.Build();
 

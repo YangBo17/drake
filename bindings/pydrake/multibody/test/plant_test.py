@@ -460,9 +460,18 @@ class TestPlant(unittest.TestCase):
         self.assertIsInstance(body.get_num_flexible_velocities(), int)
         self.assertIsInstance(body.is_floating(), bool)
         self.assertIsInstance(body.has_quaternion_dofs(), bool)
+<<<<<<< HEAD
         self.assertIsInstance(body.default_mass(), float)
         # Other APIs can't be called on a Body that isn't part of
         # a multibody system.
+=======
+        self.assertIsInstance(body.floating_positions_start(), int)
+        self.assertIsInstance(body.floating_velocities_start(), int)
+        self.assertIsInstance(body.default_mass(), float)
+        # TODO(2022-11-01) Remove with completion of deprecation.
+        with catch_drake_warnings(expected_count=1):
+            self.assertIsInstance(body.get_default_mass(), float)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
     @numpy_compare.check_all_types
     def test_body_context_methods(self, T):

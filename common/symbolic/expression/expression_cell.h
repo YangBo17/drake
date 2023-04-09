@@ -46,7 +46,12 @@ class ExpressionCell {
 
   virtual ~ExpressionCell();
 
+<<<<<<< HEAD
   /** Returns the intrusive use count (ala boost::intrusive_ptr). */
+=======
+  /** Returns the intrusive use count (ala boost::intrusive_ptr).
+  @warning This value is currently UNUSED except in unit tests; ignore it. */
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   std::atomic<int>& use_count() const { return use_count_; }
 
   /** Returns expression kind. */

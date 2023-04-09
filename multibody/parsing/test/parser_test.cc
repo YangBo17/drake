@@ -30,11 +30,14 @@ GTEST_TEST(FileParserTest, BasicTest) {
       "drake/multibody/benchmarks/acrobot/acrobot.urdf");
   const std::string xml_name = FindResourceOrThrow(
       "drake/multibody/parsing/dm_control/suite/acrobot.xml");
+<<<<<<< HEAD
   const std::string dmd_name = FindResourceOrThrow(
       "drake/multibody/parsing/test/process_model_directives_test/"
       "acrobot.dmd.yaml");
   const std::string obj_name = FindResourceOrThrow(
       "drake/multibody/parsing/test/box_package/meshes/box.obj");
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Load from SDF using plural method.
   // Add a second one with an overridden model_name.
@@ -80,15 +83,24 @@ GTEST_TEST(FileParserTest, BasicTest) {
 
   // Load from XML using plural method.
   // Add a second one with an overridden model_name.
+<<<<<<< HEAD
   // Add one with a name prefix.
   {
     MultibodyPlant<double> plant(0.0);
     Parser dut(&plant);
     const std::vector<ModelInstanceIndex> ids = dut.AddModels(xml_name);
+=======
+  {
+    MultibodyPlant<double> plant(0.0);
+    Parser dut(&plant);
+    const std::vector<ModelInstanceIndex> ids =
+        dut.AddAllModelsFromFile(xml_name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_EQ(ids.size(), 1);
     EXPECT_EQ(plant.GetModelInstanceName(ids[0]), "acrobot");
     const ModelInstanceIndex id = dut.AddModelFromFile(xml_name, "foo");
     EXPECT_EQ(plant.GetModelInstanceName(id), "foo");
+<<<<<<< HEAD
     const auto prefix_ids = Parser(&plant, "prefix").AddModels(xml_name);
     EXPECT_EQ(prefix_ids.size(), 1);
     EXPECT_EQ(plant.GetModelInstanceName(prefix_ids[0]), "prefix::acrobot");
@@ -155,6 +167,9 @@ GTEST_TEST(FileParserTest, LegacyFunctionTest) {
   MultibodyPlant<double> plant(0.0);
   Parser dut(&plant);
   EXPECT_EQ(dut.AddAllModelsFromFile(sdf_name).size(), 1);
+=======
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 GTEST_TEST(FileParserTest, BasicStringTest) {
@@ -164,9 +179,12 @@ GTEST_TEST(FileParserTest, BasicStringTest) {
       "drake/multibody/benchmarks/acrobot/acrobot.urdf");
   const std::string xml_name = FindResourceOrThrow(
       "drake/multibody/parsing/dm_control/suite/acrobot.xml");
+<<<<<<< HEAD
   const std::string dmd_name = FindResourceOrThrow(
       "drake/multibody/parsing/test/process_model_directives_test/"
       "acrobot.dmd.yaml");
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Load an SDF via string using plural method.
   {
@@ -190,11 +208,16 @@ GTEST_TEST(FileParserTest, BasicStringTest) {
     EXPECT_EQ(plant.GetModelInstanceName(ids[0]), "acrobot");
   }
 
+<<<<<<< HEAD
   // Load an MJCF via string using plural method.
+=======
+  // Load an MJCF via string.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   {
     const std::string xml_contents = ReadEntireFile(xml_name);
     MultibodyPlant<double> plant(0.0);
     Parser dut(&plant);
+<<<<<<< HEAD
     const std::vector<ModelInstanceIndex> ids =
         dut.AddModelsFromString(xml_contents, "xml");
     EXPECT_EQ(ids.size(), 1);
@@ -232,6 +255,11 @@ GTEST_TEST(FileParserTest, LegacyStringMethodTest) {
                                                        "foo");
 #pragma GCC diagnostic pop
   EXPECT_EQ(plant.GetModelInstanceName(id), "foo");
+=======
+    const ModelInstanceIndex id = dut.AddModelFromString(xml_contents, "xml");
+    EXPECT_EQ(plant.GetModelInstanceName(id), "acrobot");
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 // Try loading a file with two <model> elements, but without a <world>.

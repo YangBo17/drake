@@ -114,7 +114,11 @@ class KukaIiwaModelTests : public ::testing::Test {
   // Get an arm state associated with an arbitrary configuration that avoids
   // in-plane motion and in which joint angles and rates are non-zero.
   VectorX<double> GetArbitraryJointAnglesAndRates() {
+<<<<<<< HEAD
     VectorX<double> x(2 * (kNumJoints - 1));
+=======
+    VectorX<double> x(2 * kNumJoints);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
     // These joint angles avoid in-plane motion, but are otherwise arbitrary.
     const double q30 = M_PI / 6, q60 = M_PI / 3;

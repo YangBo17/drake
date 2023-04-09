@@ -205,7 +205,11 @@ auto InitializeAutoDiffTuple(const Eigen::MatrixBase<Deriveds>&... args) {
   // Refer to https://en.cppreference.com/w/cpp/language/fold for the syntax.
   constexpr int nq =
       ((Deriveds::SizeAtCompileTime != Eigen::Dynamic) && ...)
+<<<<<<< HEAD
           ? (static_cast<int>(Deriveds::SizeAtCompileTime) + ...)
+=======
+          ? (Deriveds::SizeAtCompileTime + ...)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
           : Eigen::Dynamic;
 
   // Compute each deriv_num_start value and then the total runtime size.

@@ -64,7 +64,11 @@ int DoMain() {
       multibody::AddMultibodyPlantSceneGraph(&builder, FLAGS_time_step);
 
   const multibody::ModelInstanceIndex jaco_id =
+<<<<<<< HEAD
       Parser(&jaco_plant).AddModelsFromUrl(kUrdfUrl).at(0);
+=======
+      Parser(&jaco_plant).AddModelFromFile(FindResourceOrThrow(kUrdfPath));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   jaco_plant.WeldFrames(jaco_plant.world_frame(),
                         jaco_plant.GetFrameByName("base"));
   jaco_plant.Finalize();
@@ -86,6 +90,15 @@ int DoMain() {
 
   systems::lcm::LcmInterfaceSystem* lcm =
       builder.AddSystem<systems::lcm::LcmInterfaceSystem>();
+<<<<<<< HEAD
+=======
+  geometry::DrakeVisualizerd::AddToBuilder(&builder, scene_graph, lcm);
+  geometry::DrakeVisualizerParams params{.role = geometry::Role::kProximity,
+                                         .default_color = {1.0, 0.0, 0.0, 0.5},
+                                         .use_role_channel_suffix = true};
+  geometry::DrakeVisualizerd::AddToBuilder(&builder, scene_graph, lcm, params);
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   auto command_sub = builder.AddSystem(
       systems::lcm::LcmSubscriberSystem::Make<drake::lcmt_jaco_command>(
           "KINOVA_JACO_COMMAND", lcm));

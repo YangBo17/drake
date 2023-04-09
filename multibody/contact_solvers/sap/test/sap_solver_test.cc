@@ -11,6 +11,10 @@
 #include "drake/multibody/contact_solvers/sap/sap_friction_cone_constraint.h"
 #include "drake/multibody/contact_solvers/sap/sap_solver_results.h"
 #include "drake/multibody/contact_solvers/supernodal_solver.h"
+<<<<<<< HEAD
+=======
+#include "drake/multibody/contact_solvers/system_dynamics_data.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/systems/framework/context.h"
 
 using drake::systems::Context;

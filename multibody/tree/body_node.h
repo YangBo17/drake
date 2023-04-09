@@ -1062,10 +1062,33 @@ class BodyNode : public MultibodyElement<T> {
       // additional_diagonal_inertias.
       D_B.diagonal() += diagonal_inertias.segment(this->velocity_start(), nv);
 
+<<<<<<< HEAD
       // Compute the LLT factorization of D_B as llt_D_B.
       math::LinearSolver<Eigen::LLT, MatrixUpTo6<T>>& llt_D_B =
         get_mutable_llt_D_B(abic);
       CalcArticulatedBodyHingeInertiaMatrixFactorization(D_B, &llt_D_B);
+=======
+      // Compute the LDLT factorization of D_B as ldlt_D_B.
+      // TODO(bobbyluig): Test performance against inverse().
+      math::LinearSolver<Eigen::LDLT, MatrixUpTo6<T>>& ldlt_D_B =
+          get_mutable_ldlt_D_B(abic);
+      ldlt_D_B = math::LinearSolver<Eigen::LDLT, MatrixUpTo6<T>>(
+          MatrixUpTo6<T>(D_B.template selfadjointView<Eigen::Lower>()));
+
+      // Ensure that D_B (the articulated body hinge inertia) is not singular.
+      // Singularity means that a non-physical hinge mapping matrix was used or
+      // that this articulated body inertia has some non-physical quantities
+      // (such as zero moment of inertia along an axis which the hinge mapping
+      // matrix permits motion).
+      if (ldlt_D_B.eigen_linear_solver().info() != Eigen::Success) {
+        std::stringstream message;
+        message << "Encountered singular articulated body hinge inertia "
+                << "for body node index " << topology_.index << ". "
+                << "Please ensure that this body has non-zero inertia "
+                << "along all axes of motion.";
+        throw std::runtime_error(message.str());
+      }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
       // Compute the Kalman gain, g_PB_W, using (6).
       Matrix6xUpTo6<T>& g_PB_W = get_mutable_g_PB_W(abic);

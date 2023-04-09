@@ -620,6 +620,7 @@ void PackageMap::PopulateFromFolder(const std::string& path) {
   CrawlForPackages(path);
 }
 
+<<<<<<< HEAD
 void PackageMap::PopulateFromEnvironment(
     const std::string& environment_variable) {
   DRAKE_THROW_UNLESS(!environment_variable.empty());
@@ -627,6 +628,16 @@ void PackageMap::PopulateFromEnvironment(
     throw std::logic_error(
         "PackageMap::PopulateFromEnvironment() must not be used to load a "
         "\"ROS_PACKAGE_PATH\"; use PopulateFromRosPackagePath() instead.");
+=======
+void PackageMap::PopulateFromEnvironment(const string& environment_variable) {
+  DRAKE_DEMAND(!environment_variable.empty());
+  if (environment_variable == "ROS_PACKAGE_PATH") {
+    drake::log()->warn(
+      "PackageMap: PopulateFromEnvironment(\"ROS_PACKAGE_PATH\") is "
+      "deprecated, and will be disabled on or around 2022-11-01. To populate "
+      "manifests from ROS_PACKAGE_PATH, use PopulateFromRosPackagePath() "
+      "instead.");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
   const char* const value = std::getenv(environment_variable.c_str());
   if (value == nullptr) {
@@ -643,17 +654,28 @@ void PackageMap::PopulateFromEnvironment(
 
 void PackageMap::PopulateFromRosPackagePath() {
   const std::vector<std::string_view> stop_markers = {
+<<<<<<< HEAD
       "AMENT_IGNORE",
       "CATKIN_IGNORE",
       "COLCON_IGNORE",
+=======
+    "AMENT_IGNORE",
+    "CATKIN_IGNORE",
+    "COLCON_IGNORE",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   };
 
   const char* const value = std::getenv("ROS_PACKAGE_PATH");
   if (value == nullptr) {
     return;
   }
+<<<<<<< HEAD
   std::istringstream input{std::string(value)};
   std::string path;
+=======
+  std::istringstream input{string(value)};
+  string path;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   while (std::getline(input, path, ':')) {
     if (!path.empty()) {
       CrawlForPackages(path, true, stop_markers);
@@ -732,6 +754,7 @@ std::tuple<std::string, std::optional<std::string>> ParsePackageManifest(
 
 }  // namespace
 
+<<<<<<< HEAD
 void PackageMap::CrawlForPackages(
     const std::string& path, bool stop_at_package,
     const std::vector<std::string_view>& stop_markers) {
@@ -760,13 +783,68 @@ void PackageMap::CrawlForPackages(
             " and will continue using the previously-known path at '{}'.",
             path, package_name, existing_data.display_path());
       }
+=======
+bool PackageMap::AddPackageIfNew(const string& package_name,
+    const string& path) {
+  DRAKE_DEMAND(!package_name.empty());
+  DRAKE_DEMAND(!path.empty());
+  // Don't overwrite entries in the map.
+  if (!Contains(package_name)) {
+    drake::log()->trace(
+        "PackageMap: Adding package://{}: {}", package_name, path);
+    if (!filesystem::is_directory(path)) {
+      throw std::runtime_error(
+          "Could not add package://" + package_name + " to the search path "
+          "because directory " + path + " does not exist");
+    }
+    map_.insert(make_pair(package_name, PackageData{path}));
+  } else {
+    // Don't warn if we've found the same path with a different spelling.
+    const PackageData existing_data = map_.at(package_name);
+    if (!filesystem::equivalent(existing_data.path, path)) {
+      drake::log()->warn(
+          "PackageMap is ignoring newly-found path \"{}\" for package \"{}\""
+          " and will continue using the previously-known path at \"{}\".",
+          path, package_name, existing_data.path);
+      return false;
+    }
+  }
+  return true;
+}
+
+PackageMap::PackageMap(std::initializer_list<std::string> manifest_paths) {
+  for (const auto& manifest_path : manifest_paths) {
+    AddPackageXml(manifest_path);
+  }
+}
+
+void PackageMap::CrawlForPackages(const string& path, bool stop_at_package,
+    const std::vector<std::string_view>& stop_markers) {
+  DRAKE_DEMAND(!path.empty());
+  filesystem::path dir = filesystem::path(path).lexically_normal();
+  if (std::any_of(stop_markers.begin(), stop_markers.end(),
+      [dir](std::string_view name){return filesystem::exists(dir / name);})) {
+    return;
+  }
+  filesystem::path manifest = dir / "package.xml";
+  if (filesystem::exists(manifest)) {
+    const auto [package_name, deprecated_message] =
+        ParsePackageManifest(manifest.string());
+    const string package_path = dir.string();
+    if (AddPackageIfNew(package_name, package_path + "/")) {
+      SetDeprecated(package_name, deprecated_message);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     }
     if (stop_at_package) {
       return;
     }
   }
   std::error_code ec;
+<<<<<<< HEAD
   fs::directory_iterator iter(dir, ec);
+=======
+  filesystem::directory_iterator iter(dir, ec);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   if (ec) {
     log()->warn("Unable to open directory: {}", path);
     return;

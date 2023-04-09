@@ -247,6 +247,7 @@ class SnoptUserFunInfo {
     return nonlinear_cost_gradient_indices_;
   }
 
+<<<<<<< HEAD
   std::vector<int>& duplicate_to_G_index_map() {
     return duplicate_to_G_index_map_;
   }
@@ -259,6 +260,8 @@ class SnoptUserFunInfo {
 
   [[nodiscard]] int lenG() const { return lenG_; }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // If and only if the userfun experiences an exception, the exception message
   // will be stashed here. All callers of snOptA or similar must check this to
   // find out if there were any errors.
@@ -309,6 +312,7 @@ class SnoptUserFunInfo {
   const std::array<int, kIntCount> this_pointer_as_int_array_;
   const MathematicalProgram& prog_;
   std::set<int> nonlinear_cost_gradient_indices_;
+<<<<<<< HEAD
   // When evaluating the nonlinear costs/constraints, the Binding could contain
   // duplicated variables. We need to sum up the entries in the gradient vector
   // corresponding to the same constraint and variables. We first evaluate all
@@ -320,6 +324,8 @@ class SnoptUserFunInfo {
   // G_w_duplicate[i] to G[duplicate_to_G_index_map[i]].
   std::vector<int> duplicate_to_G_index_map_;
   int lenG_;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   std::optional<std::string> userfun_error_message_;
 };
@@ -583,8 +589,12 @@ void EvaluateCostsConstraints(
   }
 
   F[0] = 0.0;
+<<<<<<< HEAD
   memset(G, 0, info.lenG() * sizeof(double));
   std::vector<double> G_w_duplicate(info.duplicate_to_G_index_map().size(), 0);
+=======
+  memset(G, 0, n * sizeof(double));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   size_t grad_index = 0;
 
@@ -622,6 +632,26 @@ void EvaluateCostsConstraints(
   for (int i = 0; i < static_cast<int>(info.duplicate_to_G_index_map().size());
        ++i) {
     G[info.duplicate_to_G_index_map()[i]] += G_w_duplicate[i];
+  }
+}
+
+// This function is what SNOPT calls to compute the values and derivatives.
+// Because SNOPT calls this using the C ABI we cannot throw any exceptions,
+// otherwise macOS will immediately abort. Therefore, we need to catch all
+// exceptions and manually shepherd them back to our C++ code that called
+// into SNOPT.
+void snopt_userfun(int* Status, int* n, double x[], int* needF, int* neF,
+                   double F[], int* needG, int* neG, double G[], char* cu,
+                   int* lencu, int iu[], int* leniu, double ru[], int* lenru) {
+  SnoptUserFunInfo& info = SnoptUserFunInfo::GetFrom(iu, *leniu);
+  try {
+    EvaluateCostsConstraints(info, *n, x, F, G);
+  } catch (const std::exception& e) {
+    info.userfun_error_message() = fmt::format(
+        "Exception while evaluating SNOPT costs and constraints: '{}'",
+        e.what());
+    // The SNOPT manual says "Set Status < -1 if you want snOptA to stop."
+    *Status = -2;
   }
 }
 

@@ -327,6 +327,47 @@ class Mesh final : public Shape {
   // NOTE: Cannot be const to support default copy/move semantics.
   std::string filename_;
   double scale_{};
+<<<<<<< HEAD
+=======
+};
+
+/** Definition of a *convex* surface mesh.
+
+ The mesh is defined in a canonical frame C, implicit in the file parsed. Upon
+ loading it in SceneGraph it can be scaled around the origin of C by a given
+ `scale` amount. */
+class Convex final : public Shape {
+ public:
+  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Convex)
+
+  /** Constructs a convex shape specification from the file located at the
+   given _absolute_ file path. Optionally uniformly scaled by the given scale
+   factor.
+   @param absolute_filename     The file name with absolute path. We only
+                                support an .obj file with only one polyhedron.
+                                We assume that the polyhedron is convex.
+   @param scale                 An optional scale to coordinates.
+
+   @throws std::exception       if the .obj file doesn't define a single object.
+                                This can happen if it is empty, if there are
+                                multiple object-name statements (e.g.,
+                                "o object_name"), or if there are faces defined
+                                outside a single object-name statement.
+   @throws std::exception       if |scale| < 1e-8. Note that a negative scale is
+                                considered valid. We want to preclude scales
+                                near zero but recognise that scale is a
+                                convenience tool for "tweaking" models. 8 orders
+                                of magnitude should be plenty without
+                                considering revisiting the model itself. */
+  explicit Convex(const std::string& absolute_filename, double scale = 1.0);
+
+  const std::string& filename() const { return filename_; }
+  double scale() const { return scale_; }
+
+ private:
+  std::string filename_;
+  double scale_{};
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 // TODO(russt): Rename this to `Cone` if/when it is supported by more of the
@@ -365,6 +406,7 @@ class MeshcatCone final : public Shape {
   double height_{};
   double a_{};
   double b_{};
+<<<<<<< HEAD
 };
 
 /** Definition of sphere. It is centered in its canonical frame with the
@@ -382,6 +424,8 @@ class Sphere final : public Shape {
 
  private:
   double radius_{};
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 /** The interface for converting shape descriptions to real shapes. Any entity
@@ -476,6 +520,7 @@ class ShapeName final : public ShapeReifier {
 
   using ShapeReifier::ImplementGeometry;
 
+<<<<<<< HEAD
   void ImplementGeometry(const Box&, void*) final;
   void ImplementGeometry(const Capsule&, void*) final;
   void ImplementGeometry(const Convex&, void*) final;
@@ -485,6 +530,17 @@ class ShapeName final : public ShapeReifier {
   void ImplementGeometry(const Mesh&, void*) final;
   void ImplementGeometry(const MeshcatCone&, void*) final;
   void ImplementGeometry(const Sphere&, void*) final;
+=======
+  void ImplementGeometry(const Sphere&, void*) final;
+  void ImplementGeometry(const Cylinder&, void*) final;
+  void ImplementGeometry(const HalfSpace&, void*) final;
+  void ImplementGeometry(const Box&, void*) final;
+  void ImplementGeometry(const Capsule&, void*) final;
+  void ImplementGeometry(const Ellipsoid&, void*) final;
+  void ImplementGeometry(const Mesh&, void*) final;
+  void ImplementGeometry(const Convex&, void*) final;
+  void ImplementGeometry(const MeshcatCone&, void*) final;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   //@}
 

@@ -1,8 +1,11 @@
 #pragma once
 
 #include <ostream>
+<<<<<<< HEAD
 
 #include "drake/common/fmt_ostream.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 namespace drake {
 namespace solvers {

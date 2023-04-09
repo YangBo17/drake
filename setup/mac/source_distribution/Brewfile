@@ -3,5 +3,9 @@
 
 tap 'robotlocomotion/director'
 
+<<<<<<< HEAD
 brew 'bazelisk'
+=======
+brew 'bazel'
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 brew 'robotlocomotion/director/clang-format@12'

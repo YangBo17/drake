@@ -148,6 +148,7 @@ drake_py_unittest(
         "//geometry:meshcat_websocket_client",
         "//manipulation/util:test_models",
         "//multibody/benchmarks/acrobot:models",
+        "//multibody/meshcat:models",
     ],
     deps = [
         ":model_visualizer",

@@ -8,9 +8,17 @@ load(
     "wsg_50_hydro_bubble_mesh_files",
 )
 
+<<<<<<< HEAD
 models_filegroup(
     name = "glob_models",
     glob_exclude = ["images/**/*"],
+=======
+_WSG_50_HYDRO_BUBBLE_MESHES = forward_files(
+    srcs = ["@models_internal//:" +
+            x for x in wsg_50_hydro_bubble_mesh_files()],
+    dest_prefix = "",
+    strip_prefix = "@models_internal//:wsg_50_hydro_bubble/",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     visibility = ["//visibility:private"],
 )
 

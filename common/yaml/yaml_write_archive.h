@@ -16,6 +16,7 @@
 #include <fmt/format.h>
 
 #include "drake/common/drake_copyable.h"
+#include "drake/common/drake_deprecated.h"
 #include "drake/common/name_value.h"
 #include "drake/common/nice_type_name.h"
 #include "drake/common/yaml/yaml_node.h"
@@ -65,11 +66,14 @@ class YamlWriteArchive final {
   // nullness is defined as above.
   std::string EmitString(const std::string& root_name = "root") const;
 
+<<<<<<< HEAD
   // Returns the JSON string for whatever Serializable was most recently passed
   // into Accept. A std::optional<T> value that is set to std::nullopt will be
   // entirely omitted from the result, not serialized as "null".
   std::string ToJson() const;
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // Removes from this archive any map entries that are identical to an entry
   // in `other`, iff they reside at the same location within the node tree
   // hierarchy, and iff their parent nodes (and grandparent, etc., all the way
@@ -223,6 +227,7 @@ class YamlWriteArchive final {
       // ".0" when formatting integer-valued floating-point numbers.  Force
       // the ".0" in all cases by using the "#" option for floats.  Also be
       // sure to add the required leading period for special values.
+<<<<<<< HEAD
       auto scalar = internal::Node::MakeScalar(
           fmt::format("{}{:#}", std::isfinite(value) ? "" : ".", value));
       scalar.SetTag(internal::JsonSchemaTag::kFloat);
@@ -237,6 +242,14 @@ class YamlWriteArchive final {
       scalar.SetTag(internal::JsonSchemaTag::kInt);
     }
     root_.Add(nvp.name(), std::move(scalar));
+=======
+      root_.Add(nvp.name(), internal::Node::MakeScalar(
+          fmt::format("{}{:#}", std::isfinite(value) ? "" : ".", value)));
+      return;
+    }
+    root_.Add(nvp.name(), internal::Node::MakeScalar(
+        fmt::format("{}", value)));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   // This is used for std::optional or similar.
@@ -374,5 +387,13 @@ class YamlWriteArchive final {
 };
 
 }  // namespace internal
+<<<<<<< HEAD
+=======
+
+using YamlWriteArchive
+    DRAKE_DEPRECATED("2022-09-01", "Use the yaml_io.h functions instead")
+    = internal::YamlWriteArchive;
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace yaml
 }  // namespace drake

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # -*- bazel -*-
+=======
+# -*- python -*-
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 load(
     "@drake//tools/workspace:cmake_configure_file.bzl",
@@ -35,6 +39,10 @@ cmake_configure_file(
         "HAVE_FPCLASSIFY=1",
         "HAVE_ISINF=1",
         "HAVE_ISNAN=1",
+<<<<<<< HEAD
+=======
+        "HAVE_LIBM=1",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "HAVE_QSORT_R=1",
         "HAVE_STDINT_H=1",
         "HAVE_UINT32_T=1",

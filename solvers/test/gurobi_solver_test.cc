@@ -297,6 +297,7 @@ GTEST_TEST(TestSOCP, MaximizeGeometricMeanTrivialProblem2) {
 GTEST_TEST(TestSOCP, SmallestEllipsoidCoveringProblem) {
   GurobiSolver solver;
   SolveAndCheckSmallestEllipsoidCoveringProblems(solver, {}, 1E-6);
+<<<<<<< HEAD
 }
 
 GTEST_TEST(TestSOCP, TestSocpDuplicatedVariable1) {
@@ -307,6 +308,8 @@ GTEST_TEST(TestSOCP, TestSocpDuplicatedVariable1) {
 GTEST_TEST(TestSOCP, TestSocpDuplicatedVariable2) {
   GurobiSolver solver;
   TestSocpDuplicatedVariable2(solver, std::nullopt, 1E-6);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 GTEST_TEST(GurobiTest, MultipleThreadsSharingEnvironment) {

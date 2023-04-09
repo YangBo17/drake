@@ -29,6 +29,7 @@ LcmBuses ApplyLcmBusConfig(
     const std::map<std::string, drake::lcm::DrakeLcmParams>& lcm_buses,
     systems::DiagramBuilder<double>* builder);
 
+<<<<<<< HEAD
 /** (Advanced) Returns an LCM interface based on a convenient set of heuristics.
 
 If the `forced_result` is non-null, then returns `forced_result` and does
@@ -56,6 +57,8 @@ drake::lcm::DrakeLcmInterface* FindOrCreateLcmBus(
     std::string_view description_of_caller,
     const std::string& bus_name);
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace lcm
 }  // namespace systems
 }  // namespace drake

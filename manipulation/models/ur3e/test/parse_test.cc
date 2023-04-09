@@ -15,8 +15,13 @@ GTEST_TEST(ParseTest, SpheresCollision) {
   geometry::SceneGraph<double> scene_graph;
   plant.RegisterAsSourceForSceneGraph(&scene_graph);
   multibody::Parser parser(&plant);
+<<<<<<< HEAD
   parser.AddModels(FindResourceOrThrow(
       "drake/manipulation/models/ur3e/ur3e_spheres_collision.urdf"));
+=======
+  parser.AddModelFromFile(FindResourceOrThrow(
+          "drake/manipulation/models/ur3e/ur3e_spheres_collision.urdf"));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   plant.WeldFrames(plant.world_frame(), plant.GetFrameByName("ur_base_link"));
   plant.Finalize();
 
@@ -28,8 +33,13 @@ GTEST_TEST(ParseTest, CylindersCollision) {
   geometry::SceneGraph<double> scene_graph;
   plant.RegisterAsSourceForSceneGraph(&scene_graph);
   multibody::Parser parser(&plant);
+<<<<<<< HEAD
   parser.AddModels(FindResourceOrThrow(
       "drake/manipulation/models/ur3e/ur3e_cylinders_collision.urdf"));
+=======
+  parser.AddModelFromFile(FindResourceOrThrow(
+          "drake/manipulation/models/ur3e/ur3e_cylinders_collision.urdf"));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   plant.WeldFrames(plant.world_frame(), plant.GetFrameByName("ur_base_link"));
   plant.Finalize();
 

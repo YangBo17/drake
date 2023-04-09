@@ -8,7 +8,10 @@
 #include "drake/systems/primitives/shared_pointer_system.h"
 
 using drake::lcm::DrakeLcm;
+<<<<<<< HEAD
 using drake::lcm::DrakeLcmInterface;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 using drake::lcm::DrakeLcmParams;
 using drake::systems::DiagramBuilder;
 using drake::systems::SharedPointerSystem;
@@ -49,6 +52,7 @@ LcmBuses ApplyLcmBusConfig(
   return result;
 }
 
+<<<<<<< HEAD
 DrakeLcmInterface* FindOrCreateLcmBus(
     DrakeLcmInterface* forced_result,
     const LcmBuses* lcm_buses,
@@ -73,6 +77,8 @@ DrakeLcmInterface* FindOrCreateLcmBus(
   return lcm_buses->Find(description_of_caller, bus_name);
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace lcm
 }  // namespace systems
 }  // namespace drake

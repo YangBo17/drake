@@ -187,9 +187,13 @@ ParseLinearEqualityConstraint(const Eigen::MatrixBase<DerivedV>& V,
  * constraint binding.
  */
 [[nodiscard]] Binding<QuadraticConstraint> ParseQuadraticConstraint(
+<<<<<<< HEAD
     const symbolic::Expression& e, double lower_bound, double upper_bound,
     std::optional<QuadraticConstraint::HessianType> hessian_type =
         std::nullopt);
+=======
+    const symbolic::Expression& e, double lower_bound, double upper_bound);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 /*
  * Assist MathematicalProgram::AddPolynomialConstraint(...).

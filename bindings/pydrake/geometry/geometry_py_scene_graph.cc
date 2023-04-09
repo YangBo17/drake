@@ -220,7 +220,19 @@ void DoScalarDependentDefinitions(py::module m, T) {
                     std::unique_ptr<GeometryInstance>>(
                     &Class::RegisterGeometry)),
             py::arg("source_id"), py::arg("geometry_id"), py::arg("geometry"),
+<<<<<<< HEAD:bindings/pydrake/geometry/geometry_py_scene_graph.cc
             cls_doc.RegisterGeometry.doc_deprecated_3args)
+=======
+            cls_doc.RegisterGeometry.doc_3args_source_id_geometry_id_geometry)
+        .def("RegisterGeometry",
+            overload_cast_explicit<GeometryId, systems::Context<T>*, SourceId,
+                FrameId, std::unique_ptr<GeometryInstance>>(
+                &Class::RegisterGeometry),
+            py::arg("context"), py::arg("source_id"), py::arg("frame_id"),
+            py::arg("geometry"),
+            cls_doc.RegisterGeometry
+                .doc_4args_context_source_id_frame_id_geometry)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/geometry_py_scene_graph.cc
         .def("RegisterGeometry",
             overload_cast_explicit<GeometryId, systems::Context<T>*, SourceId,
                 GeometryId, std::unique_ptr<GeometryInstance>>(
@@ -228,6 +240,7 @@ void DoScalarDependentDefinitions(py::module m, T) {
             py::arg("context"), py::arg("source_id"), py::arg("geometry_id"),
             py::arg("geometry"),
             cls_doc.RegisterGeometry
+<<<<<<< HEAD:bindings/pydrake/geometry/geometry_py_scene_graph.cc
                 .doc_4args_context_source_id_geometry_id_geometry);
 #pragma GCC diagnostic pop
     cls  // BR
@@ -237,6 +250,9 @@ void DoScalarDependentDefinitions(py::module m, T) {
                 &Class::RegisterGeometry),
             py::arg("context"), py::arg("source_id"), py::arg("frame_id"),
             py::arg("geometry"), cls_doc.RegisterGeometry.doc_4args)
+=======
+                .doc_4args_context_source_id_geometry_id_geometry)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/geometry_py_scene_graph.cc
         .def("RegisterAnchoredGeometry",
             py::overload_cast<SourceId, std::unique_ptr<GeometryInstance>>(
                 &Class::RegisterAnchoredGeometry),
@@ -391,6 +407,16 @@ void DoScalarDependentDefinitions(py::module m, T) {
         .def("has_id", &FramePoseVector<T>::has_id, py::arg("id"),
             doc.KinematicsVector.has_id.doc)
         .def("ids", &FramePoseVector<T>::ids, doc.KinematicsVector.ids.doc);
+<<<<<<< HEAD:bindings/pydrake/geometry/geometry_py_scene_graph.cc
+=======
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    cls.def("frame_ids",
+        WrapDeprecated(doc.KinematicsVector.frame_ids.doc_deprecated,
+            &FramePoseVector<T>::frame_ids),
+        doc.KinematicsVector.frame_ids.doc_deprecated);
+#pragma GCC diagnostic pop
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/geometry_py_scene_graph.cc
     AddValueInstantiation<FramePoseVector<T>>(m);
   }
 

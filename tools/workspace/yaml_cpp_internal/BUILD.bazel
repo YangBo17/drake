@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load("//tools/lint:lint.bzl", "add_lint_tests")
 
 add_lint_tests()

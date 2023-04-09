@@ -35,8 +35,15 @@ class TestLcm(unittest.TestCase):
         dut.defer_initialization = True
         instance = DrakeLcm(params=dut)
         self.assertTrue(instance.get_lcm_url(), "memq://123")
+<<<<<<< HEAD
         self.assertIn("lcm_url", repr(dut))
         copy.copy(dut)
+=======
+
+    def test_deprecated(self):
+        with catch_drake_warnings(expected_count=1):
+            DrakeLcm(lcm_url="", defer_initialization=True)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
     def _handler(self, raw):
         quat = lcmt_quaternion.decode(raw)

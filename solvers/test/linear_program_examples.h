@@ -79,7 +79,11 @@ class LinearProgram1 : public OptimizationProgram {
 };
 
 // Test a simple linear programming problem
+<<<<<<< HEAD
 // Adapted from https://docs.mosek.com/10.0/capi/tutorial-lo-shared.html
+=======
+// Adapted from https://docs.mosek.com/9.3/capi/tutorial-lo-shared.html
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 // min -3x0 - x1 - 5x2 - x3
 // s.t     3x0 +  x1 + 2x2        = 30
 //   15 <= 2x0 +  x1 + 3x2 +  x3 <= inf

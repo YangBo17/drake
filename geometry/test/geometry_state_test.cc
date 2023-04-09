@@ -109,10 +109,13 @@ class GeometryStateTester {
 
   const IdPoseMap<T>& get_geometry_world_poses() const {
     return state_->kinematics_data_.X_WGs;
+<<<<<<< HEAD
   }
 
   const IdConfigurationMap<T>& get_geometry_world_configurations() const {
     return state_->kinematics_data_.q_WGs;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   const vector<RigidTransform<T>>& get_frame_world_poses() const {
@@ -142,12 +145,15 @@ class GeometryStateTester {
     state_->FinalizePoseUpdate(state_->kinematics_data_,
                                &state_->mutable_proximity_engine(),
                                state_->GetMutableRenderEngines());
+<<<<<<< HEAD
   }
 
   void FinalizeConfigurationUpdate() {
     state_->FinalizeConfigurationUpdate(state_->kinematics_data_,
                                         &state_->mutable_proximity_engine(),
                                         state_->GetMutableRenderEngines());
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   template <typename ValueType>
@@ -1767,10 +1773,15 @@ TEST_F(GeometryStateTest, RegisterDeformableGeometry) {
       "Registering deformable geometry.*non-world frame.*");
 
   /* Successful registration of deformable geometry. */
+<<<<<<< HEAD
   const RigidTransformd X_WG(AngleAxis<double>(M_PI_2, Vector3d::UnitX()),
                              Vector3d{1, 2, 3});
   auto instance2 = make_unique<GeometryInstance>(
       X_WG, make_unique<Sphere>(sphere), "sphere");
+=======
+  auto instance2 = make_unique<GeometryInstance>(
+      RigidTransformd::Identity(), make_unique<Sphere>(sphere), "sphere");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const GeometryId expected_g_id = instance2->id();
   const auto g_id = geometry_state_.RegisterDeformableGeometry(
       s_id, InternalFrame::world_frame_id(), move(instance2), kRezHint);
@@ -1790,6 +1801,7 @@ TEST_F(GeometryStateTest, RegisterDeformableGeometry) {
   ASSERT_NE(reference_mesh, nullptr);
   EXPECT_TRUE(reference_mesh->Equal(expected_mesh));
 
+<<<<<<< HEAD
   // Querying the _reference_ pose is fine.
   EXPECT_TRUE(geometry_state_.GetPoseInFrame(g_id).IsExactlyEqualTo(X_WG));
 #pragma GCC diagnostic push
@@ -1800,6 +1812,12 @@ TEST_F(GeometryStateTest, RegisterDeformableGeometry) {
   // Querying _current_ pose on deformable geometry throws. (Deformable
   // geometries are characterized by vertex positions via
   // get_configurations_in_world.)
+=======
+  // Verify querying pose on deformable geometry throws. (Deformable geometries
+  // are characterized by vertex positions.)
+  EXPECT_THROW(geometry_state_.GetPoseInFrame(g_id), std::exception);
+  EXPECT_THROW(geometry_state_.GetPoseInParent(g_id), std::exception);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   EXPECT_THROW(geometry_state_.get_pose_in_world(g_id), std::exception);
 
   // Verify vertex positions can be retrieved.
@@ -1821,6 +1839,7 @@ TEST_F(GeometryStateTest, RegisterDeformableGeometry) {
   EXPECT_EQ(deformable_ids[0], g_id);
 }
 
+<<<<<<< HEAD
 // GetAllDeformableGeometryIds should pull *only* deformable geometry ids and
 // should get them from all sources. Finally, the list should be ordered.
 TEST_F(GeometryStateTest, GetAllDeformableGeometryIds) {
@@ -2126,6 +2145,27 @@ TEST_F(GeometryStateTest, SetGeometryConfiguration) {
   gs_tester_.FinalizeConfigurationUpdate();
   geometry_state_.ComputeDeformableContact(&contacts);
   ASSERT_EQ(contacts.contact_surfaces().size(), 0);
+=======
+TEST_F(GeometryStateTest, SetGeometryConfiguration) {
+  const SourceId s_id = NewSource("new source");
+  auto instance = make_unique<GeometryInstance>(
+      RigidTransformd::Identity(), make_unique<Sphere>(1.0), "sphere");
+  const auto g_id = geometry_state_.RegisterDeformableGeometry(
+      s_id, InternalFrame::world_frame_id(), move(instance),
+      /* resolution_hint */ 0.5);
+  const VectorX<double> default_configuration =
+      geometry_state_.get_configurations_in_world(g_id);
+  VectorX<double> new_configuration(default_configuration.size());
+  new_configuration.setZero();
+  EXPECT_FALSE(CompareMatrices(default_configuration, new_configuration, 0.1));
+
+  GeometryConfigurationVector<double> configurations;
+  configurations.set_value(g_id, new_configuration);
+  gs_tester_.SetGeometryConfiguration(
+      s_id, configurations, &gs_tester_.mutable_kinematics_data());
+  EXPECT_EQ(new_configuration,
+            geometry_state_.get_configurations_in_world(g_id));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 // Tests the RemoveGeometry() functionality. This action will have several

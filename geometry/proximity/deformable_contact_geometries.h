@@ -20,9 +20,77 @@ namespace geometry {
 namespace internal {
 namespace deformable {
 
+<<<<<<< HEAD
 // TODO(xuchenhan-tri): Consider supporting AutoDiffXd.
 /* Definition of a deformable geometry for contact evaluations. To be
  considered as deformable, a geometry must be associated with both:
+=======
+/* Definition of a deformable body's geometry at the reference configuration.
+ It includes a volume mesh and a scalar field approximating the signed distance
+ to the surface of the mesh defined on the interior of the geometry. This class
+ is similar to geometry::internal::hydroelastic::SoftMesh with two distinctions:
+ 1. This class doesn't provide a bounding volume hierarchy.
+ 2. This class calculates an approximate signed distance field (meters, negative
+    inside) instead of taking a prescribed pressure field (Pascals, positive
+    inside). */
+class ReferenceDeformableGeometry : public ShapeReifier {
+ public:
+  // TODO(xuchenhan-tri): Consider if it's possible to take a const pointer to
+  // the mesh instead of owning a copy of the mesh.
+  /* Constructs a deformable geometry at reference configuration with the given
+  `shape` and its spatial discretization `mesh`. An internal approximate signed
+  distance field in the `mesh` (to the surface of `shape`) is created at
+  construction.
+  @param shape  The shape of the deformable geometry in reference configuration.
+  @param mesh   A reasonable tetrahedral tessellation of the given `shape`. */
+  ReferenceDeformableGeometry(const Shape& shape, VolumeMesh<double> mesh);
+
+  /* Custom copy assign and construct. */
+  ReferenceDeformableGeometry& operator=(const ReferenceDeformableGeometry&);
+  ReferenceDeformableGeometry(const ReferenceDeformableGeometry&);
+  /* Default move assign and construct. */
+  ReferenceDeformableGeometry(ReferenceDeformableGeometry&&) = default;
+  ReferenceDeformableGeometry& operator=(ReferenceDeformableGeometry&&) =
+      default;
+
+  /* Returns the volume mesh representation of the deformable geometry at
+   reference configuration. */
+  const VolumeMesh<double>& mesh() const {
+    DRAKE_DEMAND(mesh_ != nullptr);
+    return *mesh_;
+  }
+
+  /* Returns the approximate signed distance field (sdf) to the surface of the
+   deformable geometry in the reference configuration. More specifically, the
+   sdf value at each vertex is exact (to the accuracy of the distance query
+   algorithm), and the values in the interior of the mesh are linearly
+   interpolated from vertex values. */
+  const VolumeMeshFieldLinear<double, double>& signed_distance_field() const {
+    DRAKE_DEMAND(signed_distance_field_ != nullptr);
+    return *signed_distance_field_;
+  }
+
+ private:
+  /* Data to be used during reification. It is passed as the `user_data`
+   parameter in the ImplementGeometry API. */
+  struct ReifyData {
+    std::vector<double> signed_distance;
+  };
+
+  std::vector<double> ComputeSignedDistanceOfVertices(const Shape& shape);
+
+  using ShapeReifier::ImplementGeometry;
+  void ImplementGeometry(const Sphere& sphere, void* user_data) override;
+  void ImplementGeometry(const Box& box, void* user_data) override;
+
+  std::unique_ptr<VolumeMesh<double>> mesh_{nullptr};
+  std::unique_ptr<VolumeMeshFieldLinear<double, double>> signed_distance_field_{
+      nullptr};
+};
+
+/* Definition of a deformable geometry for contact implementations. To be a
+ deformable geometry, a shape must be associated with both:
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    - a deformable volume mesh, and
    - an approximate signed distance field in the interior of the mesh. */
 class DeformableGeometry {

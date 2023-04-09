@@ -15,7 +15,10 @@ elements except Constant, the bit pattern must have have 0x7FF0 bits set but
 must not be exactly 0x7FF0 nor 0xFFF0 (reserved for ±infinity). Refer to the
 details in boxed_cell.h for more information. */
 enum class ExpressionKind : std::uint16_t {
+<<<<<<< HEAD
   // clang-format off
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   Constant = 0,           ///< constant (double)
   Var = 0x7FF1u,          ///< variable
   Add,                    ///< addition (+)
@@ -46,7 +49,10 @@ enum class ExpressionKind : std::uint16_t {
   NaN,                    ///< NaN
   UninterpretedFunction,  ///< Uninterpreted function
   // TODO(soonho): add Integral
+<<<<<<< HEAD
   // clang-format on
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 /** Total ordering between ExpressionKinds. */

@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 load(
     "@drake//tools/skylark:drake_cc.bzl",
     "drake_cc_googletest",
@@ -34,9 +39,13 @@ def drake_cc_variant_library(
         hdrs,
         interface_deps,
         deps_always,
+<<<<<<< HEAD
         deps_enabled,
         internal = False,
         visibility = None):
+=======
+        deps_enabled):
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     """Declares a library with a uniform set of header files (typically just
     one header file) but with two different cc file implementations, depending
     on a configuration setting. This is how we turn on/off specific solver
@@ -81,8 +90,11 @@ def drake_cc_variant_library(
             opt_in_condition: deps_always + deps_enabled,
             opt_out_condition: deps_always,
         }),
+<<<<<<< HEAD
         internal = internal,
         visibility = visibility,
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     )
     cpplint_extra(
         name = name + "_cpplint",
@@ -159,8 +171,12 @@ def drake_cc_optional_googletest(
         opt_in_condition = None,
         opt_out_condition = None,
         tags = None,
+<<<<<<< HEAD
         deps,
         use_default_main = True):
+=======
+        deps):
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     """Declares a test that is not even compiled under certain configurations.
 
     This is intended only for testing of drake_cc_optional_library targets,
@@ -183,12 +199,15 @@ def drake_cc_optional_googletest(
         opt_out_condition,
     )
     srcs = ["test/{}.cc".format(name)]
+<<<<<<< HEAD
     if use_default_main:
         opt_out_deps = []
     else:
         # The `srcs` provide a main() function, but in the opt_out case we
         # won't be linking them; to cope, we'll fall back to the default main.
         opt_out_deps = ["//common/test_utilities:drake_cc_googletest_main"]
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     drake_cc_googletest(
         name = name,
         srcs = select({
@@ -198,9 +217,14 @@ def drake_cc_optional_googletest(
         tags = tags,
         deps = select({
             opt_in_condition: deps,
+<<<<<<< HEAD
             opt_out_condition: opt_out_deps,
         }),
         use_default_main = use_default_main,
+=======
+            opt_out_condition: [],
+        }),
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     )
     cpplint_extra(
         name = name + "_cpplint",

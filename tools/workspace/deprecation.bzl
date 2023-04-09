@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 def _impl(repo_ctx):
     name = repo_ctx.attr.name
     date = repo_ctx.attr.date

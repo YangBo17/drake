@@ -65,7 +65,10 @@ RUN --mount=type=ssh \
 
 ADD image/build-wheel.sh /image/
 ADD image/setup.py /opt/drake-wheel-build/wheel/
+<<<<<<< HEAD
 ADD content /opt/drake-wheel-content
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 ENV DRAKE_VERSION=${DRAKE_VERSION}
 

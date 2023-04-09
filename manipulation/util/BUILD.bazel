@@ -190,6 +190,7 @@ drake_cc_googletest(
     ],
 )
 
+<<<<<<< HEAD
 drake_cc_googletest(
     name = "zero_force_driver_functions_test",
     data = [
@@ -248,7 +249,24 @@ filegroup(
     srcs = [
         ":test/simple_nested_model.sdf",
         ":test/simple_world_with_two_models.sdf",
+=======
+filegroup(
+    name = "test_models",
+    srcs = [
+        ":test/simple_nested_model.sdf",
+        ":test/simple_world_with_two_models.sdf",
     ],
+)
+
+drake_py_unittest(
+    name = "show_model_test",
+    data = [
+        ":show_model",
+        ":test_models",
+        "//multibody/benchmarks/acrobot:models",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
+    ],
+    deps = ["@bazel_tools//tools/python/runfiles"],
 )
 
 drake_py_unittest(

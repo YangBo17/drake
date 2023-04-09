@@ -91,6 +91,24 @@ std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(
   // For the geometry elements parsed by sdformat, assume that all elements
   // are supported and that sdformat is checking the schema.
 
+  const std::set<std::string> supported_geometry_elements{
+    "box",
+    "capsule",
+    "cylinder",
+    "drake:capsule",
+    "drake:ellipsoid",
+    "ellipsoid",
+    "empty",
+    "heightmap",
+    "mesh",
+    "plane",
+    "polyline",
+    "sphere"};
+  CheckSupportedElements(
+      diagnostic, sdf_geometry.Element(), supported_geometry_elements);
+  // For the geometry elements parsed by sdformat, assume that all elements
+  // are supported and that sdformat is checking the schema.
+
   switch (sdf_geometry.Type()) {
     case sdf::GeometryType::EMPTY: {
       // TODO(azeey): We should deprecate use of <drake:capsule> and
@@ -103,6 +121,7 @@ std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(
             sdf_geometry.Element()->GetElement("drake:capsule");
         CheckSupportedElements(
             diagnostic, capsule_element, {"radius", "length"});
+<<<<<<< HEAD
         std::optional<const double> radius =
             GetChildElementValue<double>(diagnostic, capsule_element, "radius");
         if (!radius.has_value()) return std::nullopt;
@@ -110,11 +129,19 @@ std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(
             GetChildElementValue<double>(diagnostic, capsule_element, "length");
         if (!length.has_value()) return std::nullopt;
         return make_unique<geometry::Capsule>(*radius, *length);
+=======
+        const double radius =
+            GetChildElementValue<double>(*capsule_element, "radius");
+        const double length =
+            GetChildElementValue<double>(*capsule_element, "length");
+        return make_unique<geometry::Capsule>(radius, length);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       } else if (sdf_geometry.Element()->HasElement("drake:ellipsoid")) {
         const sdf::ElementPtr ellipsoid_element =
             sdf_geometry.Element()->GetElement("drake:ellipsoid");
         CheckSupportedElements(
             diagnostic, ellipsoid_element, {"a", "b", "c"});
+<<<<<<< HEAD
         std::optional<const double> a =
             GetChildElementValue<double>(diagnostic, ellipsoid_element, "a");
         if (!a.has_value()) return std::nullopt;
@@ -125,6 +152,15 @@ std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(
             GetChildElementValue<double>(diagnostic, ellipsoid_element, "c");
         if (!c.has_value()) return std::nullopt;
         return make_unique<geometry::Ellipsoid>(*a, *b, *c);
+=======
+        const double a =
+            GetChildElementValue<double>(*ellipsoid_element, "a");
+        const double b =
+            GetChildElementValue<double>(*ellipsoid_element, "b");
+        const double c =
+            GetChildElementValue<double>(*ellipsoid_element, "c");
+        return make_unique<geometry::Ellipsoid>(a, b, c);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       }
 
       return std::unique_ptr<geometry::Shape>(nullptr);
@@ -210,11 +246,19 @@ std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(
 
 static constexpr char kAcceptingTag[] = "drake:accepting_renderer";
 
+<<<<<<< HEAD
 std::optional<std::unique_ptr<GeometryInstance>>
     MakeGeometryInstanceFromSdfVisual(
         const SDFormatDiagnostic& diagnostic,
         const sdf::Visual& sdf_visual, ResolveFilename resolve_filename,
         const math::RigidTransformd& X_LG) {
+=======
+std::unique_ptr<GeometryInstance> MakeGeometryInstanceFromSdfVisual(
+    const DiagnosticPolicy& diagnostic,
+    const sdf::Visual& sdf_visual, ResolveFilename resolve_filename,
+    const math::RigidTransformd& X_LG) {
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const std::set<std::string> supported_visual_elements{
     "geometry",
     "material",
@@ -322,7 +366,11 @@ std::optional<IllustrationProperties> MakeVisualPropertiesFromSdfVisual(
   const sdf::ElementConstPtr material_element =
       visual_element->FindElement("material");
 
+<<<<<<< HEAD
   if (material_element.get() != nullptr) {
+=======
+  if (material_element != nullptr) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const std::set<std::string> supported_material_elements{
       "ambient",
       "diffuse",
@@ -467,8 +515,13 @@ std::optional<ProximityProperties> MakeProximityPropertiesForCollision(
   CheckSupportedElementValue(
       diagnostic, collision_element, "laser_retro", "0");
 
+<<<<<<< HEAD
   const sdf::ElementConstPtr drake_element =
       collision_element->FindElement("drake:proximity_properties");
+=======
+  const sdf::Element* const drake_element =
+      MaybeGetChildElement(*collision_element, "drake:proximity_properties");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   geometry::ProximityProperties properties;
   if (drake_element != nullptr) {
@@ -539,6 +592,7 @@ std::optional<ProximityProperties> MakeProximityPropertiesForCollision(
   } else {
     // We parsed friction from <drake:proximity_properties>; test for the
     // existence of the legacy mechanism and warn we're not using it.
+<<<<<<< HEAD
     const sdf::ElementConstPtr surface_element =
         collision_element->FindElement("surface");
     if (surface_element.get()) {
@@ -554,6 +608,23 @@ std::optional<ProximityProperties> MakeProximityPropertiesForCollision(
             ode_element->FindElement("mu2").get()) {
           diagnostic.Warning(ode_element,
               fmt::format("In <collision name='{}'>: "
+=======
+    const sdf::Element* const surface_element =
+        MaybeGetChildElement(*collision_element, "surface");
+    if (surface_element) {
+      CheckSupportedElements(diagnostic, surface_element, {"friction"});
+      const sdf::Element* friction_element =
+          MaybeGetChildElement(*surface_element, "friction");
+      if (friction_element) {
+      CheckSupportedElements(diagnostic, friction_element, {"ode"});
+        const sdf::Element* ode_element =
+            MaybeGetChildElement(*friction_element, "ode");
+        CheckSupportedElements(diagnostic, ode_element, {"mu", "mu2"});
+        if (MaybeGetChildElement(*ode_element, "mu") ||
+            MaybeGetChildElement(*ode_element, "mu2")) {
+          diagnostic.Warning(fmt::format(
+              "In <collision name='{}'>: "
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
               "When drake contact parameters are fully specified in the "
               "<drake:proximity_properties> tag, the <surface><friction><ode>"
               "<mu*> tags are ignored.",

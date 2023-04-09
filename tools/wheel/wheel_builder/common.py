@@ -9,9 +9,12 @@ import sys
 # Location where most of the build will take place.
 build_root = '/opt/drake-wheel-build'
 
+<<<<<<< HEAD
 # Location where testing of the wheel will take place.
 test_root = '/opt/drake-wheel-test'
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 # Location where the wheel will be produced.
 wheelhouse = os.path.join(build_root, 'wheel', 'wheelhouse')
 

@@ -36,6 +36,10 @@ class ContactVisualizerTest : public ::testing::Test {
         multibody::AddMultibodyPlantSceneGraph(&builder, 0.001);
 
     // Add the point contact spheres and joints.
+<<<<<<< HEAD
+=======
+    multibody::Parser parser(&plant);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const std::string sdf = FindResourceOrThrow(
         "drake/examples/manipulation_station/models/sphere.sdf");
     auto sphere1_model = Parser(&plant, "sphere1").AddModels(sdf).at(0);
@@ -58,8 +62,12 @@ class ContactVisualizerTest : public ::testing::Test {
     // Add the hydroelastic spheres and joints between them.
     const std::string hydro_sdf = FindResourceOrThrow(
         "drake/multibody/meshcat/test/hydroelastic.sdf");
+<<<<<<< HEAD
     multibody::Parser parser(&plant);
     parser.AddModels(hydro_sdf);
+=======
+    parser.AddModelFromFile(hydro_sdf);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const auto& body1 = plant.GetBodyByName("body1");
     plant.AddJoint<multibody::PrismaticJoint>(
         "body1", plant.world_body(), std::nullopt, body1, std::nullopt,
@@ -67,6 +75,7 @@ class ContactVisualizerTest : public ::testing::Test {
     const auto& body2 = plant.GetBodyByName("body2");
     plant.AddJoint<multibody::PrismaticJoint>(
         "body2", plant.world_body(), std::nullopt, body2, std::nullopt,
+<<<<<<< HEAD
         Eigen::Vector3d::UnitX());
 
     auto geometry_ids = plant.GetCollisionGeometriesForBody(body1);
@@ -75,6 +84,9 @@ class ContactVisualizerTest : public ::testing::Test {
 
     body1_id1 = geometry_ids[0];
     body1_id2 = geometry_ids[1];
+=======
+        Eigen::Vector3d::UnitZ());
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
     plant.Finalize();
 
@@ -104,7 +116,11 @@ class ContactVisualizerTest : public ::testing::Test {
     diagram_ = builder.Build();
     context_ = diagram_->CreateDefaultContext();
     plant.SetPositions(&plant.GetMyMutableContextFromRoot(context_.get()),
+<<<<<<< HEAD
                        Eigen::Vector4d{-0.03, 0.03, 0.1, 0.3});
+=======
+                       Eigen::Vector4d{-0.03, 0.03, -0.05, 0.1});
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   void PublishAndCheck(
@@ -134,6 +150,8 @@ class ContactVisualizerTest : public ::testing::Test {
       EXPECT_TRUE(meshcat_->HasPath(fmt::format(
           "contact_forces/hydroelastic/body1.Id({})+body2", body1_id2)));
     }
+
+    EXPECT_TRUE(meshcat_->HasPath("contact_forces/hydroelastic/body1+body2"));
   }
 
   std::shared_ptr<Meshcat> meshcat_;

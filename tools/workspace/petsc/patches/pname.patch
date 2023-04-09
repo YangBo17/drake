@@ -1,5 +1,6 @@
 --- src/sys/objects/pname.c
 +++ src/sys/objects/pname.c
+<<<<<<< HEAD
 @@ -124,7 +124,7 @@ PetscErrorCode PetscObjectName(PetscObject obj)
      /* If the union has extra bytes, their value is implementation-dependent, but they will normally be what we set last
       * in 'ucomm.ptr = NULL'.  This output is always implementation-defined (and varies from run to run) so the union
@@ -7,5 +8,14 @@
 -    PetscCall(PetscSNPrintf(name, 64, "%s_%p_%" PetscInt_FMT, obj->class_name, ucomm.ptr, counter->namecount++));
 +    PetscCall(PetscSNPrintf(name, 64, "%s_%p_%" PetscInt_FMT, obj->class_name, ucomm.ptr, atomic_fetch_add(&counter->atomic_namecount, 1)));
      PetscCall(PetscStrallocpy(name, &obj->name));
+=======
+@@ -127,7 +127,7 @@ PetscErrorCode  PetscObjectName(PetscObject obj)
+     /* If the union has extra bytes, their value is implementation-dependent, but they will normally be what we set last
+      * in 'ucomm.ptr = NULL'.  This output is always implementation-defined (and varies from run to run) so the union
+      * abuse acceptable. */
+-    PetscCall(PetscSNPrintf(name,64,"%s_%p_%" PetscInt_FMT,obj->class_name,ucomm.ptr,counter->namecount++));
++    PetscCall(PetscSNPrintf(name,64,"%s_%p_%" PetscInt_FMT,obj->class_name,ucomm.ptr,atomic_fetch_add(&counter->atomic_namecount,1)));
+     PetscCall(PetscStrallocpy(name,&obj->name));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    }
    PetscFunctionReturn(0);

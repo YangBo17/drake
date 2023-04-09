@@ -23,6 +23,7 @@ load("@drake//tools/workspace:execute.bzl", "which")
 load("@drake//tools/workspace:os.bzl", "determine_os")
 
 def _impl(repository_ctx):
+<<<<<<< HEAD
     # When these values are updated:
     # - tools/dynamic_analysis/tsan.supp may also need updating
     # - LICENSE.third_party may also need updating to match
@@ -42,6 +43,20 @@ def _impl(repository_ctx):
     elif os_result.is_ubuntu or os_result.is_manylinux:
         mosek_platform = "linux64x86"
         sha256 = "f778f6e5560cdb8a3b5001cb51f40ccba9b3ef73da09406dcd3c1a870433eb34"  # noqa
+=======
+    # When these values are updated, tools/dynamic_analysis/tsan.supp may also
+    # need updating.
+    mosek_major_version = 9
+    mosek_minor_version = 3
+    mosek_patch_version = 20
+
+    if repository_ctx.os.name == "mac os x":
+        mosek_platform = "osx64x86"
+        sha256 = "e804225fdc48933d753645e6e4afe415aabbabb32233dd376d0dd6bf985756ef"  # noqa
+    elif repository_ctx.os.name == "linux":
+        mosek_platform = "linux64x86"
+        sha256 = "2fa2e1f742a31d7a7249ae083748f377dc68e378eb5ba18279647a433dc2e595"  # noqa
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     else:
         fail(
             "Operating system is NOT supported",
@@ -74,6 +89,15 @@ def _impl(repository_ctx):
     if repository_ctx.os.name == "mac os x":
         install_name_tool = which(repository_ctx, "install_name_tool")
 
+<<<<<<< HEAD
+=======
+        # Note that libmosek64.dylib is (erroneously) a copy of
+        # libmosek64.9.3.dylib instead of a symlink. Otherwise, the list of
+        # files should include the following in place of bin/libmosek64.dylib:
+        #
+        # "bin/libmosek64.{}.{}.dylib".format(mosek_major_version,
+        #                                     mosek_minor_version)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         files = [
             "bin/libtbb.12.dylib",
             "bin/libtbb.12.5.dylib",

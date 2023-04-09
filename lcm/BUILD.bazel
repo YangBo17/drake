@@ -19,7 +19,10 @@ drake_cc_package_library(
     visibility = ["//visibility:public"],
     deps = [
         ":drake_lcm",
+<<<<<<< HEAD
         ":drake_lcm_base",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         ":drake_lcm_params",
         ":interface",
         ":lcm_log",
@@ -48,6 +51,7 @@ drake_cc_library(
 )
 
 drake_cc_library(
+<<<<<<< HEAD
     name = "drake_lcm_base",
     srcs = ["drake_lcm_base.cc"],
     hdrs = ["drake_lcm_base.h"],
@@ -59,6 +63,10 @@ drake_cc_library(
 
 drake_cc_library(
     name = "drake_lcm_params",
+=======
+    name = "drake_lcm_params",
+    srcs = ["drake_lcm_params.cc"],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     hdrs = ["drake_lcm_params.h"],
     deps = [
         "//common:essential",
@@ -76,6 +84,10 @@ drake_cc_library(
         "//common:essential",
     ],
     deps = [
+<<<<<<< HEAD
+=======
+        "//common:scope_exit",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "@glib",
         "@lcm",
     ],

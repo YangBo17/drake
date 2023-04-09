@@ -17,6 +17,7 @@ namespace deformable {
 
 class GeometriesTester {
  public:
+<<<<<<< HEAD
   /* Returns the deformable geometry with `deformable_id` registered in
    `geometries`.
    @pre a deformable representation with `deformable_id` exists in `geometries`.
@@ -26,6 +27,8 @@ class GeometriesTester {
     return geometries.deformable_geometries_.at(deformable_id);
   }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /* Returns the rigid geometry with `rigid_id` registered in `geometries`.
    @pre a rigid representation with `rigid_id` exists in `geometries`. */
   static const RigidGeometry& get_rigid_geometry(const Geometries& geometries,
@@ -39,6 +42,7 @@ namespace {
 using Eigen::Vector3d;
 using Eigen::VectorXd;
 
+<<<<<<< HEAD
 /* Makes an arbitrary volume mesh. */
 VolumeMesh<double> MakeVolumeMesh() {
   constexpr double kRadius = 0.5;
@@ -48,6 +52,8 @@ VolumeMesh<double> MakeVolumeMesh() {
       sphere, kRezHint, TessellationStrategy::kDenseInteriorVertices);
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 /* Makes a ProximityProperties with a resolution hint property in the hydro
  group.
  @pre resolution_hint > 0. */
@@ -57,37 +63,55 @@ ProximityProperties MakeProximityPropsWithRezHint(double resolution_hint) {
   return props;
 }
 
+<<<<<<< HEAD
 math::RigidTransformd default_pose() {
   return math::RigidTransformd(math::RollPitchYaw<double>(1, 2, 3),
                                Vector3d(4, 5, 6));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 GTEST_TEST(GeometriesTest, AddRigidGeometry) {
   Geometries geometries;
   GeometryId rigid_id = GeometryId::get_new_id();
   /* No geometries have been added yet. */
   EXPECT_FALSE(geometries.is_rigid(rigid_id));
+<<<<<<< HEAD
   EXPECT_FALSE(geometries.is_deformable(rigid_id));
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Add a rigid geometry with resolution hint property. */
   constexpr double kRadius = 0.5;
   constexpr double kRezHint = 0.5;
   ProximityProperties props = MakeProximityPropsWithRezHint(kRezHint);
+<<<<<<< HEAD
   geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id, props,
                                    default_pose());
 
   EXPECT_TRUE(geometries.is_rigid(rigid_id));
   EXPECT_FALSE(geometries.is_deformable(rigid_id));
+=======
+  geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id, props);
+
+  EXPECT_TRUE(geometries.is_rigid(rigid_id));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Trying to a rigid geometry without the resolution hint property is a no-op.
    */
   GeometryId g_id = GeometryId::get_new_id();
   ProximityProperties empty_props;
+<<<<<<< HEAD
   geometries.MaybeAddRigidGeometry(Sphere(kRadius), g_id, empty_props,
                                    default_pose());
 
   EXPECT_FALSE(geometries.is_rigid(g_id));
   EXPECT_FALSE(geometries.is_deformable(g_id));
+=======
+  geometries.MaybeAddRigidGeometry(Sphere(kRadius), g_id, empty_props);
+
+  EXPECT_FALSE(geometries.is_rigid(g_id));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 /* Test coverage for all unsupported shapes as rigid geometries: MeshcatCone and
@@ -104,15 +128,25 @@ GTEST_TEST(GeometriesTest, UnsupportedRigidShapes) {
     const double height = 2.0;
     const double a = 1.0;
     const double b = 1.0;
+<<<<<<< HEAD
     EXPECT_NO_THROW(geometries.MaybeAddRigidGeometry(
         MeshcatCone(height, a, b), cone_id, props, default_pose()));
+=======
+    EXPECT_NO_THROW(geometries.MaybeAddRigidGeometry(MeshcatCone(height, a, b),
+                                                     cone_id, props));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_FALSE(geometries.is_rigid(cone_id));
   }
   /* HalfSpace */
   {
     GeometryId hs_id = GeometryId::get_new_id();
+<<<<<<< HEAD
     EXPECT_NO_THROW(geometries.MaybeAddRigidGeometry(HalfSpace(), hs_id, props,
                                                      default_pose()));
+=======
+    EXPECT_NO_THROW(
+        geometries.MaybeAddRigidGeometry(HalfSpace(), hs_id, props));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_FALSE(geometries.is_rigid(hs_id));
   }
 }
@@ -127,16 +161,24 @@ GTEST_TEST(GeometriesTest, SupportedRigidShapes) {
   /* Box */
   {
     GeometryId box_id = GeometryId::get_new_id();
+<<<<<<< HEAD
     geometries.MaybeAddRigidGeometry(Box::MakeCube(1.0), box_id, props,
                                      default_pose());
+=======
+    geometries.MaybeAddRigidGeometry(Box::MakeCube(1.0), box_id, props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(geometries.is_rigid(box_id));
   }
   /* Sphere */
   {
     const double radius = 1.0;
     GeometryId box_id = GeometryId::get_new_id();
+<<<<<<< HEAD
     geometries.MaybeAddRigidGeometry(Sphere(radius), box_id, props,
                                      default_pose());
+=======
+    geometries.MaybeAddRigidGeometry(Sphere(radius), box_id, props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(geometries.is_rigid(box_id));
   }
   /* Cylinder */
@@ -145,7 +187,11 @@ GTEST_TEST(GeometriesTest, SupportedRigidShapes) {
     const double radius = 1.0;
     const double length = 2.0;
     geometries.MaybeAddRigidGeometry(Cylinder(radius, length), cylinder_id,
+<<<<<<< HEAD
                                      props, default_pose());
+=======
+                                     props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(geometries.is_rigid(cylinder_id));
   }
   /* Capsule */
@@ -153,8 +199,13 @@ GTEST_TEST(GeometriesTest, SupportedRigidShapes) {
     GeometryId capsule_id = GeometryId::get_new_id();
     const double radius = 1.0;
     const double length = 2.0;
+<<<<<<< HEAD
     geometries.MaybeAddRigidGeometry(Capsule(radius, length), capsule_id, props,
                                      default_pose());
+=======
+    geometries.MaybeAddRigidGeometry(Capsule(radius, length), capsule_id,
+                                     props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(geometries.is_rigid(capsule_id));
   }
   /* Ellipsoid */
@@ -163,24 +214,36 @@ GTEST_TEST(GeometriesTest, SupportedRigidShapes) {
     const double a = 0.5;
     const double b = 0.8;
     const double c = 0.3;
+<<<<<<< HEAD
     geometries.MaybeAddRigidGeometry(Ellipsoid(a, b, c), ellipsoid_id, props,
                                      default_pose());
+=======
+    geometries.MaybeAddRigidGeometry(Ellipsoid(a, b, c), ellipsoid_id, props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(geometries.is_rigid(ellipsoid_id));
   }
   /* Mesh */
   {
     GeometryId mesh_id = GeometryId::get_new_id();
     std::string file = FindResourceOrThrow("drake/geometry/test/quad_cube.obj");
+<<<<<<< HEAD
     geometries.MaybeAddRigidGeometry(Mesh(file, 1.0), mesh_id, props,
                                      default_pose());
+=======
+    geometries.MaybeAddRigidGeometry(Mesh(file, 1.0), mesh_id, props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(geometries.is_rigid(mesh_id));
   }
   /* Convex */
   {
     GeometryId convex_id = GeometryId::get_new_id();
     std::string file = FindResourceOrThrow("drake/geometry/test/quad_cube.obj");
+<<<<<<< HEAD
     geometries.MaybeAddRigidGeometry(Convex(file, 1.0), convex_id, props,
                                      default_pose());
+=======
+    geometries.MaybeAddRigidGeometry(Convex(file, 1.0), convex_id, props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     EXPECT_TRUE(geometries.is_rigid(convex_id));
   }
 }
@@ -193,6 +256,7 @@ GTEST_TEST(GeometriesTest, UpdateRigidWorldPose) {
   constexpr double kRadius = 0.5;
   constexpr double kRezHint = 0.5;
   ProximityProperties props = MakeProximityPropsWithRezHint(kRezHint);
+<<<<<<< HEAD
   geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id, props,
                                    default_pose());
 
@@ -202,6 +266,15 @@ GTEST_TEST(GeometriesTest, UpdateRigidWorldPose) {
         GeometriesTester::get_rigid_geometry(geometries, rigid_id);
     EXPECT_TRUE(
         rigid_geometry.pose_in_world().IsExactlyEqualTo(default_pose()));
+=======
+  geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id, props);
+
+  /* Initially the pose is identity. */
+  {
+    const RigidGeometry& rigid_geometry =
+        GeometriesTester::get_rigid_geometry(geometries, rigid_id);
+    EXPECT_TRUE(rigid_geometry.pose_in_world().IsExactlyIdentity());
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
   /* Update the pose to some arbitrary value. */
   const math::RigidTransform<double> X_WG(
@@ -214,6 +287,7 @@ GTEST_TEST(GeometriesTest, UpdateRigidWorldPose) {
   }
 }
 
+<<<<<<< HEAD
 GTEST_TEST(GeometriesTest, AddDeformableGeometry) {
   Geometries geometries;
   GeometryId deformable_id = GeometryId::get_new_id();
@@ -233,6 +307,10 @@ GTEST_TEST(GeometriesTest, RemoveGeometry) {
   GeometryId deformable_id1 = GeometryId::get_new_id();
   geometries.AddDeformableGeometry(deformable_id0, MakeVolumeMesh());
   geometries.AddDeformableGeometry(deformable_id1, MakeVolumeMesh());
+=======
+GTEST_TEST(GeometriesTest, RemoveGeometry) {
+  Geometries geometries;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Add a couple of rigid geometries. */
   GeometryId rigid_id0 = GeometryId::get_new_id();
@@ -240,6 +318,7 @@ GTEST_TEST(GeometriesTest, RemoveGeometry) {
   constexpr double kRadius = 0.5;
   constexpr double kRezHint = 0.5;
   ProximityProperties props = MakeProximityPropsWithRezHint(kRezHint);
+<<<<<<< HEAD
   geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id0, props,
                                    default_pose());
   geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id1, props,
@@ -389,6 +468,29 @@ GTEST_TEST(GeometriesTest, ComputeDeformableContact) {
             expected_contact_surface.num_contact_points());
   EXPECT_TRUE(contact_surface.contact_mesh_W().Equal(
       expected_contact_surface.contact_mesh_W()));
+=======
+  geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id0, props);
+  geometries.MaybeAddRigidGeometry(Sphere(kRadius), rigid_id1, props);
+
+  /* Calling RemoveGeometry on an existing rigid geometry. */
+  {
+    geometries.RemoveGeometry(rigid_id0);
+    /* The geometry is indeed removed. */
+    EXPECT_FALSE(geometries.is_rigid(rigid_id0));
+    /* Other geometries are unaffected. */
+    EXPECT_TRUE(geometries.is_rigid(rigid_id1));
+  }
+  /* Calling RemoveGeometry on an invalid or already deleted geometry is a
+   no-op. */
+  {
+    GeometryId invalid_id = GeometryId::get_new_id();
+    EXPECT_NO_THROW(geometries.RemoveGeometry(invalid_id));
+    EXPECT_NO_THROW(geometries.RemoveGeometry(rigid_id0));
+
+    EXPECT_FALSE(geometries.is_rigid(rigid_id0));
+    EXPECT_TRUE(geometries.is_rigid(rigid_id1));
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 }  // namespace

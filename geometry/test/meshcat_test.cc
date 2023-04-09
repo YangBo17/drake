@@ -992,6 +992,7 @@ GTEST_TEST(MeshcatTest, StaticHtml) {
   // Confirm that the js source links were replaced.
   EXPECT_THAT(html, ::testing::Not(HasSubstr("meshcat.js")));
   EXPECT_THAT(html, ::testing::Not(HasSubstr("stats.min.js")));
+<<<<<<< HEAD
   // The static html replaces the javascript web socket connection code with
   // direct invocation of MeshCat with all of the data. We'll confirm that
   // this appears to have happened by testing for the presence of the injected
@@ -999,6 +1000,9 @@ GTEST_TEST(MeshcatTest, StaticHtml) {
   // delimiting text of the connection block.
   EXPECT_THAT(html, HasSubstr("data:application/octet-binary;base64"));
   EXPECT_THAT(html, ::testing::Not(HasSubstr("CONNECTION BLOCK")));
+=======
+  EXPECT_THAT(html, ::testing::Not(HasSubstr("msgpack.min.js")));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 // Check MeshcatParams.hide_stats_plot sends a hide_realtime_rate message

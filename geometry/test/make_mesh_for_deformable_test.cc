@@ -55,11 +55,17 @@ TEST_F(MeshBuilderForDeformableTest, Capsule) {
 }
 
 TEST_F(MeshBuilderForDeformableTest, Mesh) {
+<<<<<<< HEAD
   const Mesh m(FindResourceOrThrow("drake/geometry/test/one_tetrahedron.vtk"),
                1.5);
   std::unique_ptr<VolumeMesh<double>> mesh = builder_.Build(m, kRezHint);
   const VolumeMesh<double> expected_mesh = MakeVolumeMeshFromVtk<double>(m);
   EXPECT_TRUE(mesh->Equal(expected_mesh));
+=======
+  const Mesh m("path/to/file", 1.5);
+  DRAKE_EXPECT_THROWS_MESSAGE(builder_.Build(m, kRezHint),
+                              ".*don't yet generate deformable meshes.+ Mesh.");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 TEST_F(MeshBuilderForDeformableTest, Convex) {

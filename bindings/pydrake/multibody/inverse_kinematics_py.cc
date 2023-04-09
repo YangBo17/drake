@@ -18,7 +18,10 @@
 #include "drake/multibody/inverse_kinematics/minimum_distance_constraint.h"
 #include "drake/multibody/inverse_kinematics/orientation_constraint.h"
 #include "drake/multibody/inverse_kinematics/orientation_cost.h"
+<<<<<<< HEAD
 #include "drake/multibody/inverse_kinematics/point_to_line_distance_constraint.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/multibody/inverse_kinematics/point_to_point_distance_constraint.h"
 #include "drake/multibody/inverse_kinematics/polyhedron_constraint.h"
 #include "drake/multibody/inverse_kinematics/position_constraint.h"
@@ -181,6 +184,7 @@ PYBIND11_MODULE(inverse_kinematics, m) {
             py::keep_alive<1, 2>(),
             // Keep alive, reference: `self` keeps `plant_context` alive.
             py::keep_alive<1, 9>(), cls_doc.ctor.doc_autodiff);
+<<<<<<< HEAD
   }
   {
     using Class = AngleBetweenVectorsCost;
@@ -221,6 +225,8 @@ PYBIND11_MODULE(inverse_kinematics, m) {
             py::keep_alive<1, 2>(),
             // Keep alive, reference: `self` keeps `plant_context` alive.
             py::keep_alive<1, 8>(), cls_doc.ctor.doc_autodiff);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
   {
     using Class = PointToPointDistanceConstraint;
@@ -265,6 +271,7 @@ PYBIND11_MODULE(inverse_kinematics, m) {
             py::keep_alive<1, 9>(), cls_doc.ctor.doc_autodiff);
   }
   {
+<<<<<<< HEAD
     using Class = PointToLineDistanceConstraint;
     constexpr auto& cls_doc = doc.PointToLineDistanceConstraint;
     using Ptr = std::shared_ptr<Class>;
@@ -312,6 +319,8 @@ PYBIND11_MODULE(inverse_kinematics, m) {
             py::keep_alive<1, 10>(), cls_doc.ctor.doc_autodiff);
   }
   {
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     using Class = PolyhedronConstraint;
     constexpr auto& cls_doc = doc.PolyhedronConstraint;
     using Ptr = std::shared_ptr<Class>;
@@ -873,12 +882,15 @@ PYBIND11_MODULE(inverse_kinematics, m) {
     // TODO(russt): Add bindings for Polytope3D struct and related methods
     // (or convert those methods to use ConvexSets).
   }
+<<<<<<< HEAD
 
   // TODO(SeanCurtis-TRI): Refactor this into its own stand-alone .cc file and
   // re-introduce the inverse_kinematics_py.cc that just assembles the full
   // module.
   internal::DefineIkDifferential(m);
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // NOLINTNEXTLINE(readability/fn_size)
 }
 

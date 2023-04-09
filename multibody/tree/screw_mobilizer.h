@@ -72,6 +72,7 @@ class ScrewMobilizer final : public MobilizerImpl<T, 1, 1> {
   std::string position_suffix(int position_index_in_mobilizer) const final;
   std::string velocity_suffix(int velocity_index_in_mobilizer) const final;
 
+<<<<<<< HEAD
   bool can_rotate() const final { return true; }
   bool can_translate() const final { return true; }
 
@@ -81,6 +82,11 @@ class ScrewMobilizer final : public MobilizerImpl<T, 1, 1> {
    `axis = axis_F = axis_M`. */
   const Vector3<double>& screw_axis() const { return axis_; }
 
+=======
+  bool can_rotate() const final    { return true; }
+  bool can_translate() const final { return true; }
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /* @returns the screw pitch, which is used to relate rotational
    to translational motion for `this` mobilizer as documented
    in this class's documentation. */

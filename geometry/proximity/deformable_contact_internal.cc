@@ -15,6 +15,7 @@ namespace internal {
 namespace deformable {
 
 void Geometries::RemoveGeometry(GeometryId id) {
+<<<<<<< HEAD
   deformable_geometries_.erase(id);
   rigid_geometries_.erase(id);
 }
@@ -22,6 +23,13 @@ void Geometries::RemoveGeometry(GeometryId id) {
 void Geometries::MaybeAddRigidGeometry(
     const Shape& shape, GeometryId id, const ProximityProperties& props,
     const math::RigidTransform<double>& X_WG) {
+=======
+  rigid_geometries_.erase(id);
+}
+
+void Geometries::MaybeAddRigidGeometry(const Shape& shape, GeometryId id,
+                                       const ProximityProperties& props) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // TODO(xuchenhan-tri): Right now, rigid geometries participating in
   // deformable contact share the property "kRezHint" with hydroelastics. It's
   // reasonable to use the contact mesh with the same resolution for both hydro
@@ -31,7 +39,10 @@ void Geometries::MaybeAddRigidGeometry(
   if (props.HasProperty(kHydroGroup, kRezHint)) {
     ReifyData data{id, props};
     shape.Reify(this, &data);
+<<<<<<< HEAD
     UpdateRigidWorldPose(id, X_WG);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 }
 
@@ -42,6 +53,7 @@ void Geometries::UpdateRigidWorldPose(
   }
 }
 
+<<<<<<< HEAD
 void Geometries::AddDeformableGeometry(GeometryId id, VolumeMesh<double> mesh) {
   deformable_geometries_.insert({id, DeformableGeometry(std::move(mesh))});
 }
@@ -71,6 +83,14 @@ DeformableContact<double> Geometries::ComputeDeformableContact() const {
     }
   }
   return result;
+=======
+void Geometries::ImplementGeometry(const Sphere& sphere, void* user_data) {
+  AddRigidGeometry(sphere, *static_cast<ReifyData*>(user_data));
+}
+
+void Geometries::ImplementGeometry(const Cylinder& cylinder, void* user_data) {
+  AddRigidGeometry(cylinder, *static_cast<ReifyData*>(user_data));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 void Geometries::ImplementGeometry(const Box& box, void* user_data) {
@@ -81,6 +101,7 @@ void Geometries::ImplementGeometry(const Capsule& capsule, void* user_data) {
   AddRigidGeometry(capsule, *static_cast<ReifyData*>(user_data));
 }
 
+<<<<<<< HEAD
 void Geometries::ImplementGeometry(const Convex& convex, void* user_data) {
   AddRigidGeometry(convex, *static_cast<ReifyData*>(user_data));
 }
@@ -89,11 +110,24 @@ void Geometries::ImplementGeometry(const Cylinder& cylinder, void* user_data) {
   AddRigidGeometry(cylinder, *static_cast<ReifyData*>(user_data));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void Geometries::ImplementGeometry(const Ellipsoid& ellipsoid,
                                    void* user_data) {
   AddRigidGeometry(ellipsoid, *static_cast<ReifyData*>(user_data));
 }
 
+<<<<<<< HEAD
+=======
+void Geometries::ImplementGeometry(const Mesh& mesh, void* user_data) {
+  AddRigidGeometry(mesh, *static_cast<ReifyData*>(user_data));
+}
+
+void Geometries::ImplementGeometry(const Convex& convex, void* user_data) {
+  AddRigidGeometry(convex, *static_cast<ReifyData*>(user_data));
+}
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void Geometries::ImplementGeometry(const HalfSpace&, void*) {
   static const logging::Warn log_once(
       "Rigid (non-deformable) half spaces are not currently supported for "
@@ -101,10 +135,13 @@ void Geometries::ImplementGeometry(const HalfSpace&, void*) {
       "be reported.");
 }
 
+<<<<<<< HEAD
 void Geometries::ImplementGeometry(const Mesh& mesh, void* user_data) {
   AddRigidGeometry(mesh, *static_cast<ReifyData*>(user_data));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void Geometries::ImplementGeometry(const MeshcatCone&, void*) {
   static const logging::Warn log_once(
       "Rigid (non-deformable) Meshcat cones are not currently supported for "
@@ -112,10 +149,13 @@ void Geometries::ImplementGeometry(const MeshcatCone&, void*) {
       "be reported.");
 }
 
+<<<<<<< HEAD
 void Geometries::ImplementGeometry(const Sphere& sphere, void* user_data) {
   AddRigidGeometry(sphere, *static_cast<ReifyData*>(user_data));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 template <typename ShapeType>
 void Geometries::AddRigidGeometry(const ShapeType& shape,
                                   const ReifyData& data) {

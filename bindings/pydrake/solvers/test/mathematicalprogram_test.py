@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+from pydrake.solvers import mathematicalprogram as mp
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 import copy
 from functools import partial
 import unittest
@@ -9,6 +14,7 @@ import scipy.sparse
 from pydrake.autodiffutils import AutoDiffXd
 from pydrake.common import kDrakeAssertIsArmed
 from pydrake.common.test_utilities import numpy_compare
+<<<<<<< HEAD
 from pydrake.forwarddiff import jacobian
 from pydrake.math import ge
 from pydrake.solvers import (
@@ -25,6 +31,24 @@ from pydrake.solvers import (
     SolverType,
 )
 import pydrake.solvers as mp
+=======
+from pydrake.common.test_utilities.deprecation import catch_drake_warnings
+from pydrake.forwarddiff import jacobian
+from pydrake.math import ge
+from pydrake.solvers.gurobi import GurobiSolver
+from pydrake.solvers.snopt import SnoptSolver
+from pydrake.solvers.scs import ScsSolver
+from pydrake.solvers.osqp import OsqpSolver
+from pydrake.solvers.mathematicalprogram import (
+    LinearConstraint,
+    MathematicalProgramResult,
+    PyFunctionConstraint,
+    SolverOptions,
+    SolverType,
+    SolverId,
+    SolverInterface
+    )
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 import pydrake.solvers._testing as mp_testing
 import pydrake.symbolic as sym
 

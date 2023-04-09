@@ -1,6 +1,10 @@
 #pragma once
 
+<<<<<<< HEAD
 #include <drake_vendor/gz/math/Pose3.hh>
+=======
+#include <drake_vendor/ignition/math/Pose3.hh>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 #include "drake/common/eigen_types.h"
 #include "drake/math/rigid_transform.h"

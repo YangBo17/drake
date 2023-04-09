@@ -3,6 +3,10 @@
 #include <memory>
 
 #include "drake/geometry/render/render_engine.h"
+<<<<<<< HEAD:geometry/render_gltf_client/factory.h
+=======
+#include "drake/geometry/render/render_label.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/factory.h
 #include "drake/geometry/render_gltf_client/render_engine_gltf_client_params.h"
 
 namespace drake {

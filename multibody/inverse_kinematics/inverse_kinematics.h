@@ -334,6 +334,7 @@ class InverseKinematics {
       double distance_upper);
 
   /**
+<<<<<<< HEAD
    * Add a constraint that the distance between point P attached to frame_point
    * (denoted as B1) and a line attached to frame_line (denoted as B2) is within
    * the range [distance_lower, distance_upper]. The line passes through a point
@@ -357,6 +358,8 @@ class InverseKinematics {
       double distance_upper);
 
   /**
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    * Adds the constraint that the position of P1, ..., Pn satisfy A *
    * [p_FP1; p_FP2; ...; p_FPn] <= b.
    * @param frameF The frame in which the position P is measured and expressed
@@ -364,8 +367,13 @@ class InverseKinematics {
    * @param p_GP p_GP.col(i) is the position of the i'th point Pi measured and
    * expressed in frame G.
    * @param A We impose the constraint A * [p_FP1; p_FP2; ...; p_FPn] <= b. @pre
+<<<<<<< HEAD
    * A.cols() = 3 * p_GP.cols().
    * @param b We impose the constraint A * [p_FP1; p_FP2; ...; p_FPn] <= b.
+=======
+   * A.cols() = 3 * p_GP.cols();
+   * @param b We impose the constraint A * [p_FP1; p_FP2; ...; p_FPn] <= b
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    */
   solvers::Binding<solvers::Constraint> AddPolyhedronConstraint(
       const Frame<double>& frameF, const Frame<double>& frameG,

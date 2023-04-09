@@ -27,8 +27,14 @@ from pydrake.multibody.tree import (
     SpatialInertia,
 )
 import pydrake.multibody.inverse_kinematics as ik
+<<<<<<< HEAD
 import pydrake.solvers as mp
 from pydrake.systems.framework import DiagramBuilder, DiagramBuilder_
+=======
+import pydrake.solvers.mathematicalprogram as mp
+from pydrake.solvers import SnoptSolver
+from pydrake.systems.framework import DiagramBuilder_
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 from pydrake.geometry import (
     Box,
     Role,

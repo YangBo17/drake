@@ -66,6 +66,7 @@ class HPolyhedron final : public ConvexSet {
   using ConvexSet::IsBounded;
 
   /** Returns true iff this HPolyhedron is entirely contained in the HPolyhedron
+<<<<<<< HEAD
   other. This is done by checking whether every inequality in @p other is
   redundant when added to this.
   @param tol We check if this polyhedron is contained in other.A().row(i).dot(x)
@@ -109,6 +110,29 @@ class HPolyhedron final : public ConvexSet {
 
   /** Checks if this HPolyhedron defines an empty set.  */
   [[nodiscard]] bool IsEmpty() const;
+=======
+   * other. This is done by checking whether every inequality in @p other is
+   * redundant when added to this.
+   */
+  bool ContainedIn(const HPolyhedron& other) const;
+
+  /**
+   * Construct the intersection of two HPolyhedron by adding the rows of
+   * inequalities from @p other. If @p check_for_redundancy is true
+   * then only add the rows of @p other to this HPolyhedron if the inequality
+   * is not implied by the inequalities from this HPolyhedron.
+   */
+  HPolyhedron Intersection(const HPolyhedron& other,
+                           bool check_for_redundancy = false) const;
+
+  /**
+   * Traverses the inequalities of the HPolyhedron in order and removes
+   * inequalities which are redundant. This is not guaranteed to give the
+   * minimal representation of a polytope but is a relatively fast way to reduce
+   * the number of inequalities
+   */
+  HPolyhedron ReduceInequalities() const;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /** Solves a semi-definite program to compute the inscribed ellipsoid.
   From Section 8.4.2 in Boyd and Vandenberghe, 2004, we solve
@@ -159,6 +183,7 @@ class HPolyhedron final : public ConvexSet {
   HPolyhedron CartesianPower(int n) const;
 
   /** Returns the Pontryagin (Minkowski) Difference of `this` and `other`.
+<<<<<<< HEAD
   This is the set A ⊖ B = { a|a+ B ⊆ A }. The result is an HPolyhedron with the
   same number of inequalities as A. Requires that `this` and `other` both
   be bounded and have the same ambient dimension. This method may throw a
@@ -184,6 +209,13 @@ class HPolyhedron final : public ConvexSet {
   /** Variant of UniformSample that uses the ChebyshevCenter() as the
   previous_sample as a feasible point to start the Markov chain sampling. */
   Eigen::VectorXd UniformSample(RandomGenerator* generator) const;
+=======
+   This is the set A ⊖ B = { a|a+ B ⊆ A }. The result is an HPolyhedron with the
+   same number of inequalities as A. Requires that `this` and `other` both
+   be bounded and have the same ambient dimension. This method may throw a
+   runtime error if `this` or `other` are ill-conditioned.*/
+  HPolyhedron PontryaginDifference(const HPolyhedron& other) const;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /** Constructs a polyhedron as an axis-aligned box from the lower and upper
   corners. */
@@ -210,11 +242,17 @@ class HPolyhedron final : public ConvexSet {
   }
 
  private:
+<<<<<<< HEAD
   [[nodiscard]] HPolyhedron DoIntersectionNoChecks(
       const HPolyhedron& other) const;
 
   [[nodiscard]] HPolyhedron DoIntersectionWithChecks(const HPolyhedron& other,
                                                      double tol) const;
+=======
+  HPolyhedron DoIntersectionNoChecks(const HPolyhedron &other) const;
+
+  HPolyhedron DoIntersectionWithChecks(const HPolyhedron &other) const;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   bool DoIsBounded() const final;
 

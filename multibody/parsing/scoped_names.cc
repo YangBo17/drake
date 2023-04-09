@@ -6,10 +6,14 @@ namespace drake {
 namespace multibody {
 namespace parsing {
 
+<<<<<<< HEAD
 namespace {
 // TODO(jwnimmer-tri) Remove me 2023-07-01 as part of deprecation.
 constexpr char kScopedNameDelim[] = "::";
 }  // namespace
+=======
+using internal::kScopedNameDelim;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 const drake::multibody::Frame<double>*
 GetScopedFrameByNameMaybe(
@@ -52,10 +56,16 @@ std::string GetScopedFrameName(
 }
 #pragma GCC diagnostic pop
 
+<<<<<<< HEAD
 // Remove 2023-07-01 with deprecation.
 ScopedNameIsDeprecated ParseScopedName(const std::string& full_name) {
   size_t pos = full_name.rfind(kScopedNameDelim);
   ScopedNameIsDeprecated result;
+=======
+ScopedName ParseScopedName(const std::string& full_name) {
+  size_t pos = full_name.rfind(kScopedNameDelim);
+  ScopedName result;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   if (pos == std::string::npos) {
     result.name = full_name;
   } else {

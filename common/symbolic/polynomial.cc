@@ -15,7 +15,10 @@
 #undef DRAKE_COMMON_SYMBOLIC_EXPRESSION_DETAIL_HEADER
 
 #include "drake/common/symbolic/decompose.h"
+<<<<<<< HEAD
 #include "drake/common/text_logging.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 using std::accumulate;
 using std::make_pair;
@@ -787,6 +790,13 @@ bool Polynomial::EqualTo(const Polynomial& p) const {
   }
   return true;
 }
+<<<<<<< HEAD
+=======
+
+bool Polynomial::EqualToAfterExpansion(const Polynomial& p) const {
+  return this->Expand().EqualTo(p.Expand());
+}
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 bool Polynomial::CoefficientsAlmostEqual(const Polynomial& p,
                                          double tolerance) const {
@@ -822,6 +832,7 @@ Polynomial& Polynomial::AddProduct(const Expression& coeff, const Monomial& m) {
   return *this;
 }
 
+<<<<<<< HEAD
 Polynomial Polynomial::SubstituteAndExpand(
     const std::unordered_map<Variable, Polynomial>& indeterminate_substitution,
     SubstituteAndExpandCacheData* substitutions_cached_data)
@@ -994,6 +1005,8 @@ Polynomial Polynomial::SubstituteAndExpand(
   return Polynomial{new_polynomial_coeff_map};
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 Polynomial Polynomial::Expand() const {
   Polynomial::MapType expanded_poly_map;
   for (const auto& [monomial, coeff] : monomial_to_coefficient_map_) {

@@ -400,6 +400,7 @@ Expression Substitute(const Expression& e, const SinCosSubstitution& subs) {
   return SinCosVisitor(subs).Substitute(e);
 }
 
+<<<<<<< HEAD
 namespace internal {
 symbolic::RationalFunction SubstituteStereographicProjectionImpl(
     const symbolic::Polynomial& e_poly, const std::vector<SinCos>& sin_cos,
@@ -479,6 +480,87 @@ symbolic::RationalFunction SubstituteStereographicProjectionImpl(
   return symbolic::RationalFunction(numerator, denominator);
 }
 }  // namespace internal
+=======
+namespace {
+bool CheckPolynomialIndeterminatesAreSinCos(
+    const symbolic::Polynomial& e_poly, const std::vector<SinCos>& sin_cos) {
+  symbolic::Variables sin_cos_vars;
+  for (const auto& sc : sin_cos) {
+    sin_cos_vars.insert(sc.s);
+    sin_cos_vars.insert(sc.c);
+  }
+  return e_poly.indeterminates().IsSubsetOf(sin_cos_vars);
+}
+
+void SubstituteStereographicProjectionImpl(
+    const symbolic::Polynomial& e_poly, const std::vector<SinCos>& sin_cos,
+    const VectorX<symbolic::Variable>& t, const symbolic::Variables& t_set,
+    const VectorX<symbolic::Polynomial>& one_plus_t_angles_squared,
+    const VectorX<symbolic::Polynomial>& two_t_angles,
+    const VectorX<symbolic::Polynomial>& one_minus_t_angles_squared,
+    symbolic::RationalFunction* e_rational) {
+  DRAKE_DEMAND(static_cast<int>(sin_cos.size()) == t.rows());
+  DRAKE_DEMAND(CheckPolynomialIndeterminatesAreSinCos(e_poly, sin_cos));
+  // First find the angles whose cos or sin appear in the polynomial. This
+  // will determine the denominator of the rational function.
+  std::set<int> angle_indices;
+  for (const auto& pair : e_poly.monomial_to_coefficient_map()) {
+    // Also check that this monomial can't contain both cos_vars(i) and
+    // sin_vars(i).
+    for (int i = 0; i < static_cast<int>(sin_cos.size()); ++i) {
+      const auto& sin_var = sin_cos[i].s;
+      const auto& cos_var = sin_cos[i].c;
+      const int angle_degree =
+          pair.first.degree(cos_var) + pair.first.degree(sin_var);
+      DRAKE_DEMAND(angle_degree <= 1);
+      if (angle_degree == 1) {
+        angle_indices.insert(i);
+      }
+    }
+  }
+  if (angle_indices.empty()) {
+    *e_rational = symbolic::RationalFunction(
+        symbolic::Polynomial(e_poly.ToExpression(), t_set));
+    return;
+  }
+  const symbolic::Monomial monomial_one{};
+  symbolic::Polynomial denominator{1};
+  for (int angle_index : angle_indices) {
+    // denominator *= (1 + t(angle_index)^2)
+    denominator *= one_plus_t_angles_squared[angle_index];
+  }
+  symbolic::Polynomial numerator{};
+
+  for (const auto& [monomial, coeff] : e_poly.monomial_to_coefficient_map()) {
+    // If the monomial contains cos_vars(i), then replace cos_vars(i) with
+    // 1 - t(i) * t(i).
+    // If the monomial contains sin_vars(i), then replace sin_vars(i) with
+    // 2 * t(i).
+    // Otherwise, multiplies with 1 + t(i) * t(i)
+
+    // The coefficient could contain "t_set", (the indeterminates for e are
+    // cos_vars and sin_vars). Hence we first need to write the coefficient
+    // as a polynomial of indeterminates intersect(t_set, coeff.variables()).
+    symbolic::Polynomial numerator_term(
+        coeff, symbolic::intersect(t_set, coeff.GetVariables()));
+    for (int angle_index : angle_indices) {
+      const auto& sin_var = sin_cos[angle_index].s;
+      const auto& cos_var = sin_cos[angle_index].c;
+      if (monomial.degree(cos_var) > 0) {
+        numerator_term *= one_minus_t_angles_squared[angle_index];
+      } else if (monomial.degree(sin_var) > 0) {
+        numerator_term *= two_t_angles[angle_index];
+      } else {
+        numerator_term *= one_plus_t_angles_squared[angle_index];
+      }
+    }
+    numerator += numerator_term;
+  }
+
+  *e_rational = symbolic::RationalFunction(numerator, denominator);
+}
+}  // namespace
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 symbolic::RationalFunction SubstituteStereographicProjection(
     const symbolic::Polynomial& e_poly, const std::vector<SinCos>& sin_cos,
@@ -494,6 +576,7 @@ symbolic::RationalFunction SubstituteStereographicProjection(
     one_plus_t_square[i] = symbolic::Polynomial(
         {{monomial_one, 1}, {symbolic::Monomial(t(i), 2), 1}});
   }
+<<<<<<< HEAD
   symbolic::Variables sin_cos_set;
   for (const auto& sc : sin_cos) {
     sin_cos_set.insert(sc.s);
@@ -503,6 +586,14 @@ symbolic::RationalFunction SubstituteStereographicProjection(
   return internal::SubstituteStereographicProjectionImpl(
       e_poly, sin_cos, sin_cos_set, t, t_set, one_plus_t_square, two_t,
       one_minus_t_square);
+=======
+  const symbolic::Variables t_set{t};
+  symbolic::RationalFunction e_rational;
+  SubstituteStereographicProjectionImpl(e_poly, sin_cos, t, t_set,
+                                        one_plus_t_square, two_t,
+                                        one_minus_t_square, &e_rational);
+  return e_rational;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 symbolic::RationalFunction SubstituteStereographicProjection(

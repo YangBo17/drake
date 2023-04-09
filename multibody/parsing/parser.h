@@ -18,6 +18,7 @@ namespace internal {
 class CompositeParse;
 }  // namespace internal
 
+<<<<<<< HEAD
 /// Parses model description input into a MultibodyPlant and (optionally) a
 /// SceneGraph. A variety of input formats are supported, and are recognized by
 /// filename suffixes:
@@ -75,12 +76,17 @@ class CompositeParse;
 /// @warning AddModelsFromString() cannot be passed OBJ file contents yet.
 ///
 /// For more documentation of Drake-specific treatment of these input formats,
+=======
+/// Parses SDF and URDF input files into a MultibodyPlant and (optionally) a
+/// SceneGraph. For documentation of Drake-specific extensions and limitations,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 /// see @ref multibody_parsing.
 ///
 /// When parsing literal quantities, %Parser assumes SI units and radians in the
 /// absence of units specified by the format itself. This includes the literals
 /// in the explicitly specified files as well as referenced files such as OBJ
 /// or other data file formats.
+<<<<<<< HEAD
 ///
 /// MultibodyPlant requires that model instances have unique names. To support
 /// loading multiple instances of the same model file(s) into a plant, Parser
@@ -123,6 +129,8 @@ class CompositeParse;
 /// SceneGraph registration into the given plant. We describe this option only
 /// for completeness; we strongly discourage anyone from taking advantage of
 /// this feature.
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 class Parser final {
  public:
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Parser)
@@ -179,6 +187,7 @@ class Parser final {
   /// warnings will be treated as errors.
   void SetStrictParsing() { is_strict_ = true; }
 
+<<<<<<< HEAD
   /// Enable or disable auto-renaming. It is disabled by default.
   /// @see the Parser class documentation for more detail.
   void SetAutoRenaming(bool value) { enable_auto_rename_ = value; }
@@ -231,6 +240,34 @@ class Parser final {
   /// Parses the input file named in @p file_name and adds one top-level model
   /// to @p plant. It is an error to call this using any file that adds more
   /// than one model instance.
+=======
+  /// Parses the SDF, URDF, or MJCF file named in @p file_name and adds all of
+  /// its model(s) to @p plant.
+  ///
+  /// SDFormat files may contain multiple `<model>` elements.  New model
+  /// instances will be added to @p plant for each `<model>` tag in the file.
+  ///
+  /// @note Adding multiple root-level models, i.e, `<model>`s directly under
+  /// `<sdf>`, is deprecated. If you need multiple models in a single file,
+  /// please use an SDFormat world file.
+  ///
+  /// URDF files contain a single `<robot>` element.  Only a single model
+  /// instance will be added to @p plant.
+  ///
+  /// MJCF (MuJoCo XML) files typically contain many bodies, they will all be
+  /// added as a single model instance in the @p plant.
+  ///
+  /// @param file_name The name of the SDF, URDF, or MJCF file to be parsed.
+  /// The file type will be inferred from the extension. @returns The set of
+  /// model instance indices for the newly added models, including nested
+  /// models. @throws std::exception in case of errors.
+  std::vector<ModelInstanceIndex> AddAllModelsFromFile(
+      const std::string& file_name);
+
+  /// Parses the SDFormat, URDF, or MJCF file named in @p file_name and adds one
+  /// top-level model to @p plant. It is an error to call this using an SDFormat
+  /// file with more than one root-level `<model>` element.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   ///
   /// @note This function might create additional model instances corresponding
   /// to nested models found in the top level file. This means that elements
@@ -248,9 +285,14 @@ class Parser final {
   /// model description text data via @p file_contents with format dictated by
   /// @p file_type.
   ///
+<<<<<<< HEAD
   /// @param file_contents The model data to be parsed.
   /// @param file_type The data format; must be one of the filename suffixes
   /// listed above, *without* the leading dot (.) .
+=======
+  /// @param file_contents The XML data to be parsed.
+  /// @param file_type The data format; must be either "sdf", "urdf", or "xml".
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /// @param model_name The name given to the newly created instance of this
   /// model. If empty, the model name provided by the input text will be used.
   /// @returns The instance index for the newly added model.
@@ -264,6 +306,24 @@ class Parser final {
  private:
   friend class internal::CompositeParse;
 
+<<<<<<< HEAD
+=======
+  std::vector<ModelInstanceIndex> CompositeAddAllModelsFromFile(
+      const std::string& file_name,
+      internal::CompositeParse* composite);
+
+  ModelInstanceIndex CompositeAddModelFromFile(
+      const std::string& file_name,
+      const std::string& model_name,
+      internal::CompositeParse* composite);
+
+  ModelInstanceIndex CompositeAddModelFromString(
+      const std::string& file_contents,
+      const std::string& file_type,
+      const std::string& model_name,
+      internal::CompositeParse* composite);
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   bool is_strict_{false};
   bool enable_auto_rename_{false};
   PackageMap package_map_;

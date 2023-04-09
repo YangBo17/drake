@@ -131,6 +131,7 @@ class GraphOfConvexSets {
     /** Returns a const reference to the underlying ConvexSet. */
     const ConvexSet& set() const { return *set_; }
 
+<<<<<<< HEAD
     /** Adds a cost to this vertex, described by a symbolic::Expression @p e
     containing *only* elements of x() as variables.  For technical reasons
     relating to being able to "turn-off" the cost on inactive vertices, all
@@ -197,6 +198,8 @@ class GraphOfConvexSets {
     double GetSolutionCost(
         const solvers::MathematicalProgramResult& result) const;
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     /** Returns the solution of x() in a MathematicalProgramResult.  This
     solution is NaN if the vertex is not in the shortest path (or if we are
     solving the the convex relaxation and the total flow through this vertex at
@@ -476,7 +479,11 @@ class GraphOfConvexSets {
 
   @throws std::exception if any of the costs or constraints in the graph are
   incompatible with the shortest path formulation or otherwise unsupported.
+<<<<<<< HEAD
   All costs must be non-negative for all values of the continuous variables.
+=======
+  All costs must be non-negative (for all values of the continuous variables).
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   @pydrake_mkdoc_identifier{by_id}
   */

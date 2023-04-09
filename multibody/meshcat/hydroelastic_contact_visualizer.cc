@@ -1,6 +1,9 @@
 #include "drake/multibody/meshcat/hydroelastic_contact_visualizer.h"
 
+<<<<<<< HEAD
 #include <algorithm>
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <utility>
 
 #include <fmt/format.h>
@@ -67,7 +70,11 @@ void HydroelasticContactVisualizer::Update(
     meshcat_->SetTransform(path, RigidTransformd(item.centroid_W));
 
     // Force vector.
+<<<<<<< HEAD
     if (force_norm >= params_.force_threshold) {
+=======
+    {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       meshcat_->SetTransform(path + "/force_C_W",
                              RigidTransformd(RotationMatrixd::MakeFromOneVector(
                                  item.force_C_W, 2)));
@@ -89,7 +96,11 @@ void HydroelasticContactVisualizer::Update(
                           Vector3d{0, 0, height + arrowhead_height}));
     }
     // Moment vector.
+<<<<<<< HEAD
     if (moment_norm >= params_.moment_threshold) {
+=======
+    {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       meshcat_->SetTransform(path + "/moment_C_W",
                              RigidTransformd(RotationMatrixd::MakeFromOneVector(
                                  item.moment_C_W, 2)));
@@ -110,6 +121,7 @@ void HydroelasticContactVisualizer::Update(
           RigidTransformd(RotationMatrixd::MakeXRotation(M_PI),
                           Vector3d{0, 0, height + arrowhead_height}));
     }
+<<<<<<< HEAD
 
     // Contact surface
     {
@@ -146,6 +158,8 @@ void HydroelasticContactVisualizer::Update(
       meshcat_->SetTransform(path + "/contact_surface",
                              RigidTransformd(-item.centroid_W));
     }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   // Update meshcat visibility to match the active status.

@@ -5,6 +5,7 @@ load(
 load("//tools/skylark:drake_data.bzl", "models_filegroup")
 load("//tools/install:install_data.bzl", "install_data")
 load("//tools/lint:lint.bzl", "add_lint_tests")
+<<<<<<< HEAD
 load(
     "//tools/workspace/models_internal:files.bzl",
     "wsg_50_description_mesh_files",
@@ -14,6 +15,25 @@ package(default_visibility = [":__subpackages__"])
 
 models_filegroup(
     name = "glob_models",
+=======
+load("@drake//tools/workspace:forward_files.bzl", "forward_files")
+load(
+    "//tools/workspace/models_internal:files.bzl",
+    "wsg_50_description_mesh_files",
+)
+
+package(
+    default_visibility = [":__subpackages__"],
+)
+
+_WSG_50_DESCRIPTION_MESHES = forward_files(
+    srcs = [
+        "@models_internal//:" + x
+        for x in wsg_50_description_mesh_files()
+    ],
+    dest_prefix = "",
+    strip_prefix = "@models_internal//:wsg_50_description/",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     visibility = ["//visibility:private"],
 )
 

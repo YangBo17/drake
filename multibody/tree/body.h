@@ -184,10 +184,14 @@ class Body : public MultibodyElement<T> {
  public:
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Body)
 
+<<<<<<< HEAD
   /// Returns this element's unique index.
   BodyIndex index() const { return this->template index_impl<BodyIndex>(); }
 
   /// Gets the `name` associated with `this` body. The name will never be empty.
+=======
+  /// Gets the `name` associated with `this` body.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const std::string& name() const { return name_; }
 
   /// Returns scoped name of this frame. Neither of the two pieces of the name
@@ -349,6 +353,11 @@ class Body : public MultibodyElement<T> {
       topology_.inboard_mobilizer).velocity_suffix(velocity_index_in_body);
   }
 
+  DRAKE_DEPRECATED("2022-11-01", "Use Body::default_mass().")
+  double get_default_mass() const {
+    return default_mass();
+  }
+
   /// Returns the default mass (not Context dependent) for `this` body.
   /// In general, a body's mass can be a Context-dependent parameter that is
   /// returned by the method get_mass(). When a body's mass is a parameter, the
@@ -482,11 +491,17 @@ class Body : public MultibodyElement<T> {
 
  protected:
   /// Creates a %Body named `name` in model instance `model_instance`.
+<<<<<<< HEAD
   /// The `name` must not be empty.
   Body(const std::string& name, ModelInstanceIndex model_instance)
       : MultibodyElement<T>(model_instance),
         name_(internal::DeprecateWhenEmptyName(name, "Body")),
         body_frame_(*this) {}
+=======
+  Body(const std::string& name, ModelInstanceIndex model_instance)
+      : MultibodyElement<Body, T, BodyIndex>(model_instance),
+        name_(name), body_frame_(*this) {}
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /// @name Methods to make a clone templated on different scalar types.
   ///

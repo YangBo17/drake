@@ -41,10 +41,16 @@ Shape::Shape(ShapeTag<S>) {
   };
 }
 
+<<<<<<< HEAD
 Box::Box(double width, double depth, double height)
     : Shape(ShapeTag<Box>()),
       size_(width, depth, height) {
   if (width <= 0 || depth <= 0 || height <= 0) {
+=======
+Sphere::Sphere(double radius)
+    : Shape(ShapeTag<Sphere>()), radius_(radius) {
+  if (radius < 0) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     throw std::logic_error(
         fmt::format("Box width, depth, and height should all be > 0 (were {}, "
                     "{}, and {}, respectively).",
@@ -161,6 +167,7 @@ MeshcatCone::MeshcatCone(double height, double a, double b)
   }
 }
 
+<<<<<<< HEAD
 MeshcatCone::MeshcatCone(const Vector3<double>& measures)
     : MeshcatCone(measures(0), measures(1), measures(2)) {}
 
@@ -170,6 +177,12 @@ Sphere::Sphere(double radius)
     throw std::logic_error(
         fmt::format("Sphere radius should be >= 0 (was {}).", radius));
   }
+=======
+ShapeReifier::~ShapeReifier() = default;
+
+void ShapeReifier::ImplementGeometry(const Sphere&, void*) {
+  ThrowUnsupportedGeometry("Sphere");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 ShapeReifier::~ShapeReifier() = default;
@@ -221,6 +234,21 @@ ShapeName::ShapeName(const Shape& shape) {
 
 ShapeName::~ShapeName() = default;
 
+<<<<<<< HEAD
+=======
+void ShapeName::ImplementGeometry(const Sphere&, void*) {
+  string_ = "Sphere";
+}
+
+void ShapeName::ImplementGeometry(const Cylinder&, void*) {
+  string_ = "Cylinder";
+}
+
+void ShapeName::ImplementGeometry(const HalfSpace&, void*) {
+  string_ = "HalfSpace";
+}
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void ShapeName::ImplementGeometry(const Box&, void*) {
   string_ = "Box";
 }
@@ -229,6 +257,7 @@ void ShapeName::ImplementGeometry(const Capsule&, void*) {
   string_ = "Capsule";
 }
 
+<<<<<<< HEAD
 void ShapeName::ImplementGeometry(const Convex&, void*) {
   string_ = "Convex";
 }
@@ -237,26 +266,41 @@ void ShapeName::ImplementGeometry(const Cylinder&, void*) {
   string_ = "Cylinder";
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void ShapeName::ImplementGeometry(const Ellipsoid&, void*) {
   string_ = "Ellipsoid";
 }
 
+<<<<<<< HEAD
 void ShapeName::ImplementGeometry(const HalfSpace&, void*) {
   string_ = "HalfSpace";
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void ShapeName::ImplementGeometry(const Mesh&, void*) {
   string_ = "Mesh";
 }
 
+<<<<<<< HEAD
+=======
+void ShapeName::ImplementGeometry(const Convex&, void*) {
+  string_ = "Convex";
+}
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 void ShapeName::ImplementGeometry(const MeshcatCone&, void*) {
   string_ = "MeshcatCone";
 }
 
+<<<<<<< HEAD
 void ShapeName::ImplementGeometry(const Sphere&, void*) {
   string_ = "Sphere";
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 std::ostream& operator<<(std::ostream& out, const ShapeName& name) {
   out << name.name();
   return out;

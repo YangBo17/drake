@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# -*- python -*-
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 # This file exists to make our directory into a Bazel package, so that our
 # neighboring *.bzl file can be loaded elsewhere.
 

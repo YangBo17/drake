@@ -20,12 +20,20 @@ readonly git_root="$(
 )"
 
 build_deps=1
+<<<<<<< HEAD
 if [[ "$1" == "--no-deps" ]]; then
+=======
+if [ "$1" == "--no-deps" ]; then
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     build_deps=
     shift 1
 fi
 
+<<<<<<< HEAD
 if [[ $# -lt 1 ]]; then
+=======
+if [ $# -lt 1 ]; then
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     echo "Usage: $0 <drake-version>" >&2
     exit 1
 fi
@@ -59,7 +67,11 @@ export SDKROOT="$(xcrun --show-sdk-path)"
 # Build Drake's dependencies.
 # -----------------------------------------------------------------------------
 
+<<<<<<< HEAD
 if [[ -n "$build_deps" ]]; then
+=======
+if [ -n "$build_deps" ]; then
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     rm -rf /opt/drake-dependencies
 
     rm -rf "/opt/drake-wheel-build/dependencies"
@@ -93,11 +105,18 @@ export SNOPT_PATH=git
 
 declare -a bazel_args=(
     --repo_env=DRAKE_OS=macos_wheel
+<<<<<<< HEAD
     --define=NO_DRAKE_VISUALIZER=ON
     --define=WITH_MOSEK=ON
     --define=WITH_SNOPT=ON
     # See tools/wheel/wheel_builder/macos.py for more on this env variable.
     --macos_minimum_os="${MACOSX_DEPLOYMENT_TARGET}"
+=======
+    --define NO_DRAKE_VISUALIZER=ON
+    --define NO_DREAL=ON
+    --define WITH_MOSEK=ON
+    --define WITH_SNOPT=ON
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
 bazel build "${bazel_args[@]}" //tools/wheel:strip_rpath
@@ -111,9 +130,13 @@ bazel run "${bazel_args[@]}" //:install -- /opt/drake
 
 rm -rf  "/opt/drake-wheel-build/python"
 
+<<<<<<< HEAD
 # NOTE: Xcode ships python3, make sure to use the one from brew.
 $(brew --prefix python@3.11)/bin/python3.11 \
     -m venv "/opt/drake-wheel-build/python"
+=======
+python3 -m venv "/opt/drake-wheel-build/python"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 . "/opt/drake-wheel-build/python/bin/activate"
 

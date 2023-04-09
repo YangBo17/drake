@@ -349,6 +349,21 @@ GTEST_TEST(SymbolicExtraction, DecomposeAffineExpression) {
     EXPECT_TRUE(CompareMatrices(coeffs_expected, coeffs, kEps));
     EXPECT_EQ(c_expected, c);
 
+<<<<<<< HEAD
+=======
+    // TODO(hongkai.dai): 2022-11-01 remove the following test after deprecating
+    // DecomposeAffineExpression with coeffs as a const reference argument.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    Eigen::RowVectorXd coeffs_deprecated(num_variables);
+    double c_deprecated;
+    DecomposeAffineExpression(e, map_var_to_index, coeffs_deprecated,
+                              &c_deprecated);
+    EXPECT_TRUE(CompareMatrices(coeffs_expected, coeffs_deprecated, kEps));
+    EXPECT_EQ(c_expected, c_deprecated);
+#pragma GCC diagnostic pop
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     // Now test a new expression with different coefficients and we pass in the
     // same variable `coeffs`. This tests whether DecomposeAffineExpression
     // reset coeffs (when the input coeffs stores some value).

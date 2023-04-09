@@ -6,8 +6,11 @@
 #include <vector>
 
 #include "drake/common/drake_copyable.h"
+<<<<<<< HEAD
 #include "drake/common/fmt_ostream.h"
 #include "drake/common/name_value.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 namespace drake {
 namespace multibody {
@@ -138,6 +141,7 @@ class PackageMap final {
   exist or is unreadable, a warning is logged. */
   void PopulateFromFolder(const std::string& path);
 
+<<<<<<< HEAD
   /** Obtains one or more paths from environment variable
   `environment_variable`. Crawls downward through the directory tree(s) starting
   from the path(s) searching for `package.xml` files. For each of these files,
@@ -188,6 +192,38 @@ class PackageMap final {
   void Remove(const std::string& package_name);
 
   ///@}
+=======
+  /// Obtains one or more paths from environment variable
+  /// @p environment_variable. Crawls downward through the directory tree(s)
+  /// starting from the path(s) searching for `package.xml` files. For each of
+  /// these files, this method adds a new entry into this PackageMap where the
+  /// key is the package name as specified within `package.xml` and the value is
+  /// the path to the `package.xml` file. Multiple paths can be specified by
+  /// separating them using the ':' symbol. For example, the environment
+  /// variable can contain [path 1]:[path 2]:[path 3] to search three different
+  /// paths.
+  /// If a package already known by the PackageMap is found again with a
+  /// conflicting path, a warning is logged and the original path is kept. This
+  /// accomodates the expected behavior using ROS_PACKAGE_PATH, where a package
+  /// path corresponds to the "highest" overlay in which that package is found.
+  /// If a path does not exist or is unreadable, a warning is logged.
+  /// This function should not be used when populating manifests from the
+  /// ROS_PACKAGE_PATH environment variable. To do so, the
+  /// PopulateFromRosPackagePath function should be used instead, which follows
+  /// standard ROS package discovery semantics described in the documentation
+  /// for that function.
+  void PopulateFromEnvironment(const std::string& environment_variable);
+
+  /// Obtains one or more paths from the ROS_PACKAGE_PATH environment variable.
+  /// Semantics are similar to PopulateFromEnvironment(), except that ROS-style
+  /// crawl termination semantics are enabled, which means that subdirectories
+  /// of already-identified packages are not searched, and neither are
+  /// directories which contain any of the following marker files:
+  /// - AMENT_IGNORE
+  /// - CATKIN_IGNORE
+  /// - COLCON_IGNORE
+  void PopulateFromRosPackagePath();
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const PackageMap& package_map);
@@ -206,9 +242,33 @@ class PackageMap final {
   void CrawlForPackages(const std::string& path, bool stop_at_package = false,
                         const std::vector<std::string_view>& stop_markers = {});
 
+<<<<<<< HEAD
   /* Our member data is forward declared to hide implementation details. */
   class Impl;
   std::unique_ptr<Impl> impl_;
+=======
+  // Recursively crawls through @p path looking for package.xml files. Adds
+  // the packages defined by these package.xml files to this PackageMap.
+  //
+  // @param[in] stop_at_package When passed true, do not crawl into
+  // subdirectories of packages which have already been found.
+  // @param[in] stop_markers When a directory contains one or more files or
+  // directories with one of the given names, do not crawl into that directory
+  // or any subdirectories when searching for packages.
+  void CrawlForPackages(const std::string& path,
+      bool stop_at_package = false,
+      const std::vector<std::string_view>& stop_markers = {});
+
+  // This method is the same as Add() except if package_name is already present
+  // with a different path, then this method prints a warning and returns false
+  // without adding the new path. Returns true otherwise.
+  bool AddPackageIfNew(const std::string& package_name,
+      const std::string& path);
+
+  // The key is the name of a ROS package and the value is a struct containing
+  // information about that package.
+  std::map<std::string, struct PackageData> map_;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 }  // namespace multibody

@@ -142,17 +142,23 @@ drake_pybind_library(
         "//bindings/pydrake/geometry",
         "//bindings/pydrake/common:cpp_template_py",
     ],
+<<<<<<< HEAD
     py_srcs = [
         "_plant_extra.py",
     ],
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
 drake_pybind_library(
     name = "parsing_py",
     cc_deps = [
         "//bindings/pydrake:documentation_pybind",
+<<<<<<< HEAD
         "//bindings/pydrake/common:deprecation_pybind",
         "//bindings/pydrake/common:serialize_pybind",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
     cc_srcs = ["parsing_py.cc"],
     package_info = PACKAGE_INFO,
@@ -215,6 +221,7 @@ drake_pybind_library(
         ":module_py",
         ":plant_py",
         "//bindings/pydrake/solvers",
+<<<<<<< HEAD
     ],
 )
 
@@ -231,6 +238,8 @@ drake_pybind_library(
         ":module_py",
         ":plant_py",
         "//bindings/pydrake/solvers",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
@@ -243,6 +252,23 @@ drake_jupyter_py_binary(
     ],
 )
 
+drake_pybind_library(
+    name = "rational_forward_kinematics_py",
+    cc_deps = [
+        "//bindings/pydrake:documentation_pybind",
+        "//bindings/pydrake/common:default_scalars_pybind",
+        "//bindings/pydrake/common:sorted_pair_pybind",
+        "//bindings/pydrake/common:value_pybind",
+    ],
+    cc_srcs = ["rational_forward_kinematics_py.cc"],
+    package_info = PACKAGE_INFO,
+    py_deps = [
+        ":module_py",
+        ":plant_py",
+        "//bindings/pydrake/solvers",
+    ],
+)
+
 PY_LIBRARIES_WITH_INSTALL = [
     ":benchmarks_py",
     ":fem_py",
@@ -252,7 +278,11 @@ PY_LIBRARIES_WITH_INSTALL = [
     ":optimization_py",
     ":parsing_py",
     ":plant_py",
+<<<<<<< HEAD
     ":rational_py",
+=======
+    ":rational_forward_kinematics_py",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ":tree_py",
 ]
 
@@ -276,8 +306,8 @@ drake_py_library(
 
 install(
     name = "install",
-    targets = PY_LIBRARIES + [":all_py"],
     py_dest = PACKAGE_INFO.py_dest,
+    targets = PY_LIBRARIES + [":all_py"],
     deps = get_drake_py_installs(PY_LIBRARIES_WITH_INSTALL),
 )
 
@@ -317,7 +347,6 @@ drake_py_unittest(
     deps = [
         ":parsing_py",
         ":plant_py",
-        "//bindings/pydrake/common/test_utilities",
     ],
 )
 
@@ -423,6 +452,7 @@ drake_py_unittest(
 )
 
 drake_py_unittest(
+<<<<<<< HEAD
     name = "rational_test",
     data = [
         ":models",
@@ -431,6 +461,21 @@ drake_py_unittest(
         ":parsing_py",
         ":rational_py",
         "//bindings/pydrake/common/test_utilities",
+=======
+    name = "rational_forward_kinematics_test",
+    size = "large",
+    data = [
+        "//manipulation/models/iiwa_description:models",
+    ],
+    deps = [
+        ":parsing_py",
+        ":plant_py",
+        ":rational_forward_kinematics_py",
+        "//bindings/pydrake:geometry_py",
+        "//bindings/pydrake:math_py",
+        "//bindings/pydrake/common/test_utilities",
+        "//bindings/pydrake/systems:framework_py",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 

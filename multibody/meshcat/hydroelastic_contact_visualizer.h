@@ -17,6 +17,7 @@ namespace internal {
 /* Like multibody::HydroelasticContactInfo, but only the visualization info.
    TODO(joemasterjohn): Add the mesh geometry and pressure values. */
 struct HydroelasticContactVisualizerItem {
+<<<<<<< HEAD
   HydroelasticContactVisualizerItem(
       std::string body_A_, std::string body_B_,
       const Eigen::Vector3d& centroid_W_, const Eigen::Vector3d& force_C_W_,
@@ -24,23 +25,36 @@ struct HydroelasticContactVisualizerItem {
       const Eigen::Matrix3Xd p_WV_,
       const Eigen::Matrix3Xi faces_,
       const Eigen::VectorXd pressure_)
+=======
+  HydroelasticContactVisualizerItem(std::string body_A_, std::string body_B_,
+                                    const Eigen::Vector3d& centroid_W_,
+                                    const Eigen::Vector3d& force_C_W_,
+                                    const Eigen::Vector3d& moment_C_W_)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       : body_A(std::move(body_A_)),
         body_B(std::move(body_B_)),
         centroid_W(centroid_W_),
         force_C_W(force_C_W_),
+<<<<<<< HEAD
         moment_C_W(moment_C_W_),
         p_WV(std::move(p_WV_)),
         faces(std::move(faces_)),
         pressure(std::move(pressure_)) {}
+=======
+        moment_C_W(moment_C_W_) {}
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   std::string body_A;
   std::string body_B;
   Eigen::Vector3d centroid_W;
   Eigen::Vector3d force_C_W;
   Eigen::Vector3d moment_C_W;
+<<<<<<< HEAD
   Eigen::Matrix3Xd p_WV;
   Eigen::Matrix3Xi faces;
   Eigen::VectorXd pressure;
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 /* HydroelasticContactVisualizer publishes hydroelastic contact results for

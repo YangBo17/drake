@@ -167,6 +167,7 @@ class QueryObject {
    @throws std::exception if the frame `frame_id` is not valid.  */
   const math::RigidTransform<T>& GetPoseInParent(FrameId frame_id) const;
 
+<<<<<<< HEAD
   /** Reports the position of the frame of the rigid geometry indicated by
    `geometry_id` relative to the world frame (X_WG).
    @note This query is meaningless for deformable geometries. Their current
@@ -177,6 +178,13 @@ class QueryObject {
    parent frame (see SceneGraphInspector::GetPoseInFrame()).
    @throws std::exception if the geometry `geometry_id` is not valid or if it
    is deformable.  */
+=======
+  /** Reports the position of the geometry indicated by `geometry_id` relative
+   to the world frame.
+   @sa GetConfigurationsInWorld().
+   @throws std::exception if the geometry `geometry_id` is not valid or if it
+   exists but is deformable.  */
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   const math::RigidTransform<T>& GetPoseInWorld(GeometryId geometry_id) const;
 
   /** Reports the configuration of the deformable geometry indicated by
@@ -811,8 +819,13 @@ class QueryObject {
     if (scene_graph_) scene_graph_->FullPoseUpdate(*context_);
   }
 
+<<<<<<< HEAD
   // Update configurations for all deformable geometries. This method does no
   // work if this is a "baked" query object (see class docs for discussion).
+=======
+  // Update all deformable configurations. This method does no work if this is
+  // a "baked" query object (see class docs for discussion).
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   void FullConfigurationUpdate() const {
     // TODO(SeanCurtis-TRI): Modify this when the cache system is in place.
     //  Ideally, QueryObject should never have to invoke any explicit state
@@ -821,6 +834,7 @@ class QueryObject {
     if (scene_graph_) scene_graph_->FullConfigurationUpdate(*context_);
   }
 
+<<<<<<< HEAD
   // Update poses for all rigid (non-deformable) geometries and configurations
   // for all deformable geometries. This method does no work if this is a
   // "baked" query object (see class docs for discussion).
@@ -829,6 +843,8 @@ class QueryObject {
     FullConfigurationUpdate();
   }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // Reports true if this object is configured so that it can support a query.
   bool is_callable() const {
     const bool live_condition = context_ != nullptr && scene_graph_ != nullptr;

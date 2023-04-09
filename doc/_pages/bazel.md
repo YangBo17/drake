@@ -169,8 +169,13 @@ bazel build //tools/lint:buildifier
 
 The Drake Bazel build currently supports the following proprietary solvers:
 
+<<<<<<< HEAD
 * Gurobi 9.5
 * MOSEK™ 10.0
+=======
+* Gurobi 9.5.1
+* MOSEK™ 9.3
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 * SNOPT 7.4
 
 ## Gurobi 9.5
@@ -180,6 +185,7 @@ The Drake Bazel build currently supports the following proprietary solvers:
 1. Register for an account on [https://www.gurobi.com](https://www.gurobi.com).
 2. Set up your Gurobi license file in accordance with Gurobi documentation.
 3. ``export GRB_LICENSE_FILE=/path/to/gurobi.lic``.
+<<<<<<< HEAD
 4. Download ``gurobi9.5.2_linux64.tar.gz``. You may need to manually edit the URL to get the correct version.
 5. Unzip it.  We suggest that you use ``/opt/gurobi952`` to simplify working with Drake installations.
 6. If you unzipped into a location other than ``/opt/gurobi952``, then call ``export GUROBI_HOME=GUROBI_UNZIP_PATH/linux64`` to set the path you used, where in ``GUROBI_HOME`` folder you can find ``bin`` folder.
@@ -187,6 +193,11 @@ The Drake Bazel build currently supports the following proprietary solvers:
 Drake supports any patch version of Gurobi 9.5. At time of writing, the most
 recent available version was 9.5.2; if using a newer patch version, the paths
 and file names above should be adjusted accordingly.
+=======
+4. Download ``gurobi9.5.1_linux64.tar.gz``. You may need to manually edit the URL to get the correct minor version.
+5. Unzip it.  We suggest that you use ``/opt/gurobi951`` to simplify working with Drake installations.
+6. If you unzipped into a location other than ``/opt/gurobi951``, then call ``export GUROBI_HOME=GUROBI_UNZIP_PATH/linux64`` to set the path you used, where in ``GUROBI_HOME`` folder you can find ``bin`` folder.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 ### Install on macOS
 
@@ -206,7 +217,11 @@ See [https://docs.bazel.build/versions/main/user-manual.html#bazelrc](https://do
 
 ## MOSEK
 
+<<<<<<< HEAD
 The Drake Bazel build system downloads MOSEK™ 10.0.18 automatically. No manual
+=======
+The Drake Bazel build system downloads MOSEK™ 9.3.20 automatically. No manual
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 installation is required.  Set the location of your license file as follows:
 
   ```export MOSEKLM_LICENSE_FILE=/path/to/mosek.lic```

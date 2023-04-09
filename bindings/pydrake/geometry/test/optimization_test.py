@@ -109,6 +109,7 @@ class TestGeometryOptimization(unittest.TestCase):
         self.assertIsInstance(h5, mut.HPolyhedron)
         np.testing.assert_array_equal(h5.A(), h_box.A())
         np.testing.assert_array_equal(h5.b(), np.zeros(6))
+<<<<<<< HEAD:bindings/pydrake/geometry/test/optimization_test.py
 
         generator = RandomGenerator()
         sample = h_box.UniformSample(generator=generator)
@@ -155,6 +156,8 @@ class TestGeometryOptimization(unittest.TestCase):
         hpoly = mut.HPolyhedron(vpoly=vpoly)
         self.assertEqual(hpoly.ambient_dimension(), 3)
         self.assertEqual(hpoly.A().shape, (4, 3))
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:bindings/pydrake/test/geometry_optimization_test.py
 
     def test_hyper_ellipsoid(self):
         ellipsoid = mut.Hyperellipsoid(A=self.A, center=self.b)

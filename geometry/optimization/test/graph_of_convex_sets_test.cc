@@ -384,15 +384,19 @@ TEST_F(ThreePoints, LinearCost1) {
   ASSERT_TRUE(result4.is_success());
   EXPECT_NEAR(e_on_->GetSolutionCost(result4), 1.0, 1e-6);
   EXPECT_NEAR(e_off_->GetSolutionCost(result4), 0.0, 1e-6);
+<<<<<<< HEAD
   EXPECT_NEAR(source_->GetSolutionCost(result4), 1.0, 1e-6);
   EXPECT_NEAR(target_->GetSolutionCost(result4), 0.0, 1e-6);
   EXPECT_NEAR(sink_->GetSolutionCost(result4), 0.0, 1e-6);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   EXPECT_TRUE(
       CompareMatrices(source_->GetSolution(result4), p_source_.x(), 1e-6));
   EXPECT_TRUE(
       CompareMatrices(target_->GetSolution(result4), p_target_.x(), 1e-6));
   EXPECT_TRUE(sink_->GetSolution(result4).hasNaN());
+<<<<<<< HEAD
 
   if (solvers::ClpSolver::is_available()) {
     solvers::ClpSolver clp;
@@ -405,6 +409,8 @@ TEST_F(ThreePoints, LinearCost1) {
     EXPECT_NEAR(target_->GetSolutionCost(result3), 0.0, 1e-6);
     EXPECT_NEAR(sink_->GetSolutionCost(result3), 0.0, 1e-6);
   }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 TEST_F(ThreePoints, ConvexRelaxation) {
@@ -1591,11 +1597,19 @@ GTEST_TEST(ShortestPathTest, Figure9) {
       spp.AddVertex(HPolyhedron::MakeBox(Vector2d(2, -2), Vector2d(4, 2)));
   const Vertex* target = spp.AddVertex(Point(Vector2d(5, 0)), "target");
 
+<<<<<<< HEAD
   Edge* e01 = spp.AddEdge(*source, *v1);
   Edge* e02 = spp.AddEdge(*source, *v2);
   Edge* e13 = spp.AddEdge(*v1, *v3);
   Edge* e23 = spp.AddEdge(*v2, *v3);
   Edge* e34 = spp.AddEdge(*v3, *target);
+=======
+  const Edge* e01 = spp.AddEdge(*source, *v1);
+  const Edge* e02 = spp.AddEdge(*source, *v2);
+  const Edge* e13 = spp.AddEdge(*v1, *v3);
+  const Edge* e23 = spp.AddEdge(*v2, *v3);
+  const Edge* e34 = spp.AddEdge(*v3, *target);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Edge length is distance for all edges.
   Matrix<double, 2, 4> A;
@@ -1607,7 +1621,11 @@ GTEST_TEST(ShortestPathTest, Figure9) {
     e->AddCost(solvers::Binding(cost, {e->xu(), e->xv()}));
   }
 
+<<<<<<< HEAD
   auto result = spp.SolveShortestPath(source->id(), target->id());
+=======
+  auto result = spp.SolveShortestPath(source->id(), target->id(), true);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   ASSERT_TRUE(result.is_success());
 
   const double kTol = 2e-4;  // Gurobi required this large tolerance.
@@ -1622,6 +1640,7 @@ GTEST_TEST(ShortestPathTest, Figure9) {
   EXPECT_TRUE(v3->GetSolution(result)[0] > 2.0 - kTol);
   EXPECT_TRUE(v3->GetSolution(result)[0] < 4.0 - kTol);
   EXPECT_NEAR(v3->GetSolution(result)[1], 0, kTol);
+<<<<<<< HEAD
 
   // Test that rounding returns the convex relaxation when relaxation is
   // feasible but integer solution is not.
@@ -1655,6 +1674,8 @@ GTEST_TEST(ShortestPathTest, Figure9) {
     EXPECT_NEAR(e->GetSolutionCost(relaxed_result),
                 e->GetSolutionCost(rounded_result), 1e-10);
   }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 GTEST_TEST(ShortestPathTest, Graphviz) {

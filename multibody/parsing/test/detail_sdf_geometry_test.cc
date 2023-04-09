@@ -7,6 +7,10 @@
 #include <sstream>
 #include <vector>
 
+<<<<<<< HEAD
+=======
+#include "fmt/ostream.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <drake_vendor/sdf/Root.hh>
 #include <drake_vendor/sdf/parser.hh>
 #include <gmock/gmock.h>
@@ -509,6 +513,22 @@ TEST_F(SceneGraphParserDetail, MakePolylineFromSdfGeometry) {
       MakeShapeFromSdfGeometry(*sdf_geometry);
   EXPECT_TRUE(shape.has_value());
   EXPECT_EQ(*shape, nullptr);
+}
+
+// Verify that MakeShapeFromSdfGeometry does nothing with a polyline.
+TEST_F(SceneGraphParserDetail, MakePolylineFromSdfGeometry) {
+  unique_ptr<sdf::Geometry> sdf_geometry = MakeSdfGeometryFromString(
+      "<polyline>"
+      "  <polyline>"
+      "    <point>0 0</point>"
+      "    <point>0 1</point>"
+      "    <point>1 1</point>"
+      "    <point>1 0</point>"
+      "    <height>1</height>"
+      "  </polyline>"
+      "</polyline>");
+  unique_ptr<Shape> shape = MakeShapeFromSdfGeometry(*sdf_geometry);
+  EXPECT_EQ(shape, nullptr);
 }
 
 // Verify MakeGeometryInstanceFromSdfVisual can make a GeometryInstance from an
@@ -1236,9 +1256,15 @@ TEST_F(SceneGraphParserDetail, MakeProximityPropertiesForCollision) {
                            geometry::internal::kElastic, 3.5);
     assert_single_property(*properties, geometry::internal::kMaterialGroup,
                            geometry::internal::kHcDissipation, 4.5);
+<<<<<<< HEAD
     assert_single_property(*properties, geometry::internal::kMaterialGroup,
                            geometry::internal::kRelaxationTime, 3.1);
     assert_friction(*properties, {4.75, 4.5});
+=======
+    assert_single_property(properties, geometry::internal::kMaterialGroup,
+                           geometry::internal::kRelaxationTime, 3.1);
+    assert_friction(properties, {4.75, 4.5});
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   // Case: specifies rigid hydroelastic.

@@ -1,8 +1,11 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
+<<<<<<< HEAD
 #include "drake/bindings/pydrake/common/deprecation_pybind.h"
 #include "drake/bindings/pydrake/common/serialize_pybind.h"
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/bindings/pydrake/documentation_pybind.h"
 #include "drake/bindings/pydrake/pydrake_pybind.h"
 #include "drake/multibody/parsing/package_map.h"
@@ -72,10 +75,15 @@ PYBIND11_MODULE(parsing, m) {
         .def("PopulateFromEnvironment", &Class::PopulateFromEnvironment,
             py::arg("environment_variable"),
             cls_doc.PopulateFromEnvironment.doc)
+<<<<<<< HEAD
         .def("PopulateFromRosPackagePath", &Class::PopulateFromRosPackagePath,
             cls_doc.PopulateFromRosPackagePath.doc)
         .def_static("MakeEmpty", &Class::MakeEmpty, cls_doc.MakeEmpty.doc);
     DefCopyAndDeepCopy(&cls);
+=======
+        .def("PopulateFromRosPackagePath", &Class::PopulateFromRosPackagePath)
+        .def_static("MakeEmpty", &Class::MakeEmpty, cls_doc.MakeEmpty.doc);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   // Parser
@@ -136,9 +144,15 @@ PYBIND11_MODULE(parsing, m) {
             WrapDeprecated(cls_doc.AddModelFromString.doc_deprecated,
                 &Class::AddModelFromString),
             py::arg("file_contents"), py::arg("file_type"),
+<<<<<<< HEAD
             py::arg("model_name") = "",
             cls_doc.AddModelFromString.doc_deprecated);
 #pragma GCC diagnostic pop
+=======
+            py::arg("model_name") = "", cls_doc.AddModelFromString.doc)
+        .def("SetStrictParsing", &Class::SetStrictParsing,
+            cls_doc.SetStrictParsing.doc);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 
   // Model Directives
@@ -244,6 +258,12 @@ PYBIND11_MODULE(parsing, m) {
         .def_readonly("model_instance", &Class::model_instance,
             cls_doc.model_instance.doc);
   }
+
+  m.def("ProcessModelDirectives",
+      py::overload_cast<const parsing::ModelDirectives&, Parser*>(
+          &parsing::ProcessModelDirectives),
+      py::arg("directives"), py::arg("parser"),
+      doc.parsing.ProcessModelDirectives.doc_2args);
 
   m.def("ProcessModelDirectives",
       py::overload_cast<const parsing::ModelDirectives&, Parser*>(

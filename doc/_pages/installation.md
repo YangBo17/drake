@@ -14,6 +14,7 @@ notebooks. See the [Tutorials](/index.html#tutorials) page for details.
 The following table shows the configurations and platforms that Drake
 officially supports:
 
+<<<<<<< HEAD
 | Operating System ⁽¹⁾               | Architecture | Python ⁽²⁾ |
 |------------------------------------|--------------|------------|
 | Ubuntu 20.04 LTS (Focal Fossa)     | x86_64       | 3.8 ⁽³⁾    |
@@ -23,6 +24,23 @@ officially supports:
 
 "Official support" means that we have Continuous Integration test coverage to
 notice regressions, so if it doesn't work for you then please file a bug report.
+=======
+| Operating System ⁽⁴⁾⁽⁵⁾            | Architecture | Python   |
+|------------------------------------|--------------|----------|
+| Ubuntu 20.04 LTS (Focal Fossa)     | x86_64 ⁽¹⁾   | 3.8 ⁽³⁾  |
+| Ubuntu 22.04 LTS (Jammy Jellyfish) | x86_64 ⁽¹⁾   | 3.10 ⁽³⁾ |
+| macOS Big Sur (11)                 | x86_64 ⁽²⁾   | 3.9 ⁽³⁾  |
+| macOS Monterey (12)                | x86_64 ⁽²⁾   | 3.9 ⁽³⁾  |
+
+⁽¹⁾ Drake Ubuntu builds assume support for Intel's AVX2 and FMA instructions,
+introduced with the Haswell architecture in 2013 with substantial performance
+improvements in the Broadwell architecture in 2014. Drake is compiled with
+`-march=broadwell` to exploit these instructions (that also works for Haswell
+machines). Drake can be used on older machines if necessary by building from
+source with that
+[flag](https://github.com/RobotLocomotion/drake/blob/77642cc9/math/BUILD.bazel#L288)
+removed.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 Unofficially, Drake is also likely to be compatible with newer versions of
 Ubuntu or macOS than what are listed, or with Ubuntu 22.04 running on arm64, or
@@ -45,15 +63,28 @@ has caused problems for some users.
 channels. Additionally, on Ubuntu when installing via ``pip`` Python versions
 3.8 through 3.11 (inclusive) are supported.
 
+⁽⁵⁾ Ubuntu 22.04 (Jammy Jellyfish) builds are only supported from source or
+as nightly binaries. Drake does not yet publish stable binaries for this
+platform.
+
 Additionally, if you are compiling your own C++ code against Drake's C++ code
 and are using Drake's pre-compiled binaries, then you must use the same
 compiler as our releases:
 
+<<<<<<< HEAD
 | Operating System                   | C/C++ Compiler           | Std   |
 |------------------------------------|--------------------------|-------|
 | Ubuntu 20.04 LTS (Focal Fossa)     | GCC 9                    | C++17 |
 | Ubuntu 22.04 LTS (Jammy Jellyfish) | GCC 11                   | C++20 |
 | macOS Monterey (12)                | Apple LLVM 14 (Xcode 14) | C++20 |
+=======
+| Operating System                   | C/C++ Compiler                 |
+|------------------------------------|--------------------------------|
+| Ubuntu 20.04 LTS (Focal Fossa)     | GCC 9.3                        |
+| Ubuntu 22.04 LTS (Jammy Jellyfish) | GCC 11.2                       |
+| macOS Big Sur (11)                 | Apple LLVM 12.0.0 (Xcode 12.4) |
+| macOS Monterey (12)                | Apple LLVM 12.0.0 (Xcode 12.4) |
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 ## Available Versions
 

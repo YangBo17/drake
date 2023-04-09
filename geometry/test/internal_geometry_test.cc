@@ -14,10 +14,14 @@ namespace geometry {
 namespace internal {
 namespace {
 
+<<<<<<< HEAD
 using Eigen::Vector3d;
 using math::RigidTransformd;
 using math::RollPitchYawd;
 using math::RotationMatrixd;
+=======
+using math::RigidTransformd;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 using std::make_unique;
 
 // Create two instances of the given Properties type with different properties:
@@ -203,13 +207,18 @@ GTEST_TEST(InternalGeometryTest, RemoveRole) {
   EXPECT_FALSE(geometry.has_role(Role::kPerception));
 }
 
+<<<<<<< HEAD
 GTEST_TEST(InternalGeometryTest, DeformableGeometry) {
+=======
+GTEST_TEST(InternalGeometryTest, DeformableMeshedGeometry) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   SourceId source_id = SourceId::get_new_id();
   Sphere sphere(1.0);
   constexpr double kRezHint = .5;
   FrameId frame_id = FrameId::get_new_id();
   GeometryId deformable_geometry_id = GeometryId::get_new_id();
   std::string name = "sphere";
+<<<<<<< HEAD
   const RigidTransformd X_FG(RollPitchYawd(1, 2, 3), Vector3d(3, 4, 5));
   const VolumeMesh<double> expected_mesh_G = MakeSphereVolumeMesh<double>(
       sphere, kRezHint, TessellationStrategy::kDenseInteriorVertices);
@@ -224,18 +233,41 @@ GTEST_TEST(InternalGeometryTest, DeformableGeometry) {
   EXPECT_TRUE(geometry.X_FG().IsExactlyEqualTo(X_FG));
   // The immediate parent of a deformable geometry is the frame.
   EXPECT_TRUE(geometry.X_PG().IsExactlyEqualTo(X_FG));
+=======
+  const VolumeMesh<double> expected_mesh = MakeSphereVolumeMesh<double>(
+      sphere, kRezHint, TessellationStrategy::kDenseInteriorVertices);
+
+  // Confirms that a meshed geometry can be constructed.
+  InternalGeometry geometry(source_id, make_unique<Sphere>(sphere), frame_id,
+                            deformable_geometry_id, name, kRezHint);
+  const VolumeMesh<double>* reference_mesh = geometry.reference_mesh();
+  ASSERT_NE(reference_mesh, nullptr);
+  EXPECT_TRUE(expected_mesh.Equal(*reference_mesh));
+
+  // Deformable geometry doesn't have the notion of "fixed-in" frame. Those
+  // values are set to identity.
+  EXPECT_TRUE(geometry.X_FG().IsExactlyIdentity());
+  EXPECT_TRUE(geometry.X_PG().IsExactlyIdentity());
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // Meshed geometry is never anchored.
   EXPECT_TRUE(geometry.is_dynamic());
   // Meshed geometry is always deformable.
   EXPECT_TRUE(geometry.is_deformable());
 
+<<<<<<< HEAD
   // Confirms that the a geometry created without resolution hint is not a
   // deformable geometry and doesn't have a reference mesh.
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   GeometryId rigid_geometry_id = GeometryId::get_new_id();
   InternalGeometry rigid_geometry(source_id, make_unique<Sphere>(sphere),
                                   frame_id, rigid_geometry_id, name,
                                   RigidTransformd());
   EXPECT_EQ(rigid_geometry.reference_mesh(), nullptr);
+<<<<<<< HEAD
+=======
+  // Non-meshed geometry is not deformable.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   EXPECT_FALSE(rigid_geometry.is_deformable());
 }
 

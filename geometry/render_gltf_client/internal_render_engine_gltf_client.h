@@ -3,10 +3,16 @@
 #include <memory>
 #include <string>
 
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.h
 #include "drake/geometry/render/render_camera.h"
 #include "drake/geometry/render_gltf_client/internal_render_client.h"
 #include "drake/geometry/render_vtk/internal_render_engine_vtk.h"
 #include "drake/systems/sensors/image.h"
+=======
+#include "drake/geometry/render/dev/render_gltf_client/factory.h"
+#include "drake/geometry/render_gltf_client/internal_render_client.h"
+#include "drake/geometry/render_vtk/internal_render_engine_vtk.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.h
 
 namespace drake {
 namespace geometry {
@@ -82,6 +88,20 @@ class RenderEngineGltfClient : public geometry::render::RenderEngineVtk {
   void ExportScene(const std::string& export_path,
                    geometry::render::internal::ImageType image_type) const;
 
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.h
+=======
+  /* Deletes the files at the paths `scene_path` and `image_path`.  Should only
+   be called when `!no_cleanup()`. */
+  void CleanupFrame(const std::string& scene_path,
+                    const std::string& image_path) const;
+
+  /* Helper access method for testing UpdateViewpoint matrix inversion for the
+   specified image_type.  Only used for testing. */
+  Eigen::Matrix4d CameraModelViewTransformMatrix(
+      geometry::render::internal::ImageType image_type) const;
+
+  friend class RenderEngineGltfClientTester;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.h
   std::unique_ptr<RenderClient> render_client_;
 };
 

@@ -1,7 +1,11 @@
 #include "drake/multibody/parsing/detail_collision_filter_group_resolver.h"
 
+<<<<<<< HEAD
 #include "drake/common/unused.h"
 #include "drake/multibody/tree/scoped_name.h"
+=======
+#include "drake/multibody/parsing/scoped_names.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 namespace drake {
 namespace multibody {
@@ -9,6 +13,13 @@ namespace internal {
 
 using drake::internal::DiagnosticPolicy;
 using geometry::GeometrySet;
+<<<<<<< HEAD
+=======
+using parsing::GetInstanceScopeName;
+using parsing::ParseScopedName;
+using parsing::PrefixName;
+using parsing::ScopedName;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 CollisionFilterGroupResolver::CollisionFilterGroupResolver(
     MultibodyPlant<double>* plant)
@@ -16,11 +27,14 @@ CollisionFilterGroupResolver::CollisionFilterGroupResolver(
   DRAKE_DEMAND(plant != nullptr);
   minimum_model_instance_index_ =
       ModelInstanceIndex(plant->num_model_instances());
+<<<<<<< HEAD
 
   // The scoped name for the world instance would require special handling,
   // but we never expect to be given a `model_instance` that refers to it.
   const ModelInstanceIndex world = plant->world_body().model_instance();
   DRAKE_DEMAND(minimum_model_instance_index_ > world);
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 CollisionFilterGroupResolver::~CollisionFilterGroupResolver() {}
@@ -35,6 +49,7 @@ void CollisionFilterGroupResolver::AddGroup(
     DRAKE_DEMAND(*model_instance >= minimum_model_instance_index_);
   }
   DRAKE_DEMAND(!group_name.empty());
+<<<<<<< HEAD
   const std::string full_group_name = FullyQualify(group_name, model_instance);
   if (!ScopedName::Parse(group_name).get_namespace().empty()) {
     diagnostic.Error(fmt::format("group name '{}' cannot be a scoped name",
@@ -43,12 +58,24 @@ void CollisionFilterGroupResolver::AddGroup(
   }
   if (body_names.empty()) {
     diagnostic.Error(fmt::format("group '{}' has no members", full_group_name));
+=======
+  if (!CheckLegalName(diagnostic, group_name, "group name")) { return; }
+  if (!ParseScopedName(group_name).instance_name.empty()) {
+    diagnostic.Error(fmt::format("group name '{}' cannot be a scoped name",
+                                 FullyQualify(group_name, model_instance)));
+    return;
+  }
+  if (body_names.empty()) {
+    diagnostic.Error(fmt::format("group '{}' has no members",
+                                 FullyQualify(group_name, model_instance)));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     return;
   }
 
   geometry::GeometrySet geometry_set;
   for (const auto& body_name : body_names) {
     DRAKE_DEMAND(!body_name.empty());
+<<<<<<< HEAD
     const ScopedName scoped_body_name =
         ScopedName::Parse(FullyQualify(body_name, model_instance));
 
@@ -66,6 +93,25 @@ void CollisionFilterGroupResolver::AddGroup(
     if (!body) {
       diagnostic.Error(fmt::format("body with name '{}' not found",
                                    scoped_body_name));
+=======
+    if (!CheckLegalName(diagnostic, body_name, "body name")) { continue; }
+    const std::string qualified = FullyQualify(body_name, model_instance);
+    ScopedName scoped_name = ParseScopedName(qualified);
+
+    const Body<double>* body{};
+    if (plant_->HasModelInstanceNamed(scoped_name.instance_name)) {
+      ModelInstanceIndex body_model =
+          plant_->GetModelInstanceByName(scoped_name.instance_name);
+      if (body_model < minimum_model_instance_index_) {
+        diagnostic.Error(fmt::format("body name '{}' refers to a model outside"
+                                     " the current parse", qualified));
+        continue;
+      }
+      body = FindBody(scoped_name.name, body_model);
+    }
+    if (!body) {
+      diagnostic.Error(fmt::format("body with name '{}' not found", qualified));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       continue;
     }
 
@@ -79,14 +125,25 @@ void CollisionFilterGroupResolver::AddPair(
     const std::string& group_name_a,
     const std::string& group_name_b,
     std::optional<ModelInstanceIndex> model_instance) {
+<<<<<<< HEAD
   unused(diagnostic);
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   DRAKE_DEMAND(!group_name_a.empty());
   DRAKE_DEMAND(!group_name_b.empty());
   if (model_instance) {
     DRAKE_DEMAND(*model_instance < plant_->num_model_instances());
     DRAKE_DEMAND(*model_instance >= minimum_model_instance_index_);
   }
+<<<<<<< HEAD
+=======
+  bool a_ok = CheckLegalName(diagnostic, group_name_a, "group name");
+  bool b_ok = CheckLegalName(diagnostic, group_name_b, "group name");
+  if (!(a_ok && b_ok)) {
+    return;
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // Store group pairs by fully qualified name. The groups don't need to
   // actually be defined until Resolve() time.
@@ -114,6 +171,29 @@ void CollisionFilterGroupResolver::Resolve(const DiagnosticPolicy& diagnostic) {
   }
 }
 
+<<<<<<< HEAD
+=======
+bool CollisionFilterGroupResolver::CheckLegalName(
+    const drake::internal::DiagnosticPolicy& diagnostic,
+    std::string_view name,
+    const std::string& description) const {
+  DRAKE_DEMAND(!name.empty());
+
+  const std::string_view delim(parsing::internal::kScopedNameDelim);
+  // The main objective here is to avoid aborting with a dubious message in
+  // ParseScope(). There are numerous other degenerate name cases, but those
+  // likely won't abort in ParseScope() and will be caught later on by full
+  // qualification and lookup.
+  bool legal = (name.front() != delim.front()) &&
+               (name.back() != delim.back());
+  if (!legal) {
+    diagnostic.Error(fmt::format("{} '{}' can neither begin nor end with '{}'",
+                                 description, name, delim));
+  }
+  return legal;
+}
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 std::string CollisionFilterGroupResolver::FullyQualify(
     const std::string& name,
     std::optional<ModelInstanceIndex> model_instance) const {
@@ -121,8 +201,15 @@ std::string CollisionFilterGroupResolver::FullyQualify(
     // Names found in global scope are just themselves.
     return name;
   }
+<<<<<<< HEAD
   const std::string& model_name = plant_->GetModelInstanceName(*model_instance);
   return ScopedName::Join(model_name, name).to_string();
+=======
+
+  // Treat the name as relative and just prefix it with the model instance
+  // name. Misuses of scoping will fail in lookup.
+  return PrefixName(GetInstanceScopeName(*plant_, *model_instance), name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 const GeometrySet* CollisionFilterGroupResolver::FindGroup(
@@ -138,7 +225,11 @@ const GeometrySet* CollisionFilterGroupResolver::FindGroup(
 }
 
 const Body<double>* CollisionFilterGroupResolver::FindBody(
+<<<<<<< HEAD
     std::string_view name,
+=======
+    const std::string& name,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ModelInstanceIndex model_instance) {
   if (plant_->HasBodyNamed(name, model_instance)) {
     return &plant_->GetBodyByName(name, model_instance);

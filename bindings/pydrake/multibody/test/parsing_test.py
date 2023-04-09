@@ -25,8 +25,11 @@ import re
 import unittest
 
 from pydrake.common import FindResourceOrThrow
+<<<<<<< HEAD
 from pydrake.common.test_utilities.deprecation import catch_drake_warnings
 from pydrake.geometry import SceneGraph
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 from pydrake.multibody.tree import (
     ModelInstanceIndex,
 )
@@ -144,6 +147,7 @@ class TestParsing(unittest.TestCase):
                 file_contents=sdf_contents, file_type="sdf")
         self.assertIsInstance(result, ModelInstanceIndex)
 
+<<<<<<< HEAD
         plant = MultibodyPlant(time_step=0.01)
         parser = Parser(plant=plant)
         results = parser.AddModelsFromString(
@@ -261,6 +265,56 @@ directives:
 """
         LoadModelDirectivesFromString(model_directives=str)
 
+=======
+    def test_strict(self):
+        plant = MultibodyPlant(time_step=0.01)
+        parser = Parser(plant=plant)
+        model = """<robot name='robot' version='0.99'>
+            <link name='a'/>
+            </robot>"""
+        parser.AddModelFromString(
+            file_contents=model, file_type='urdf', model_name='lax')
+        parser.SetStrictParsing()
+        with self.assertRaises(RuntimeError) as e:
+            result = parser.AddModelFromString(
+                file_contents=model, file_type='urdf', model_name='strict')
+        pattern = r'.*version.*ignored.*'
+        message = str(e.exception)
+        match = re.match(pattern, message)
+        self.assertTrue(match, f'"{message}" does not match "{pattern}"')
+
+    def test_model_instance_info(self):
+        """Checks that ModelInstanceInfo bindings exist."""
+        ModelInstanceInfo.model_name
+        ModelInstanceInfo.model_path
+        ModelInstanceInfo.parent_frame_name
+        ModelInstanceInfo.child_frame_name
+        ModelInstanceInfo.X_PC
+        ModelInstanceInfo.model_instance
+
+    def test_add_frame(self):
+        """Checks that AddFrame bindings exist."""
+        AddFrame.name
+        AddFrame.X_PF
+
+    def test_scoped_frame_names(self):
+        plant = MultibodyPlant(time_step=0.01)
+        frame = GetScopedFrameByName(plant, "world")
+        self.assertIsNotNone(GetScopedFrameName(plant, frame))
+
+    def _make_plant_parser_directives(self):
+        """Returns a tuple (plant, parser, directives) for later testing."""
+        model_dir = os.path.dirname(FindResourceOrThrow(
+            "drake/multibody/parsing/test/"
+            "process_model_directives_test/package.xml"))
+        plant = MultibodyPlant(time_step=0.01)
+        parser = Parser(plant=plant)
+        parser.package_map().PopulateFromFolder(model_dir)
+        directives_file = model_dir + "/add_scoped_top.yaml"
+        directives = LoadModelDirectives(directives_file)
+        return (plant, parser, directives)
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     def test_process_model_directives(self):
         """Check the Process... overload using a Parser."""
         (plant, parser, directives) = self._make_plant_parser_directives()
@@ -278,6 +332,7 @@ directives:
         model_names = [model.model_name for model in added_models]
         self.assertIn("extra_model", model_names)
         plant.GetModelInstanceByName("extra_model")
+<<<<<<< HEAD
 
     def test_add_collision_filter_group_struct(self):
         """Checks the bindings of the AddCollisionFilterGroup helper struct."""
@@ -334,3 +389,5 @@ directives:
         self.assertIn("add_model", repr(dut))
         copy.copy(dut)
         copy.deepcopy(dut)
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c

@@ -82,6 +82,14 @@ bool KinematicsVector<Id, KinematicsValue>::has_id(Id id) const {
 }
 
 template <typename Id, typename KinematicsValue>
+<<<<<<< HEAD
+=======
+std::vector<Id> KinematicsVector<Id, KinematicsValue>::frame_ids() const {
+  return ids();
+}
+
+template <typename Id, typename KinematicsValue>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 std::vector<Id> KinematicsVector<Id, KinematicsValue>::ids() const {
   std::vector<Id> result;
   result.reserve(size_);

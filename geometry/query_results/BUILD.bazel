@@ -13,7 +13,11 @@ drake_cc_package_library(
     visibility = ["//visibility:public"],
     deps = [
         ":contact_surface",
+<<<<<<< HEAD
         ":deformable_contact",
+=======
+        ":deformable_rigid_contact",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         ":penetration_as_point_pair",
         ":signed_distance_pair",
         ":signed_distance_to_point",
@@ -67,9 +71,15 @@ drake_cc_library(
 )
 
 drake_cc_library(
+<<<<<<< HEAD
     name = "deformable_contact",
     srcs = ["deformable_contact.cc"],
     hdrs = ["deformable_contact.h"],
+=======
+    name = "deformable_rigid_contact",
+    srcs = ["deformable_rigid_contact.cc"],
+    hdrs = ["deformable_rigid_contact.h"],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     deps = [
         "//geometry:geometry_ids",
         "//geometry/proximity:polygon_surface_mesh",
@@ -78,9 +88,15 @@ drake_cc_library(
 )
 
 drake_cc_googletest(
+<<<<<<< HEAD
     name = "deformable_contact_test",
     deps = [
         ":deformable_contact",
+=======
+    name = "deformable_rigid_contact_test",
+    deps = [
+        ":deformable_rigid_contact",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "//common/test_utilities:eigen_matrix_compare",
         "//geometry/proximity:make_box_mesh",
     ],

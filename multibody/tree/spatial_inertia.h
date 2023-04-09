@@ -125,6 +125,7 @@ class SpatialInertia {
   /// moments of inertia of 1 and products of inertia of 0.
   static SpatialInertia<T> MakeUnitary();
 
+<<<<<<< HEAD
   /// Creates the spatial inertia for a particle Q of mass m about a point P.
   /// @param[in] mass mass of the single particle (units of kg).
   /// @param[in] position vector from point P to Q, expressed in a frame B.
@@ -327,6 +328,8 @@ class SpatialInertia {
       const T& density, const Vector3<T>& p1, const Vector3<T>& p2,
       const Vector3<T>& p3);
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /// Default SpatialInertia constructor initializes mass, center of mass and
   /// rotational inertia to invalid NaN's for a quick detection of
   /// uninitialized values.

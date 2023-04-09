@@ -875,7 +875,11 @@ TYPED_TEST(DrakeVisualizerTest, VisualizeDeformableGeometry) {
   /* Dispatch a load message. */
   auto context = this->diagram_->CreateDefaultContext();
   const auto& vis_context = this->visualizer_->GetMyContextFromRoot(*context);
+<<<<<<< HEAD
   this->visualizer_->ForcedPublish(vis_context);
+=======
+  this->visualizer_->Publish(vis_context);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Confirm that messages were sent.  */
   MessageResults results = this->ProcessMessages();

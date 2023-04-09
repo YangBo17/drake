@@ -583,12 +583,20 @@ def drake_cc_library(
         if kwargs.get("testonly", False):
             fail("Using internal = True is already implied under testonly = 1")
         if len(kwargs.get("visibility") or []) == 0:
+<<<<<<< HEAD
             fail("When using internal = True, you must set visibility. " +
+=======
+            fail("When using internal = True, you must set visiblity. " +
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
                  "In most cases, visibility = [\"//visibility:private\"] " +
                  "or visibility = [\"//:__subpackages__\"] are suitable.")
         for item in kwargs["visibility"]:
             if item == "//visibility:public":
+<<<<<<< HEAD
                 fail("When using internal = True, visibility can't be public")
+=======
+                fail("When using internal = True, visiblity can't be public")
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         install_hdrs_exclude = hdrs
         new_tags = new_tags + [
             "exclude_from_libdrake",

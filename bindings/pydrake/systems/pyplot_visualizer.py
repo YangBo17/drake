@@ -1,4 +1,8 @@
 import matplotlib
+<<<<<<< HEAD
+=======
+import matplotlib.animation as animation
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 import numpy as np
 from warnings import warn
 

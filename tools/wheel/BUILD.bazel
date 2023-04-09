@@ -13,7 +13,10 @@ drake_py_binary(
     srcs = [
         "wheel_builder/common.py",
         "wheel_builder/linux.py",
+<<<<<<< HEAD
         "wheel_builder/linux_types.py",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "wheel_builder/macos.py",
         "wheel_builder/main.py",
     ],

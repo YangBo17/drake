@@ -1,5 +1,9 @@
 #include "drake/common/symbolic/codegen.h"
 
+<<<<<<< HEAD
+=======
+#include <iostream>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include <sstream>
 #include <vector>
 

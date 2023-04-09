@@ -1,4 +1,13 @@
 if(NOT APPLE)
+<<<<<<< HEAD
+=======
+    # patchelf
+    set(patchelf_version 0.12)
+    set(patchelf_url "https://github.com/NixOS/patchelf/archive/${patchelf_version}/patchelf-${patchelf_version}.tar.gz")
+    set(patchelf_md5 "b9d1161e52e2f342598deabf7d85ed24")
+    list(APPEND ALL_PROJECTS patchelf)
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     # libxcrypt
     set(libxcrypt_version 4.4.25)
     set(libxcrypt_url "https://github.com/besser82/libxcrypt/archive/v${libxcrypt_version}/libxcrypt-${libxcrypt_version}.tar.gz")
@@ -91,12 +100,18 @@ set(clp_dlname "clp-${clp_version}.tar.gz")
 list(APPEND ALL_PROJECTS clp)
 
 if(APPLE)
+<<<<<<< HEAD
     set(mumps_version 5.4.1)  # Latest available in Ubuntu.
     set(mumps_url
          "http://archive.ubuntu.com/ubuntu/pool/universe/m/mumps/mumps_${mumps_version}.orig.tar.gz"
         "http://mumps.enseeiht.fr/MUMPS_${mumps_version}.tar.gz"
     )
     set(mumps_md5 "93be789bf9c6c341a78c16038da3241b")
+=======
+    set(mumps_version 5.4.0)  # Current version in Homebrew.
+    set(mumps_url "http://mumps.enseeiht.fr/MUMPS_${mumps_version}.tar.gz")
+    set(mumps_md5 "808178997dc571c748e9cf0cabf9a26e")
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     set(mumps_dlname "mumps-${mumps_version}.tar.gz")
     list(APPEND ALL_PROJECTS mumps)
 endif()

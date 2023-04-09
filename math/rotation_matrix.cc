@@ -52,6 +52,7 @@ void ThrowIfAnyElementInQuaternionIsInfinityOrNaN(
 }
 }  // namespace
 
+<<<<<<< HEAD
 template <typename T>
 RotationMatrix<T>::RotationMatrix(const RollPitchYaw<T>& rpy) {
   // TODO(@mitiguy) Add publicly viewable documentation on how Sherm and
@@ -78,6 +79,8 @@ RotationMatrix<T>::RotationMatrix(const RollPitchYaw<T>& rpy) {
                          Vector3<T>(Rzx, Rzy, Rzz));
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 template <typename T>
 RotationMatrix<T> RotationMatrix<T>::MakeFromOneUnitVector(
     const Vector3<T>& u_A, int axis_index) {

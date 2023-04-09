@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # -*- bazel -*-
+=======
+# -*- python -*-
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 load(
     "@drake//tools/install:install.bzl",
@@ -83,7 +87,10 @@ cc_library_vendored(
         x.replace("src/", "drake_src/drake_vendor/")
         for x in _SRCS_CPP
     ],
+<<<<<<< HEAD
     copts = ["-w"],
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     linkstatic = 1,
     visibility = ["//visibility:public"],
     deps = [":qhull_r"],

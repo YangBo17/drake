@@ -37,7 +37,11 @@
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
+<<<<<<< HEAD
             <uri>package://drake_models/tri_homecart/homecart_cutting_board.obj</uri>
+=======
+            <uri>homecart_cutting_board.obj</uri>
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
             <scale>1.0 1.0 1.0</scale>
           </mesh>
         </geometry>

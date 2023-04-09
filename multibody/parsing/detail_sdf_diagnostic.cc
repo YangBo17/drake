@@ -1,7 +1,10 @@
 #include "drake/multibody/parsing/detail_sdf_diagnostic.h"
 
+<<<<<<< HEAD
 #include <utility>
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/common/drake_assert.h"
 
 namespace drake {
@@ -11,6 +14,7 @@ namespace internal {
 using drake::internal::DiagnosticDetail;
 using drake::internal::DiagnosticPolicy;
 
+<<<<<<< HEAD
 SDFormatDiagnostic::SDFormatDiagnostic(
     const drake::internal::DiagnosticPolicy* diagnostic,
     const drake::multibody::internal::DataSource* data_source,
@@ -114,21 +118,35 @@ bool PropagateErrors(
 void CheckSupportedElements(
     const SDFormatDiagnostic& diagnostic,
     sdf::ElementConstPtr root_element,
+=======
+void CheckSupportedElements(
+    const DiagnosticPolicy& diagnostic,
+    sdf::ElementPtr root_element,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const std::set<std::string>& supported_elements) {
   CheckSupportedElements(diagnostic, root_element.get(), supported_elements);
 }
 
 void CheckSupportedElements(
+<<<<<<< HEAD
     const SDFormatDiagnostic& diagnostic,
+=======
+    const DiagnosticPolicy& diagnostic,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const sdf::Element* root_element,
     const std::set<std::string>& supported_elements) {
   DRAKE_DEMAND(root_element != nullptr);
 
+<<<<<<< HEAD
   sdf::ElementConstPtr element = root_element->GetFirstElement();
+=======
+  sdf::ElementPtr element = root_element->GetFirstElement();
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   while (element) {
     const std::string& element_name = element->GetName();
     if ((supported_elements.find(element_name) == supported_elements.end()) &&
         element->GetExplicitlySetInFile()) {
+<<<<<<< HEAD
       // Unsupported elements in the drake namespace are errors.
       if (element_name.find("drake:") == 0) {
         std::string message =
@@ -140,6 +158,21 @@ void CheckSupportedElements(
             std::string("Ignoring unsupported SDFormat element in ") +
             root_element->GetName() + std::string(": ") + element_name;
         diagnostic.Warning(element, std::move(message));
+=======
+      internal::DiagnosticDetail detail;
+      if (!element->FilePath().empty()) {
+        detail.filename = element->FilePath();
+      }
+      detail.line = element->LineNumber();
+      detail.message =
+          std::string("Unsupported SDFormat element in ") +
+          root_element->GetName() + std::string(": ") + element_name;
+      // Unsupported elements in the drake namespace are errors.
+      if (element_name.find("drake:") == 0) {
+        diagnostic.Error(detail);
+      } else {
+        diagnostic.Warning(detail);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
       }
     }
     element = element->GetNextElement();
@@ -147,8 +180,13 @@ void CheckSupportedElements(
 }
 
 void CheckSupportedElementValue(
+<<<<<<< HEAD
     const SDFormatDiagnostic& diagnostic,
     sdf::ElementConstPtr root_element,
+=======
+    const drake::internal::DiagnosticPolicy& diagnostic,
+    sdf::ElementPtr root_element,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const std::string& element_name,
     const std::string& expected) {
   DRAKE_DEMAND(root_element != nullptr);
@@ -157,17 +195,33 @@ void CheckSupportedElementValue(
     return;
   }
 
+<<<<<<< HEAD
   sdf::ElementConstPtr element = root_element->FindElement(element_name);
+=======
+  sdf::ElementPtr element = root_element->GetElement(element_name);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   if (!element->GetExplicitlySetInFile()) {
     return;
   }
 
   sdf::ParamPtr value = element->GetValue();
   if (value->GetAsString() != expected) {
+<<<<<<< HEAD
     std::string message =
       std::string("Unsupported value for SDFormat element ") +
         element->GetName() + std::string(": ") + value->GetAsString();
     diagnostic.Warning(element, message);
+=======
+    internal::DiagnosticDetail detail;
+    if (!element->FilePath().empty()) {
+      detail.filename = element->FilePath();
+    }
+    detail.line = element->LineNumber();
+    detail.message =
+        std::string("Unsupported value for SDFormat element ") +
+        element->GetName() + std::string(": ") + value->GetAsString();
+    diagnostic.Warning(detail);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   }
 }
 

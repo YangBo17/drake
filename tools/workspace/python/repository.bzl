@@ -49,6 +49,7 @@ _VERSION_SUPPORT_MATRIX = {
     # CMakeLists.txt python versions.
     "ubuntu:20.04": ["3.8"],
     "ubuntu:22.04": ["3.10"],
+<<<<<<< HEAD
     "macos": ["3.11"],
     # NOTE: when updating supported wheel python versions:
     # - Update both lists of URLs on doc/_pages/pip.md (`cpXY-cpXY` components)
@@ -58,6 +59,11 @@ _VERSION_SUPPORT_MATRIX = {
     # - Tables on from_source.md and installation.md (python version number).
     "macos_wheel": ["3.11"],
     "manylinux": ["3.8", "3.9", "3.10", "3.11"],
+=======
+    "macos": ["3.9"],
+    "macos_wheel": ["3.9"],
+    "manylinux": ["3.8", "3.9"],
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }
 
 def repository_python_info(repository_ctx):

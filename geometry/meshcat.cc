@@ -59,6 +59,11 @@ const std::string& GetUrlContent(std::string_view url_path) {
       LoadResource("drake/geometry/meshcat.js"));
   static const drake::never_destroyed<std::string> stats_js(
       LoadResource("drake/geometry/stats.min.js"));
+<<<<<<< HEAD
+=======
+  static const drake::never_destroyed<std::string> msgpack_lite_js(
+      LoadResource("drake/geometry/msgpack.min.js"));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   static const drake::never_destroyed<std::string> meshcat_ico(
       LoadResource("drake/geometry/meshcat.ico"));
   static const drake::never_destroyed<std::string> meshcat_html(
@@ -75,6 +80,12 @@ const std::string& GetUrlContent(std::string_view url_path) {
   if (url_path == "/stats.min.js") {
     return stats_js.access();
   }
+<<<<<<< HEAD
+=======
+  if (url_path == "/msgpack.min.js") {
+    return msgpack_lite_js.access();
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   if (url_path == "/favicon.ico") {
     return meshcat_ico.access();
   }
@@ -1482,14 +1493,42 @@ class Meshcat::Impl {
 
     // Replace the javascript code in the original html file which connects via
     // websockets with the static javascript commands.
+<<<<<<< HEAD
     std::regex block_re(
         "<!-- CONNECTION BLOCK BEGIN [^]+ CONNECTION BLOCK END -->\n");
     html = std::regex_replace(html, block_re, f.get());
+=======
+    // Note: If the html code changes, the DRAKE_DEMAND will fail, and the code
+    // string here will need to be updated to once again match the html.
+    const std::string html_connect = R"""(try {
+      url = location.toString();
+      url = url.replace("http://", "ws://")
+      url = url.replace("https://", "wss://")
+      url = url.replace("/index.html", "/")
+      url = url.replace("/meshcat.html", "/")
+      connection = new WebSocket(url);
+      connection.binaryType = "arraybuffer";
+      connection.onmessage = (msg) => handle_message(msg);
+      connection.onclose = function(evt) {
+        console.log("onclose:", evt);
+      }
+      viewer.connection = connection
+    } catch (e) {
+      console.info("Not connected to MeshCat websocket server: ", e);
+    })""";
+    const size_t pos = html.find(html_connect);
+    DRAKE_DEMAND(pos != std::string::npos);
+    html.replace(pos, html_connect.size(), std::move(f.get()));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
     // Insert the javascript directly into the html.
     std::vector<std::pair<std::string, std::string>> js_paths{
         {" src=\"meshcat.js\"", "/meshcat.js"},
         {" src=\"stats.min.js\"", "/stats.min.js"},
+<<<<<<< HEAD
+=======
+        {" src=\"msgpack.min.js\"", "/msgpack.min.js"},
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     };
 
     for (const auto& [src_link, url] : js_paths) {

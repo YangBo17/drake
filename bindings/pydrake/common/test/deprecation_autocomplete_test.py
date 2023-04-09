@@ -9,7 +9,10 @@ to fail if this test is part of that suite.
 """
 
 import rlcompleter
+<<<<<<< HEAD
 import sys
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 import unittest
 
 
@@ -70,11 +73,14 @@ class TestDeprecation(unittest.TestCase):
             "sub_module",
             "value",
         ]
+<<<<<<< HEAD
         # Python 3.11 adds a default implementation of __getstate__(), see:
         # https://docs.python.org/3/library/pickle.html#object.__getstate__
         # It does not exist in python <=3.10.
         if sys.version_info[0:2] >= (3, 11):
             suffixes_expected.append("__getstate__(")
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         suffixes_expected += [
             "__ge__(",
             "__eq__(",

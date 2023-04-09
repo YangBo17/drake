@@ -8,7 +8,11 @@
 #include "drake/geometry/geometry_ids.h"
 #include "drake/geometry/proximity/deformable_contact_geometries.h"
 #include "drake/geometry/proximity/volume_mesh.h"
+<<<<<<< HEAD
 #include "drake/geometry/query_results/deformable_contact.h"
+=======
+#include "drake/geometry/query_results/deformable_rigid_contact.h"
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 #include "drake/geometry/shape_specification.h"
 
 namespace drake {
@@ -47,12 +51,15 @@ class Geometries final : public ShapeReifier {
     return rigid_geometries_.count(id) != 0;
   }
 
+<<<<<<< HEAD
   /* Returns true if a deformable geometry representation with the given `id`
    exists. */
   bool is_deformable(GeometryId id) const {
     return deformable_geometries_.count(id) != 0;
   }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   /* Removes the geometry (if it has a deformable contact representation). No-op
    if no geometry with a deformable contact representation exists with the
    provided id. */
@@ -72,20 +79,28 @@ class Geometries final : public ShapeReifier {
    @param id            The unique identifier for the geometry.
    @param properties    The proximity properties that specifies the properties
                         of the rigid representation.
+<<<<<<< HEAD
    @param X_WG          The pose of the geometry in the world frame.
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
    @throws std::exception if resolution hint <= 0 for the following shapes: Box,
            Sphere, Cylinder, Capsule, and Ellipsoid. Note that Mesh and Convex
            don't restrict the range of resolution_hint.
    @pre There is no previous representation associated with id.  */
   void MaybeAddRigidGeometry(const Shape& shape, GeometryId id,
+<<<<<<< HEAD
                              const ProximityProperties& props,
                              const math::RigidTransform<double>& X_WG);
+=======
+                             const ProximityProperties& props);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Updates the world pose of the rigid geometry with the given id, if it
    exists, to `X_WG`. */
   void UpdateRigidWorldPose(GeometryId id,
                             const math::RigidTransform<double>& X_WG);
 
+<<<<<<< HEAD
   /* Adds a deformable geometry whose contact mesh representation is given by
    `mesh`.
 
@@ -105,6 +120,8 @@ class Geometries final : public ShapeReifier {
   */
   DeformableContact<double> ComputeDeformableContact() const;
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
  private:
   friend class GeometriesTester;
 
@@ -115,6 +132,7 @@ class Geometries final : public ShapeReifier {
     const ProximityProperties& properties;
   };
 
+<<<<<<< HEAD
   void ImplementGeometry(const Box& box, void* user_data) override;
   void ImplementGeometry(const Capsule& capsule, void* user_data) override;
   void ImplementGeometry(const Convex& convex, void* user_data) override;
@@ -124,14 +142,29 @@ class Geometries final : public ShapeReifier {
   void ImplementGeometry(const Mesh& mesh, void* user_data) override;
   void ImplementGeometry(const MeshcatCone& cone, void* user_data) override;
   void ImplementGeometry(const Sphere& sphere, void* user_data) override;
+=======
+  void ImplementGeometry(const Sphere& sphere, void* user_data) override;
+  void ImplementGeometry(const Cylinder& cylinder, void* user_data) override;
+  void ImplementGeometry(const Box& box, void* user_data) override;
+  void ImplementGeometry(const Capsule& capsule, void* user_data) override;
+  void ImplementGeometry(const Ellipsoid& ellipsoid, void* user_data) override;
+  void ImplementGeometry(const Mesh& mesh, void* user_data) override;
+  void ImplementGeometry(const Convex& convex, void* user_data) override;
+  void ImplementGeometry(const HalfSpace& half_space, void* user_data) override;
+  void ImplementGeometry(const MeshcatCone& cone, void* user_data) override;
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   /* Makes a rigid (non-deformable) geometry from a supported shape type using
    the given `data`. */
   template <typename ShapeType>
   void AddRigidGeometry(const ShapeType& shape, const ReifyData& data);
 
+<<<<<<< HEAD
   // The representations of all deformable geometries.
   std::unordered_map<GeometryId, DeformableGeometry> deformable_geometries_;
+=======
+  // TODO(xuchenhan-tri): Add deformable geometries.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // The representations of all rigid geometries.
   std::unordered_map<GeometryId, RigidGeometry> rigid_geometries_;

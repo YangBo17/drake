@@ -103,10 +103,17 @@ TEST_F(SymbolicExpansionTest, ExpressionAlreadyExpandedPolynomial) {
 }
 
 TEST_F(SymbolicExpansionTest, ExpressionAlreadyExpandedPow) {
+<<<<<<< HEAD
   EXPECT_TRUE(CheckAlreadyExpanded(3 * pow(2, y_)));  // 3*2^y
   EXPECT_TRUE(CheckAlreadyExpanded(pow(x_, y_)));     // x^y
   EXPECT_TRUE(CheckAlreadyExpanded(pow(x_, -1)));     // x^(-1)
   EXPECT_TRUE(CheckAlreadyExpanded(pow(x_, -1)));     // x^(-1)
+=======
+  EXPECT_TRUE(CheckAlreadyExpanded(3 * pow(2, y_)));         // 3*2^y
+  EXPECT_TRUE(CheckAlreadyExpanded(pow(x_, y_)));            // x^y
+  EXPECT_TRUE(CheckAlreadyExpanded(pow(x_, -1)));            // x^(-1)
+  EXPECT_TRUE(CheckAlreadyExpanded(pow(x_, -1)));            // x^(-1)
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
   // The following are all already expanded. They do not yet detect and report
   // `is_expanded() == true` upon construction, but in any case they must not

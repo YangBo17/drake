@@ -100,6 +100,30 @@ class MultibodyPlantTester {
       const MultibodyPlant<T>& plant, GeometryId id) {
     return plant.FindBodyByGeometryId(id);
   }
+<<<<<<< HEAD
+=======
+
+  static void CalcNormalAndTangentContactJacobians(
+      const MultibodyPlant<double>& plant, const Context<double>& context,
+      const std::vector<PenetrationAsPointPair<double>>& point_pairs,
+      MatrixX<double>* Jn, MatrixX<double>* Jt,
+      std::vector<RotationMatrix<double>>* R_WC_set) {
+    // We first convert point contact pairs to discrete contact pairs.
+    std::vector<internal::DiscreteContactPair<double>> discrete_pairs;
+    for (const PenetrationAsPointPair<double>& pair : point_pairs) {
+      const Vector3d p_WC = 0.5 * (pair.p_WCa + pair.p_WCb);
+      // fn0, k and d are irrelevant values for Jacobian computation. Thus we
+      // arbitrarily set them to zero.
+      const double fn0 = 0.0;
+      const double k = 0.0;
+      const double d = 0.0;
+      discrete_pairs.push_back(
+          {pair.id_A, pair.id_B, p_WC, pair.nhat_BA_W, fn0, k, d});
+    }
+    plant.CalcNormalAndTangentContactJacobians(
+        context, discrete_pairs, Jn, Jt, R_WC_set);
+  }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 };
 
 namespace {
@@ -3896,9 +3920,14 @@ GTEST_TEST(MultibodyPlantTests, ActuationPorts) {
   // Add a split pendulum to the plant.
   const ModelInstanceIndex pendulum_model_instance =
       Parser(plant.get())
+<<<<<<< HEAD
           .AddModels(FindResourceOrThrow(
               "drake/multibody/plant/test/split_pendulum.sdf"))
           .at(0);
+=======
+          .AddModelFromFile(FindResourceOrThrow(
+              "drake/multibody/plant/test/split_pendulum.sdf"));
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   plant->Finalize();
   ASSERT_EQ(plant->num_actuated_dofs(default_model_instance()), 1);
   ASSERT_EQ(plant->num_actuated_dofs(pendulum_model_instance), 1);
@@ -3951,7 +3980,12 @@ GTEST_TEST(MultibodyPlantTests, AlgebraicLoopDetection) {
       "drake/manipulation/models/iiwa_description/sdf/"
       "iiwa14_no_collision.sdf";
   Parser parser(plant);
+<<<<<<< HEAD
   auto iiwa_instance = parser.AddModels(FindResourceOrThrow(kSdfPath)).at(0);
+=======
+  auto iiwa_instance =
+      parser.AddModelFromFile(FindResourceOrThrow(kSdfPath), "iiwa");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   plant->Finalize();
   auto feedback =
       builder.AddSystem<systems::PassThrough<double>>(plant->num_velocities());
@@ -4041,6 +4075,7 @@ GTEST_TEST(MultibodyPlantTest, ThrowIfSpatialForcePortContainsNaN) {
       "Spatial force.*contains NaN.");
 }
 
+<<<<<<< HEAD
 GTEST_TEST(MultibodyPlantTest, SetDefaultPositions) {
   // Construct a plant with two Iiwas.
   const char kSdfPath[] =
@@ -4116,6 +4151,8 @@ GTEST_TEST(MultibodyPlantTest, GetMutableSceneGraphPreFinalize) {
                               ".*!is_finalized.*");
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace
 }  // namespace multibody
 }  // namespace drake

@@ -6,10 +6,18 @@ default-jdk
 file
 gfortran
 git
+<<<<<<< HEAD
+=======
+libblas-dev
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 libbz2-dev
 libclang-12-dev
 libdouble-conversion-dev
 libexpat1-dev
+<<<<<<< HEAD
+=======
+libgflags-dev
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 libgl-dev
 libglew-dev
 libglib2.0-dev
@@ -23,10 +31,17 @@ libmumps-seq-dev
 libnlopt-cxx-dev
 libopengl-dev
 libpng-dev
+<<<<<<< HEAD
 libtiff-dev
 libtinyxml-dev
 libtool
 libvtk9-dev
+=======
+libsuitesparse-dev
+libtiff-dev
+libtinyxml-dev
+libtool
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 libx11-dev
 ocl-icd-opencl-dev
 opencl-headers

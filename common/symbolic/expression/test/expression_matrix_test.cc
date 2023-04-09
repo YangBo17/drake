@@ -583,6 +583,7 @@ void CheckSymbolicMatrixInversion() {
   DRAKE_EXPECT_THROWS_MESSAGE(Mdyn.inverse().eval(), kBadMatrixInversion);
 }
 
+<<<<<<< HEAD
 // Positive tests for symbolic inversion of 1x1, 2x2, 3x3, and 4x4 matrices.
 // Negative test for 5x5 matrix.
 TEST_F(SymbolicExpressionMatrixTest, Inverse) {
@@ -615,6 +616,8 @@ TEST_F(SymbolicExpressionMatrixTest, InverseNumeric) {
   CheckNumericExpressionMatrixInversion<10>();
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 // We found that the following example could leak memory. This test makes sure
 // that we provide a correct work-around. FYI, `--config asan` option is
 // required to see failures from this test case.

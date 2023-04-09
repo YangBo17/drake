@@ -194,6 +194,7 @@ TEST_F(KukaTest, ReachableWithCost) {
   }
 }
 
+<<<<<<< HEAD
 TEST_F(ToyTest, Test) {
   GlobalInverseKinematics::Options global_ik_options;
   GlobalInverseKinematics global_ik(*plant_, global_ik_options);
@@ -222,6 +223,8 @@ TEST_F(ToyTest, Test) {
   }
 }
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace
 }  // namespace multibody
 }  // namespace drake

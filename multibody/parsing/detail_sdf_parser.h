@@ -41,8 +41,13 @@ namespace internal {
 //   null if there were parsing errors reported through the workspace.diagnostic
 //   policy.
 std::optional<ModelInstanceIndex> AddModelFromSdf(
+<<<<<<< HEAD
     const DataSource& data_source, const std::string& model_name,
     const std::optional<std::string>& parent_model_name,
+=======
+    const DataSource& data_source,
+    const std::string& model_name,
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     const ParsingWorkspace& workspace);
 
 // Parses all `<model>` elements from the SDF file specified by `data_source`
@@ -70,6 +75,7 @@ std::optional<ModelInstanceIndex> AddModelFromSdf(
 //   errors reported through the workspace.diagnostic policy.
 std::vector<ModelInstanceIndex> AddModelsFromSdf(
     const DataSource& data_source,
+<<<<<<< HEAD
     const std::optional<std::string>& parent_model_name,
     const ParsingWorkspace& workspace);
 
@@ -88,6 +94,9 @@ class SdfParserWrapper final : public ParserInterface {
       const std::optional<std::string>& parent_model_name,
       const ParsingWorkspace& workspace) final;
 };
+=======
+    const ParsingWorkspace& workspace);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 }  // namespace internal
 }  // namespace multibody

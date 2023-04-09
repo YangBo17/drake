@@ -1,12 +1,32 @@
 Do not load unused packages to reduce build footprint
 --- src/sys/dll/reg.c
 +++ src/sys/dll/reg.c
+<<<<<<< HEAD
 @@ -46,8 +46,6 @@ PETSC_EXTERN PetscErrorCode DMInitializePackage(void);
  PETSC_EXTERN PetscErrorCode PCInitializePackage(void);
  PETSC_EXTERN PetscErrorCode KSPInitializePackage(void);
  PETSC_EXTERN PetscErrorCode SNESInitializePackage(void);
 -PETSC_EXTERN PetscErrorCode TSInitializePackage(void);
 -PETSC_EXTERN PetscErrorCode TaoInitializePackage(void);
+=======
+@@ -112,9 +112,6 @@ PETSC_INTERN PetscErrorCode PetscInitialize_DynamicLibraries(void)
+ #if defined(PETSC_USE_SINGLE_LIBRARY)
+   PetscCall(AOInitializePackage());
+   PetscCall(PetscSFInitializePackage());
+-#if !defined(PETSC_USE_COMPLEX)
+-  PetscCall(CharacteristicInitializePackage());
+-#endif
+   PetscCall(ISInitializePackage());
+   PetscCall(VecInitializePackage());
+   PetscCall(MatInitializePackage());
+@@ -123,7 +120,5 @@ PETSC_INTERN PetscErrorCode PetscInitialize_DynamicLibraries(void)
+   PetscCall(KSPInitializePackage());
+   PetscCall(SNESInitializePackage());
+-  PetscCall(TSInitializePackage());
+-  PetscCall(TaoInitializePackage());
+ #else
+   SETERRQ(PETSC_COMM_WORLD,PETSC_ERR_SUP,"Cannot use -library_preload with multiple static PETSc libraries");
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
  #endif
  #if defined(PETSC_HAVE_THREADSAFETY)
  static MPI_Comm PETSC_COMM_WORLD_INNER = 0, PETSC_COMM_SELF_INNER = 0;

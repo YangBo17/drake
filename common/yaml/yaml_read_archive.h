@@ -34,6 +34,13 @@ class YamlReadArchive final {
  public:
   DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(YamlReadArchive)
 
+<<<<<<< HEAD
+=======
+  using Options
+      DRAKE_DEPRECATED("2022-09-01", "Use drake::yaml::LoadYamlOptions instead")
+      = LoadYamlOptions;
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   YamlReadArchive(internal::Node root, const LoadYamlOptions& options);
 
   static internal::Node LoadFileAsNode(
@@ -580,5 +587,13 @@ class YamlReadArchive final {
 };
 
 }  // namespace internal
+<<<<<<< HEAD
+=======
+
+using YamlReadArchive
+    DRAKE_DEPRECATED("2022-09-01", "Use the yaml_io.h functions instead")
+    = internal::YamlReadArchive;
+
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 }  // namespace yaml
 }  // namespace drake

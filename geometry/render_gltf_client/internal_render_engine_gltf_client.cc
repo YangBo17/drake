@@ -133,6 +133,7 @@ void LogFrameServerResponsePath(ImageType image_type, const std::string& path) {
       ImageTypeToString(image_type), path);
 }
 
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
 /* Deletes the files, i.e., `scene_path` and `image_path`, and logs if verbose.
  This function is called only when get_params().cleanup == true. */
 void CleanupFrame(const std::string& scene_path, const std::string& image_path,
@@ -143,6 +144,23 @@ void CleanupFrame(const std::string& scene_path, const std::string& image_path,
     drake::log()->debug(
         "RenderEngineGltfClient: deleted unused files {} and {}.", scene_path,
         image_path);
+=======
+// Deletes the file and log if verbose. This function is called only when
+// render_client_->get_params().no_cleanup == false.
+void DeleteFileAndLogIfVerbose(const std::string& path, bool verbose) {
+  try {
+    fs::remove(path);
+    if (verbose) {
+      drake::log()->debug("RenderEngineGltfClient: deleted unused file '{}'.",
+                          path);
+    }
+  } catch (const std::exception& e) {
+    if (verbose) {
+      drake::log()->debug(
+          "RenderEngineGltfClient: unable to delete file '{}'.  {}", path,
+          e.what());
+    }
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
   }
 }
 
@@ -229,8 +247,13 @@ void RenderEngineGltfClient::UpdateViewpoint(
 
 void RenderEngineGltfClient::DoRenderColorImage(
     const ColorRenderCamera& camera, ImageRgba8U* color_image_out) const {
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   const int64_t color_scene_id = GetNextSceneId();
   if (get_params().verbose) {
+=======
+  const auto color_scene_id = GetNextSceneId();
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameStart(ImageType::kColor, color_scene_id);
   }
 
@@ -244,33 +267,52 @@ void RenderEngineGltfClient::DoRenderColorImage(
   // Export and render the glTF scene.
   SetGltfCameraPerspective(camera.core(),
                            color_pipeline.renderer->GetActiveCamera());
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   const std::string scene_path =
       fs::path(temp_directory()) /
       GetSceneFileName(ImageType::kColor, color_scene_id);
   ExportScene(scene_path, ImageType::kColor);
   if (get_params().verbose) {
+=======
+  const std::string scene_path = ExportScene(ImageType::kColor, color_scene_id);
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameGltfExportPath(ImageType::kColor, scene_path);
   }
 
   const std::string image_path = render_client_->RenderOnServer(
       camera.core(), VtkToRenderImageType(ImageType::kColor), scene_path,
       MimeType());
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   if (get_params().verbose) {
+=======
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameServerResponsePath(ImageType::kColor, image_path);
   }
 
   // Load the returned image back to the drake buffer.
   render_client_->LoadColorImage(image_path, color_image_out);
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   if (get_params().cleanup) {
     CleanupFrame(scene_path, image_path, get_params().verbose);
+=======
+  if (!render_client_->get_params().no_cleanup) {
+    CleanupFrame(scene_path, image_path);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
   }
 }
 
 void RenderEngineGltfClient::DoRenderDepthImage(
     const DepthRenderCamera& camera, ImageDepth32F* depth_image_out) const {
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   const int64_t depth_scene_id = GetNextSceneId();
 
   if (get_params().verbose) {
+=======
+  const auto depth_scene_id = GetNextSceneId();
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameStart(ImageType::kDepth, depth_scene_id);
   }
 
@@ -283,33 +325,52 @@ void RenderEngineGltfClient::DoRenderDepthImage(
   // Export and render the glTF scene.
   SetGltfCameraPerspective(camera.core(),
                            depth_pipeline.renderer->GetActiveCamera());
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   const std::string scene_path =
       fs::path(temp_directory()) /
       GetSceneFileName(ImageType::kDepth, depth_scene_id);
   ExportScene(scene_path, ImageType::kDepth);
   if (get_params().verbose) {
+=======
+  const std::string scene_path = ExportScene(ImageType::kDepth, depth_scene_id);
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameGltfExportPath(ImageType::kDepth, scene_path);
   }
 
   const std::string image_path = render_client_->RenderOnServer(
       camera.core(), VtkToRenderImageType(ImageType::kDepth), scene_path,
       MimeType(), camera.depth_range());
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   if (get_params().verbose) {
+=======
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameServerResponsePath(ImageType::kDepth, image_path);
   }
 
   // Load the returned image back to the drake buffer.
   render_client_->LoadDepthImage(image_path, depth_image_out);
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   if (get_params().cleanup) {
     CleanupFrame(scene_path, image_path, get_params().verbose);
+=======
+  if (!render_client_->get_params().no_cleanup) {
+    CleanupFrame(scene_path, image_path);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
   }
 }
 
 void RenderEngineGltfClient::DoRenderLabelImage(
     const ColorRenderCamera& camera, ImageLabel16I* label_image_out) const {
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   const int64_t label_scene_id = GetNextSceneId();
 
   if (get_params().verbose) {
+=======
+  const auto label_scene_id = GetNextSceneId();
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameStart(ImageType::kLabel, label_scene_id);
   }
 
@@ -323,22 +384,32 @@ void RenderEngineGltfClient::DoRenderLabelImage(
   // Export and render the glTF scene.
   SetGltfCameraPerspective(camera.core(),
                            label_pipeline.renderer->GetActiveCamera());
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   const std::string scene_path =
       fs::path(temp_directory()) /
       GetSceneFileName(ImageType::kLabel, label_scene_id);
   ExportScene(scene_path, ImageType::kLabel);
   if (get_params().verbose) {
+=======
+  const std::string scene_path = ExportScene(ImageType::kLabel, label_scene_id);
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameGltfExportPath(ImageType::kLabel, scene_path);
   }
 
   const std::string image_path = render_client_->RenderOnServer(
       camera.core(), VtkToRenderImageType(ImageType::kLabel), scene_path,
       MimeType());
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   if (get_params().verbose) {
+=======
+  if (render_client_->get_params().verbose) {
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
     LogFrameServerResponsePath(ImageType::kLabel, image_path);
   }
 
   // Load the returned image back to the drake buffer.
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
   /* NOTE: The loaded image from `image_path` is expected to be a colored label
    image that will then be converted to an actual label image.  The server has
    no knowledge of the conversion formula, and thus, a colored label image is
@@ -361,6 +432,11 @@ void RenderEngineGltfClient::DoRenderLabelImage(
 
   if (get_params().cleanup) {
     CleanupFrame(scene_path, image_path, get_params().verbose);
+=======
+  render_client_->LoadLabelImage(image_path, label_image_out);
+  if (!render_client_->get_params().no_cleanup) {
+    CleanupFrame(scene_path, image_path);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
   }
 }
 
@@ -371,6 +447,16 @@ void RenderEngineGltfClient::ExportScene(const std::string& export_path,
   gltf_exporter->SetRenderWindow(get_mutable_pipeline(image_type).window);
   gltf_exporter->SetFileName(export_path.c_str());
   gltf_exporter->Write();
+<<<<<<< HEAD:geometry/render_gltf_client/internal_render_engine_gltf_client.cc
+=======
+  return scene_path;
+}
+
+void RenderEngineGltfClient::CleanupFrame(const std::string& scene_path,
+                                          const std::string& image_path) const {
+  DeleteFileAndLogIfVerbose(scene_path, render_client_->get_params().verbose);
+  DeleteFileAndLogIfVerbose(image_path, render_client_->get_params().verbose);
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c:geometry/render/dev/render_gltf_client/internal_render_engine_gltf_client.cc
 }
 
 Eigen::Matrix4d RenderEngineGltfClient::CameraModelViewTransformMatrix(

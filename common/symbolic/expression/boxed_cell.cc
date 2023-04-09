@@ -17,9 +17,12 @@ void BoxedCell::ConstructCopy(const BoxedCell& other) {
 }
 
 void BoxedCell::AssignCopy(const BoxedCell& other) {
+<<<<<<< HEAD
   if (this == &other) {
     return;
   }
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
   // Decrement the use_count of our currently-managed cell.
   Release();
   if (other.is_constant()) {

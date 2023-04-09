@@ -49,8 +49,21 @@ The macOS wheel builds clean up after themselves by default. The
 Optional Arguments
 ------------------
 
+<<<<<<< HEAD
 Except for ``--output-dir`` (``-o``), most of the available options exist for
 debugging purposes and should not be needed in ordinary use.
+=======
+Except for ``--test`` (``-t``) and ``--output-dir`` (``-o``), most of the
+available options exist for debugging purposes and should not be needed in
+ordinary use.
+
+``-t``, ``--test``
+    Run some basic tests on the wheels after extracting them. On Ubuntu, this
+    this is incompatible with ``--no-extract`` for obvious reasons.
+
+    Tests should always be run prior to publishing wheels. However, while
+    debugging build issues, it may be expedient to skip the tests.
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 ``-o``, ``--output-dir``
     Specifies where extracted wheels should be written. The default is the
@@ -67,12 +80,15 @@ debugging purposes and should not be needed in ordinary use.
     On macOS, if ``--keep-build`` is used, the wheel will still be accessible
     via its build location in ``//opt/drake-wheel-build/wheel/wheelhouse``.
 
+<<<<<<< HEAD
     This option automatically implies ``--no-test``.
 
 ``--no-test``
     Skips testing the wheels after extracting them. While debugging build
     issues, it may be expedient to skip the tests.
 
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ``-s``, ``--tag-stages`` (Ubuntu only)
     Build each stage independently and, on completion, assign it a permanent
     tag. This serves two functions; first, assignment of permanent tags ensures

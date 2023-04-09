@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # -*- bazel -*-
+=======
+# -*- python -*-
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 
 load(
     "@drake//tools/workspace:cmake_configure_file.bzl",
@@ -34,30 +38,52 @@ config_setting(
 # Generates config.hh based on the version numbers in CMake code.
 cmake_configure_file(
     name = "config",
+<<<<<<< HEAD
     src = "include/gz/math/config.hh.in",
     out = "include/gz/math/config.hh",
     cmakelists = ["CMakeLists.txt"],
     defines = [
+=======
+    src = "include/ignition/math/config.hh.in",
+    out = "include/ignition/math/config.hh",
+    cmakelists = ["CMakeLists.txt"],
+    defines = [
+        "IGN_DESIGNATION=math",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         "PROJECT_VERSION_MAJOR=0",
         "PROJECT_VERSION_MINOR=0",
         "PROJECT_VERSION_PATCH=0",
         "PROJECT_VERSION=0.0",
         "PROJECT_VERSION_FULL=0.0.0",
+<<<<<<< HEAD
         "PROJECT_NAME_NO_VERSION=gz-math",
+=======
+        "PROJECT_NAME_NO_VERSION=ignition-math",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     ],
 )
 
 generate_file(
+<<<<<<< HEAD
     name = "include/gz/math/Export.hh",
     content = """
 #pragma once
 // Simplified version of visibility and deprecation macros.
 #define GZ_MATH_VISIBLE
 #define GZ_DEPRECATED(version) __attribute__ ((__deprecated__))
+=======
+    name = "include/ignition/math/Export.hh",
+    content = """
+#pragma once
+// Simplified version of visibility and deprecation macros.
+#define IGNITION_MATH_VISIBLE
+#define IGN_DEPRECATED(version) __attribute__ ((__deprecated__))
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     """,
 )
 
 _MOST_HDRS = [
+<<<<<<< HEAD
     "include/gz/math/AdditivelySeparableScalarField3.hh",
     "include/gz/math/Angle.hh",
     "include/gz/math/AxisAlignedBox.hh",
@@ -130,11 +156,78 @@ _HDRS_PRIVATE = [
     "src/MaterialType.hh",
     "src/SignalStatsPrivate.hh",
     "src/SplinePrivate.hh",
+=======
+    "include/ignition/math/Angle.hh",
+    "include/ignition/math/AxisAlignedBox.hh",
+    "include/ignition/math/Box.hh",
+    "include/ignition/math/Capsule.hh",
+    "include/ignition/math/Color.hh",
+    "include/ignition/math/Cylinder.hh",
+    "include/ignition/math/DiffDriveOdometry.hh",
+    "include/ignition/math/Ellipsoid.hh",
+    "include/ignition/math/Filter.hh",
+    "include/ignition/math/Frustum.hh",
+    "include/ignition/math/GaussMarkovProcess.hh",
+    "include/ignition/math/Helpers.hh",
+    "include/ignition/math/Inertial.hh",
+    "include/ignition/math/Kmeans.hh",
+    "include/ignition/math/Line2.hh",
+    "include/ignition/math/Line3.hh",
+    "include/ignition/math/MassMatrix3.hh",
+    "include/ignition/math/Material.hh",
+    "include/ignition/math/MaterialType.hh",
+    "include/ignition/math/Matrix3.hh",
+    "include/ignition/math/Matrix4.hh",
+    "include/ignition/math/MovingWindowFilter.hh",
+    "include/ignition/math/OrientedBox.hh",
+    "include/ignition/math/PID.hh",
+    "include/ignition/math/Plane.hh",
+    "include/ignition/math/Pose3.hh",
+    "include/ignition/math/Quaternion.hh",
+    "include/ignition/math/Rand.hh",
+    "include/ignition/math/RollingMean.hh",
+    "include/ignition/math/RotationSpline.hh",
+    "include/ignition/math/SemanticVersion.hh",
+    "include/ignition/math/SignalStats.hh",
+    "include/ignition/math/SpeedLimiter.hh",
+    "include/ignition/math/Sphere.hh",
+    "include/ignition/math/SphericalCoordinates.hh",
+    "include/ignition/math/Spline.hh",
+    "include/ignition/math/Stopwatch.hh",
+    "include/ignition/math/Temperature.hh",
+    "include/ignition/math/Triangle.hh",
+    "include/ignition/math/Triangle3.hh",
+    "include/ignition/math/Vector2.hh",
+    "include/ignition/math/Vector3.hh",
+    "include/ignition/math/Vector3Stats.hh",
+    "include/ignition/math/Vector4.hh",
+    "include/ignition/math/detail/Box.hh",
+    "include/ignition/math/detail/Capsule.hh",
+    "include/ignition/math/detail/Cylinder.hh",
+    "include/ignition/math/detail/Ellipsoid.hh",
+    "include/ignition/math/detail/Sphere.hh",
+    "include/ignition/math/detail/WellOrderedVector.hh",
+    "include/ignition/math/graph/Edge.hh",
+    "include/ignition/math/graph/Graph.hh",
+    "include/ignition/math/graph/GraphAlgorithms.hh",
+    "include/ignition/math/graph/Vertex.hh",
+]
+
+_HDRS_PRIVATE = [
+    "src/FrustumPrivate.hh",
+    "src/KmeansPrivate.hh",
+    "src/MaterialType.hh",
+    "src/RotationSplinePrivate.hh",
+    "src/SignalStatsPrivate.hh",
+    "src/SplinePrivate.hh",
+    "src/Vector3StatsPrivate.hh",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ]
 
 check_lists_consistency(
     files = _MOST_HDRS + _HDRS_PRIVATE,
     glob_include = ["include/**/*.hh"],
+<<<<<<< HEAD
     glob_exclude = [
         # These headers are deprecated.
         "include/ignition/math/AdditivelySeparableScalarField3.hh",
@@ -210,6 +303,13 @@ check_lists_consistency(
 _HDRS = _MOST_HDRS + [
     "include/gz/math/config.hh",
     "include/gz/math/Export.hh",
+=======
+)
+
+_HDRS = _MOST_HDRS + [
+    "include/ignition/math/config.hh",
+    "include/ignition/math/Export.hh",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 ]
 
 # The explicitly listed srcs= matches upstream's explicitly listed sources plus
@@ -224,11 +324,18 @@ _SRCS = [
     "src/Helpers.cc",
     "src/Kmeans.cc",
     "src/Material.cc",
+<<<<<<< HEAD
     "src/MovingWindowFilter.cc",
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "src/PID.cc",
     "src/Rand.cc",
     "src/RollingMean.cc",
     "src/RotationSpline.cc",
+<<<<<<< HEAD
+=======
+    "src/RotationSplinePrivate.cc",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     "src/SemanticVersion.cc",
     "src/SignalStats.cc",
     "src/SpeedLimiter.cc",
@@ -249,19 +356,30 @@ cc_library_vendored(
     ],
     hdrs = _HDRS,
     hdrs_vendored = [
+<<<<<<< HEAD
         x.replace("include/gz/", "drake_src/drake_vendor/gz/")
         for x in _HDRS
     ],
     edit_include = {
         "gz/": "drake_vendor/gz/",
+=======
+        x.replace("include/ignition/", "drake_src/drake_vendor/ignition/")
+        for x in _HDRS
+    ],
+    edit_include = {
+        "ignition/": "drake_vendor/ignition/",
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
     },
     copts = ["-w"],
     linkstatic = True,
     includes = ["drake_src"],
     visibility = ["//visibility:public"],
+<<<<<<< HEAD
     deps = [
         "@gz_utils_internal//:gz_utils",
     ],
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 )
 
 install(

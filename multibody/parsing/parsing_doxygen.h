@@ -64,7 +64,11 @@ scoped names.
 Scoped names allow referring to an element of a model nested within the current
 model. They take the form of some number of nested model names, plus the
 element name, all joined by the delimiter `::`. Names not using the `::`
+<<<<<<< HEAD
 delimiter are not considered scoped names; they are used to define or refer to
+=======
+delimeter are not considered scoped names; they are used to define or refer to
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
 elements of the current model. For example, suppose that model A contains model
 B, which in turn contains model C. Here are some valid scoped names:
 

@@ -108,8 +108,11 @@ void DoScalarDependentDefinitions(py::module m, T) {
             cls_doc.IsExactlyIdentity.doc)
         .def("IsNearlyIdentity", &Class::IsNearlyIdentity,
             py::arg("translation_tolerance"), cls_doc.IsNearlyIdentity.doc)
+<<<<<<< HEAD
         .def("IsExactlyEqualTo", &Class::IsExactlyEqualTo, py::arg("other"),
             cls_doc.IsExactlyEqualTo.doc)
+=======
+>>>>>>> 39291320815eca6c872c9ce0a595d643d0acf87c
         .def("IsNearlyEqualTo", &Class::IsNearlyEqualTo, py::arg("other"),
             py::arg("tolerance"), cls_doc.IsNearlyEqualTo.doc)
         .def("inverse", &Class::inverse, cls_doc.inverse.doc)
